@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Центр каякінгу KAYAK.DP.UA - Дніпро</title>
+    <!-- Подключаем современный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Иконки соцсетей -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Шапка сайта (Светлая, воздушная) -->
+    <header class="main-header">
+        <div class="header-container">
+            
+            <!-- Левая часть: Соцсети -->
+            <div class="social-block">
+                <a href="https://instagram.com" target="_blank" class="social-btn" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://telegram.org" target="_blank" class="social-btn" aria-label="Telegram">
+                    <i class="fa-brands fa-telegram"></i>
+                </a>
+            </div>
+
+            <!-- Центр: Твой логотип -->
+            <div class="logo-block">
+                <img src="./img/kayakdnepr.png" class="logo" alt="logo kayakdpua">
+            </div>
+
+            <!-- Правая часть: Телефон и Языки -->
+            <div class="meta-block">
+                <a href="tel:+380637100636" class="phone-btn">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>+380637100636</span>
+                </a>
+                <div class="lang-switcher">
+                    <a href="#" class="lang-item active">ua</a>
+                    <span class="lang-divider">|</span>
+                    <a href="#" class="lang-item">ru</a>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="burger-menu-btn" id="burgerToggle" aria-label="Відкрити меню">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Виїзне меню (Панель) -->
+        <nav class="mobile-nav-panel" id="mobileNav">
+            <ul class="mobile-nav-list">
+                <!-- Твоя ссылка на каталог -->
+                <li><a href="./catalog.html" class="catalog-link">🛶 Каталог спорядження</a></li>
+            </ul>
+            
+            <div class="mobile-nav-footer">
+                <div class="lang-switcher-mobile">
+                    <a href="#" class="active">ua</a> | <a href="#">ru</a>
+                </div>
+                <a href="tel:+380637100636" class="mobile-phone">+38 (063) 710-06-36</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Главный экран (Hero) с ярким фоном -->
+    <section class="hero-section">
+        
+        <!-- Задний фон: картинка каякера + светлый умный оверлей -->
+        <div class="hero-bg-container">
+            <!-- Прописали путь к главной фоновой картинке -->
+            <img src="./img/sap_tourism.webp" alt="Каякинг на Днепре" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+
+        <!-- Контент поверх картинки -->
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Центр каякінгу <span class="brand-highlight">KAYAK.DP.UA</span></h1>
+                <p class="hero-subtitle">Англійське, Канадське та Українське спорядження європейської якості</p>
+                
+                <div class="locations-box">
+                    <p class="locations-text">
+                        Пункти прокату 
+                        <a href="#parus" class="location-link">«Ж/м Парус»</a> 
+                        та 
+                        <a href="#sich" class="location-link">«Яхт-клуб Січ»</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Блок "Кому подходит" -->
+    <section class="for-whom-section">
+        <div class="section-container">
+            
+            <!-- Заголовок блока -->
+            <div class="section-header">
+                <span class="section-badge">ДЛЯ КОГО ЦЕ?</span>
+                <h2 class="section-title">Прогулянка на каяках однозначно підходить Вам, якщо:</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <!-- Сетка современных карточек -->
+            <div class="cards-grid">
+                
+                <!-- Карточка 1: Драйв -->
+                <div class="target-card">
+                    <div class="card-image-box">
+                        <img src="./img/kayak1.webp" alt="Активний відпочинок та драйв" class="card-bg-img">
+                        <div class="card-number">01</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-wrapper drive">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </div>
+                        <p class="card-description">
+                            Подобається активний відпочинок та драйв. Втомилися від стандартних прогулянок та хочете отримати багато нових вражень від цікавих мальовничих маршрутів.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Карточка 2: Релакс после работы -->
+                <div class="target-card">
+                    <div class="card-image-box">
+                        <img src="./img/kayak2.jpg" alt="Відпочинок після роботи" class="card-bg-img">
+                        <div class="card-number">02</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-wrapper relax">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+                        <p class="card-description">
+                            Бажаєте відпочити після роботи або насолодитися активним відпочинком у колі однодумців, любите пригоди та нові знайомства.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Карточка 3: Первозданная природа -->
+                <div class="target-card">
+                    <div class="card-image-box">
+                        <img src="./img/kayak3.jpg" alt="Первозданна природа" class="card-bg-img">
+                        <div class="card-number">03</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-wrapper nature">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <p class="card-description">
+                            Хочете відволіктися від повсякденності, поринути у первозданну природу, випробувати та загартувати себе.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Карточка 4: Перезагрузка -->
+                <div class="target-card">
+                    <div class="card-image-box">
+                        <img src="./img/kayak4.jpg" alt="Перезавантаження" class="card-bg-img">
+                        <div class="card-number">04</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-wrapper reboot">
+                            <i class="fa-solid fa-spa"></i>
+                        </div>
+                        <p class="card-description">
+                            Бажаєте перезавантажитись, звільнитися від втоми та відчути себе невід'ємною частиною природи.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Классический блок "Чому обирають нас" с фоновым изображением -->
+    <section class="benefits-classic-section">
+        
+        <!-- Задний фон блока (сюда пропиши путь к сочной картинке) -->
+        <div class="benefits-section-bg">
+            <img src="./img/kayakzakat.jpg" alt="Water Background" class="bg-image">
+            <div class="bg-overlay"></div>
+        </div>
+
+        <div class="classic-container">
+
+            <!-- Заголовок -->
+            <h2 class="classic-section-title">Чому мешканці Дніпра обирають саме нас?</h2>
+
+            <!-- Сетка 3х2 как в оригинале -->
+            <div class="classic-grid">
+
+                <!-- 1. Безпека та комфорт -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-regular fa-star"></i>
+                    </div>
+                    <h3 class="classic-card-title">Безпека та комфорт</h3>
+                    <p class="classic-card-text">
+                        Максимально зручна транспортна розв'язка та розташування прокату! Всього за 150 метрів від зупинки "Ж/м Парус 1". Стоянка, що охороняється, поруч із прокатом. Якісне, надійне спорядження англійського та німецького виробництва.
+                    </p>
+                </div>
+
+                <!-- 2. Багато маршрутів -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-regular fa-comment-dots"></i>
+                    </div>
+                    <h3 class="classic-card-title">Багато маршрутів</h3>
+                    <p class="classic-card-text">
+                        Для Вашої зручності ми склали карти найкращих маршрутів по Дніпру та Діївським плавням (найбільш мальовничі локації нашого міста, унікальна природа та Червонокнижні лілії за 15 хвилин від однієї з точок прокату).
+                    </p>
+                </div>
+
+                <!-- 3. Для будь-якого віку -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h3 class="classic-card-title">Для будь-якого віку</h3>
+                    <p class="classic-card-text">
+                        Не важливо скільки вам років, у нас всі кайфують: від зовсім ще маленьких діток до людей поважного віку. Якщо Ви з маленькою дитиною, ми надаємо дитяче крісло та дитячий страхувальний жилет.
+                    </p>
+                </div>
+
+                <!-- 4. Погодинна оренда каяків -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <h3 class="classic-card-title">Погодинна оренда каяків</h3>
+                    <p class="classic-card-text">
+                        Попереднє бронювання – запорука відсутності черги! Просто наберіть адміністратора, забронюйте зручний для Вас час, прийдіть вчасно та насолодіться приємною прогулянкою.
+                    </p>
+                </div>
+
+                <!-- 5. Приємні бонуси -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <h3 class="classic-card-title">Приємні бонуси</h3>
+                    <ul class="classic-list">
+                        <li>пригощаємо чаєм;</li>
+                        <li>за бажанням та наявності надаємо гермочохли для телефона;</li>
+                        <li>за бажанням та наявності надаємо питну воду.</li>
+                    </ul>
+                </div>
+
+                <!-- 6. Подарункові сертифікати -->
+                <div class="classic-card">
+                    <div class="classic-icon">
+                        <i class="fa-regular fa-id-badge"></i>
+                    </div>
+                    <h3 class="classic-card-title">Подарункові сертифікати</h3>
+                    <p class="classic-card-text">
+                        Бажаєте порадувати друга або знайти оригінальний подарунок? У нас Ви можете придбати подарункові сертифікати для своїх друзів та близьких й подарувати їм незабутні емоції та яскраві враження!
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            
+            <!-- Блок Бренда -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <!-- Прописали правильный путь к новому логотипу -->
+                    <img src="./img/kayakdnepr.png" class="footer-logo-img" alt="logo kayakdpua">
+                </div>
+                <p class="footer-brand-text">
+                    Найкращий прокат професійних та аматорських каяків у Дніпрі. Забезпечуємо повну ліквідність вашого відпочинку на воді.
+                </p>
+            </div>
+
+            <!-- Навигация по флоту -->
+            <div>
+                <h4 class="footer-title">Наш Флот</h4>
+                <ul class="footer-links">
+                    <li><a href="./catalog.html">LiteRowing 9.5</a></li>
+                    <li><a href="./catalog.html">SpeedRowing 16.0</a></li>
+                    <li><a href="./catalog.html">Perception Carolina 12/14</a></li>
+                </ul>
+            </div>
+
+            <!-- Контакты и Локация -->
+            <div>
+                <h4 class="footer-title">Контакти</h4>
+                <ul class="footer-contacts">
+                    <li>
+                        <i class="fa-solid fa-location-dot" style="color: #0284c7; width: 16px;"></i>
+                        <span>м. Дніпро, Набережна Перемоги</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone" style="color: #10b981; width: 16px;"></i>
+                        <a href="tel:+380000000000">+38 (000) 000-00-00</a>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope" style="color: #f97316; width: 16px;"></i>
+                        <a href="mailto:info@timurtour.com">info@timurtour.com</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Нижняя плашка -->
+        <div class="footer-bottom">
+            <div>
+                &copy; 2026 kayak.dp.ua. Всі права захищені.
+            </div>
+            <div class="footer-bottom-links">
+                <a href="#">Політика конфіденційності</a>
+                <a href="#">Правила прокату</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1190 @@
+/* ================= ПЕРЕМЕННЫЕ И СБРОС ================= */
+:root {
+    --primary-blue: #0088cc;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --bg-light: #f8fafc;
+    --border-light: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-light);
+    line-height: 1.5;
+}
+
+/* ================= НАВИГАЦИЯ ================= */
+.catalog-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-home-btn {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+
+.back-home-btn:hover {
+    color: var(--primary-blue);
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logo span {
+    color: var(--primary-blue);
+}
+
+/* ================= ВВОДНЫЙ БЛОК ================= */
+.catalog-main {
+    padding: 60px 0;
+}
+
+.catalog-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.catalog-intro {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.catalog-intro h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+
+.catalog-intro p {
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+/* ================= СЕТКА КАРТОЧЕК ================= */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
+}
+
+.product-img-box {
+    height: 220px;
+    background: #f1f5f9;
+}
+
+.product-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* СКРЫВАЕМ описание на карточке для идеальной высоты */
+.product-desc {
+    display: none;
+}
+
+/* Спецификации лодки */
+.product-specs {
+    list-style: none;
+    border-top: 1px dashed var(--border-light);
+    border-bottom: 1px dashed var(--border-light);
+    padding: 16px 0;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+}
+
+.product-specs li {
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-specs li span {
+    color: var(--text-muted);
+}
+
+.product-specs li strong {
+    color: var(--text-main);
+}
+
+/* ==========================================================================
+   ИДЕАЛЬНЫЙ КАЛЬКУЛЯТОР ДЛЯ TIMURTOUR (ДЕСКТОП-ФОКУС)
+   ========================================================================== */
+
+/* Общий блок калькулятора */
+.card-calculator {
+    background: #f8fafc; /* Легкий контрастный фон */
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+/* Строка с элементами */
+.calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+/* Названия (Тривалість / Кількість) */
+.calc-row label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0;
+    min-width: 150px; /* Жестко фиксируем ширину текста, чтобы правая колонка была ровной */
+}
+
+/* ================= ДРОПДАУН ================= */
+.custom-dropdown {
+    position: relative; /* Удерживает выпадающий список относительно себя */
+    width: 100%;
+    max-width: 240px; /* Ограничиваем ширину на десктопе */
+    user-select: none;
+}
+
+/* Видимая кнопка дропдауна */
+.dropdown-trigger {
+    background: #ffffff;
+    border: 1px solid #cbd5e1; /* Четкая рамка */
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.1);
+}
+
+.dropdown-arrow {
+    font-size: 12px;
+    color: #94a3b8;
+    transition: transform 0.3s ease;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+    color: var(--primary-blue);
+}
+
+/* САМ ВЫПАДАЮЩИЙ СПИСОК (ТЕПЕРЬ ОН СПРЯТАН!) */
+.dropdown-options-list {
+    position: absolute; /* Отрываем от документа, чтобы не растягивал карточку */
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Солидная тень */
+    z-index: 1000; /* Поверх всех элементов */
+    
+    /* Скрываем по умолчанию */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Добавляем внутренний скролл, если опций слишком много */
+    max-height: 250px; 
+    overflow-y: auto;
+}
+
+/* Открытое состояние */
+.custom-dropdown.open .dropdown-options-list {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Элементы внутри списка */
+.dropdown-item {
+    padding: 12px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-main);
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9; /* Тонкие разделители */
+    transition: background 0.15s ease;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover, .dropdown-item.active {
+    background: #f0f8ff;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+/* ================= СЧЕТЧИК ЛОДОК ================= */
+.card-qty-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 130px; /* Приводим к аккуратному размеру */
+    margin-left: auto; /* Прижимаем к правому краю */
+    overflow: hidden; /* Чтобы кнопки не ломали углы */
+}
+
+/* Кнопки плюс/минус */
+.card-qty-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    background: #f8fafc;
+    font-size: 18px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-qty-btn:hover {
+    background: #e2e8f0;
+    color: var(--primary-blue);
+}
+
+/* Цифра */
+.card-qty-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    width: 100%;
+    text-align: center;
+    user-select: none;
+}
+
+/* Футер карточки */
+.card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: auto;
+    border-top: 1px solid var(--border-light);
+    padding-top: 18px;
+}
+
+.card-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.price-amount {
+    font-size: 14px;            
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.price-val {
+    font-size: 28px;             
+    font-weight: 800;           
+    color: var(--primary-blue);
+    letter-spacing: -0.5px;
+    margin-right: 4px;           
+}
+
+/* Две кнопки в ряд */
+.card-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+}
+
+.details-btn {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.details-btn:hover {
+    background: rgba(0, 136, 204, 0.05);
+    transform: translateY(-1px);
+}
+
+.book-btn {
+    background: var(--primary-blue);
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.book-btn:hover {
+    background: #0077b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.15);
+}
+
+/* ================= МОДАЛЬНОЕ ОКНО "ДЕТАЛЬНІШЕ" ================= */
+.details-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.details-modal.open {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    position: relative;
+    background: #ffffff;
+    width: 90%;
+    max-width: 850px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.details-modal.open .modal-content {
+    transform: scale(1);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none;
+    background: #f1f5f9;
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    z-index: 12;
+}
+
+.close-modal-btn:hover {
+    background: #e2e8f0;
+    color: var(--text-main);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: row;
+}
+
+.modal-img-box {
+    flex: 1.1;
+    background: #f8fafc;
+    max-height: 480px;
+}
+
+.modal-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Перестраиваем контейнер информации в модалке, чтобы кнопка всегда прижималась к низу */
+.modal-info-box {
+    flex: 1.3;
+    padding: 40px;
+    display: flex;
+    flex-direction: column; /* Делаем флекс-бокс вертикальным */
+    gap: 24px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+/* Стили для зоны кнопки в модалке */
+.modal-footer-action {
+    margin-top: auto; /* Выталкивает кнопку в самый низ контента */
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+/* Сама большая кнопка */
+.modal-book-btn {
+    width: 100%;
+    background: var(--primary-blue);
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.modal-book-btn i {
+    font-size: 18px;
+}
+
+.modal-book-btn:hover {
+    background: #0077b3;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 136, 204, 0.25);
+}
+
+.modal-book-btn:active {
+    transform: translateY(0);
+}
+
+.modal-info-box h2 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.modal-desc-section h3, 
+.modal-specs-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.modal-desc-section p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Дублируем стили сетки спецификаций для модалки */
+.modal-specs-section .product-specs {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ================= DRAWER (ОФОРМЛЕНИЕ ЗАКАЗА) ================= */
+.booking-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    visibility: hidden;
+    transition: visibility 0.4s;
+}
+
+.booking-drawer.open {
+    visibility: visible;
+}
+
+.drawer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.booking-drawer.open .drawer-overlay {
+    opacity: 1;
+}
+
+.drawer-content {
+    position: absolute;
+    top: 0;
+    right: -480px;
+    width: 100%;
+    max-width: 450px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+    padding: 30px 24px; /* Чуть уменьшили паддинги, чтобы дать больше места контенту */
+    display: flex;
+    flex-direction: column;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    max-height: 100vh; /* Строго высота экрана */
+    overflow: hidden;   /* Никакой контент не должен ломать общую разметку */
+}
+
+.drawer-body-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    
+    flex: 1;            /* Занимает всё доступное пространство между шапкой и низом */
+    overflow-y: auto;   /* ВКЛЮЧАЕТ ВЕРТИКАЛЬНЫЙ СКРОЛЛ ДЛЯ ВСЕЙ ФОРМЫ */
+    padding-right: 8px; /* Зазор для красивого скроллбара */
+}
+
+.drawer-body-form::-webkit-scrollbar {
+    width: 4px;
+}
+.drawer-body-form::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 4px;
+}
+
+.booking-drawer.open .drawer-content {
+    right: 0;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.drawer-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.close-drawer-btn {
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.drawer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.order-summary-card {
+    background: var(--bg-light);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.order-summary-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.summary-details p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 12px;
+}
+
+.summary-total span:first-child {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.total-price {
+    font-size: 14px;             /* "грн" теперь аккуратный и небольшой */
+    font-weight: 600;            /* средняя плотность */
+    color: var(--text-muted);    /* приглушенный серый цвет, чтобы не отвлекал */
+}
+
+#summary-price-val {
+    font-size: 28px;             /* Вот теперь цифра реально доминирует! */
+    font-weight: 800;            /* Монолитный Extra Bold */
+    color: var(--primary-blue);  /* Наш фирменный синий */
+    letter-spacing: -0.5px;      /* Эффект плотности */
+    margin-right: 4px;           /* Небольшой отступ перед "грн" */
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.input-group input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    outline: none;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-blue);
+}
+
+.submit-order-btn {
+    background: #0088cc;
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.submit-order-btn:hover {
+    background: #0077b3;
+}
+
+/* ==========================================================================
+   КАСТОМНЫЙ КАЛЕНДАРЬ И ВРЕМЯ (В СТИЛЕ "KAYAK BLUE")
+   ========================================================================== */
+
+.widget-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* Заголовок текущего месяца */
+.booking-month-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    text-transform: capitalize;
+}
+
+/* Контейнер горизонтального скролла для дней */
+.days-scroll-container {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;   /* Горизонтальный скролл на мобилках */
+    width: 100%;        /* На всю ширину */
+    padding-bottom: 12px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Прячем дефолтный скролл в Firefox */
+}
+
+.days-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Карточка отдельного дня */
+.day-card {
+    flex: 0 0 65px; /* фиксированная ширина плитки */
+    height: 80px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.day-card:hover {
+    border-color: var(--primary-blue);
+    background: rgba(0, 136, 204, 0.03);
+}
+
+.day-month-name {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.day-number {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.day-week-name {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Активное состояние дня (В наших синих цветах с неоновым свечением) */
+.day-card.active {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    box-shadow: 0 6px 15px rgba(0, 136, 204, 0.35);
+    transform: translateY(-2px);
+}
+
+.day-card.active .day-month-name,
+.day-card.active .day-number,
+.day-card.active .day-week-name {
+    color: #ffffff; /* Белый текст на синем фоне */
+}
+
+/* Сетка времени в 2 колонки */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Кнопка выбора времени */
+.time-slot-btn {
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.time-slot-btn:hover {
+    border-color: var(--primary-blue);
+    background: rgba(0, 136, 204, 0.03);
+}
+
+/* Активное состояние кнопки времени */
+.time-slot-btn.active {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   СТИЛІ ДЛЯ ІНПУТІВ ТА КНОПОК У ДРОВЕРІ
+   ========================================================================== */
+
+/* Блок резюме замовлення */
+.booking-summary-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.booking-summary-box h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.summary-row:last-child {
+    margin-bottom: 0;
+}
+
+.summary-label {
+    color: var(--text-muted);
+}
+
+.summary-value {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* Стилізація полів введення (Ім'я та Телефон) */
+.drawer-input {
+    width: 100%;
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-main);
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Ефект фокусу в наших фірмових синіх тонах */
+.drawer-input:focus {
+    border-color: var(--primary-blue);
+    background: rgba(0, 136, 204, 0.02);
+    box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.15);
+}
+
+/* Підвал дровера з ціною та фінальною кнопкою */
+.drawer-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.price-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Велика кнопка "Забронювати" внизу Дровера */
+.submit-booking-btn {
+    width: 100%;
+    background: var(--primary-blue);
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.submit-booking-btn:hover {
+    background: #0077b3;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 136, 204, 0.25);
+}
+
+.submit-booking-btn:active {
+    transform: translateY(0);
+}
+
+#check-order-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+#check-order-details::-webkit-scrollbar-track {
+    background: #f1f5f9; 
+    border-radius: 10px;
+}
+
+#check-order-details::-webkit-scrollbar-thumb {
+    background: #cbd5e1; 
+    border-radius: 10px;
+}
+
+#check-order-details::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; 
+}
+
+/* ================= ТРЕНДОВЫЙ ТЕМНЫЙ ФУТЕР TINELAB ================= */
+.main-footer {
+    background: #0f172a;
+    color: #94a3b8;
+    font-family: sans-serif;
+    padding: 64px 24px 32px 24px;
+    border-top: 1px solid #334155;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 48px;
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ================= ЛОГОТИП TIMURTOUR В ФУТЕРЕ ================= */
+.footer-logo {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: #ffffff;
+    letter-spacing: -1px;
+    user-select: none;
+}
+
+.footer-logo-accent {
+    color: #0284c7; /* Сочный синий цвет для Tour */
+    margin-left: 2px;
+}
+
+.footer-brand-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #64748b;
+    margin: 0;
+}
+
+.footer-title {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.95rem;
+}
+
+.footer-links a, .footer-bottom-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.footer-links a:hover, .footer-bottom-links a:hover {
+    color: #ffffff;
+}
+
+.footer-contacts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 0.95rem;
+}
+
+.footer-contacts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-contacts a {
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-top: 1px solid #334155;
+    padding-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 24px;
+}
+
+.footer-bottom-links a {
+    color: #64748b;
+}
+
+/* ================= СТИЛЬНЫЙ СКРОЛЛБАР ДЛЯ ПЛАШКИ ПРОВЕРКИ ================= */
+#check-order-details::-webkit-scrollbar {
+    width: 6px;
+}
+#check-order-details::-webkit-scrollbar-track {
+    background: #f1f5f9; 
+    border-radius: 10px;
+}
+#check-order-details::-webkit-scrollbar-thumb {
+    background: #cbd5e1; 
+    border-radius: 10px;
+}
+#check-order-details::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; 
+}
+
+/* ================= АДАПТИВНОСТЬ ПОД МОБИЛКИ ================= */
+@media (max-width: 768px) {
+    .modal-body {
+        flex-direction: column;
+    }
+    .modal-img-box {
+        height: 220px;
+        max-height: 220px;
+    }
+    .modal-info-box {
+        padding: 24px;
+        max-height: 350px;
+    }
+}

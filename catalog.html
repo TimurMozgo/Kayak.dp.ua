@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог та Бронювання — Kayak Dnipro</title>
+    <!-- FontAwesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="catalog.css">
+</head>
+<body>
+
+    <!-- Навигация -->
+    <header class="catalog-header">
+        <div class="header-container">
+            <a href="index.html" class="back-home-btn">
+                <i class="fa-solid fa-arrow-left"></i> На головну
+            </a>
+            <div class="logo">Timur<span>TOUR</span></div>
+            <div class="lang-switcher">
+                <span class="lang-item active">UA</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="catalog-main">
+        <div class="catalog-container">
+            
+            <div class="catalog-intro">
+                <h1>Оренда спорядження у Дніпрі</h1>
+                <p>Оберіть каяк або SUP-борд, вкажіть час та оформіть швидке бронювання.</p>
+            </div>
+
+            <!-- Сетка товаров (Все карточки идеально ровные) -->
+            <div class="catalog-grid" id="catalog-grid">
+                
+                <!-- КАРТОЧКА 1: LiteRowing 9.5 -->
+                <div class="product-card" data-id="literowing-9.5" style="position: relative;">
+                    <div class="product-img-box">
+                        <img src="./img/LiteRowing_9.5.webp" alt="LiteRowing 9.5">
+
+                        <!-- Вставлять внутрь <div class="product-img-box"> -->
+                        <div class="product-badge" style="position: absolute; top: 12px; right: 12px; left: auto; background: #025338; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); font-family: sans-serif; opacity: 1 !important; visibility: visible !important; display: block !important;">
+                            🔰 ТОП ДЛЯ ПОЧАТКІВЦІВ
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">LiteRowing 9.5</h3>
+                        <!-- Описание скрыто в CSS, но JS его прочитает для модалки -->
+                        <p class="product-desc">Каяк для відпочинку, ефективний та простий у веслуванні. Має підвищену стійкість. Комфортний прогулянково-туристичний каяк для каякерів-початківців. У ньому Ви почуватиметеся спокійно та надійно. Відмінно підходить для неспішних прогулянок та легких туристичних походів.</p>
+                        
+                        <ul class="product-specs">
+                            <li><span>Довжина:</span> <strong>2,9 м</strong></li>
+                            <li><span>Ширина:</span> <strong>0,74 м</strong></li>
+                            <li><span>Вага:</span> <strong>17 кг</strong></li>
+                            <li><span>Вантажність:</span> <strong>80 кг</strong></li>
+                        </ul>
+
+                        <div class="card-calculator">
+                            <div class="calc-row">
+                                <label>Тривалість:</label>
+                                
+                                <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
+                                <div class="custom-dropdown">
+                                    <!-- Видима кнопка -->
+                                    <div class="dropdown-trigger">
+                                        <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                                    </div>
+                                    
+                                    <!-- Схований список опцій (з твоїми рідними value) -->
+                                    <div class="dropdown-options-list">
+                                        <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
+                                        <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
+                                        <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
+                                        <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
+                                        <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="calc-row">
+                                <label>Кількість лодок:</label>
+                                <div class="card-qty-control">
+                                    <button class="card-qty-btn minus">-</button>
+                                    <span class="card-qty-value">1</span>
+                                    <button class="card-qty-btn plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="card-price-row">
+                                <span class="price-label">Разом:</span>
+                                <span class="price-amount"><span class="price-val">300</span> грн</span>
+                            </div>
+                            <div class="card-buttons">
+                                <button class="details-btn">Детальніше</button>
+                                <button class="book-btn">Забронювати</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- КАРТОЧКА 2: Perception Carolina -->
+                <div class="product-card" data-id="perception-carolina">
+                    <div class="product-img-box">
+                        <img src="./img/Perception Carolina_12_Perception Carolina_14.webp" alt="Perception Carolina">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Perception Carolina 12 / 14</h3>
+                        <p class="product-desc">Perception Carolina 12 та Perception Carolina 14 - найкращий одномісний каяк для любителів. Стійкий, при цьому, каяк має високу швидкість, хорошу курсову стійкість та відмінну керованість. Завдяки зручному кокпіту в каяк дуже комфортно сідати та виходити з нього. Анатомічне сидіння з регульованою спинкою та регульовані упори для ніг дозволяють ідеально налаштувати каяк під себе. Каяк оснащений місткими вантажними відсіками в кормі та носі, що дозволяє розмістити у каяку досить великий обсяг речей.</p>
+                        
+                        <ul class="product-specs">
+                            <li><span>Довжина:</span> <strong>3,7 - 4,3 м</strong></li>
+                            <li><span>Ширина:</span> <strong>0,66 м</strong></li>
+                            <li><span>Вага:</span> <strong>22 - 24 кг</strong></li>
+                            <li><span>Вантажність:</span> <strong>150 - 170 кг</strong></li>
+                        </ul>
+
+                        <div class="card-calculator">
+                            <div class="calc-row">
+                                <label>Тривалість:</label>
+                                
+                                <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
+                                <div class="custom-dropdown">
+                                    <!-- Видима кнопка -->
+                                    <div class="dropdown-trigger">
+                                        <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                                    </div>
+                                    
+                                    <!-- Схований список опцій (з твоїми рідними value) -->
+                                    <div class="dropdown-options-list">
+                                        <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
+                                        <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
+                                        <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
+                                        <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
+                                        <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="calc-row">
+                                <label>Кількість лодок:</label>
+                                <div class="card-qty-control">
+                                    <button class="card-qty-btn minus">-</button>
+                                    <span class="card-qty-value">1</span>
+                                    <button class="card-qty-btn plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="card-price-row">
+                                <span class="price-label">Разом:</span>
+                                <span class="price-amount"><span class="price-val">300</span> грн</span>
+                            </div>
+                            <div class="card-buttons">
+                                <button class="details-btn">Детальніше</button>
+                                <button class="book-btn">Забронювати</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- КАРТОЧКА 3: SpeedRowing 16.0 -->
+                <div class="product-card" data-id="speedrowing-16.0" style="position: relative;" >
+                    <div class="product-img-box">
+                        <img src="./img/SpeedRowing_16.0.webp" alt="SpeedRowing 16.0">
+
+                        <!-- Вставлять внутрь <div class="product-img-box"> -->
+                        <div class="product-badge" style="position: absolute; top: 12px; right: 12px; left: auto; background: #a94600; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); font-family: sans-serif; opacity: 1 !important; visibility: visible !important; display: block !important;">
+                            ⚡ ТОП ШВИДКОСТІ
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">SpeedRowing 16.0</h3>
+                        <p class="product-desc">SpeedRowing 16.0 – одномісний морський туристичний каяк. Ідеальне поєднання швидкості та гарного балансу між маневреністю та утриманням курсу. Призначений для багатоденних морських та річкових походів, активного відпочинку на воді.</p>
+                        
+                        <ul class="product-specs">
+                            <li><span>Довжина:</span> <strong>4,85 м</strong></li>
+                            <li><span>Ширина:</span> <strong>0,60 м</strong></li>
+                            <li><span>Вага:</span> <strong>26 кг</strong></li>
+                            <li><span>Вантажність:</span> <strong>135 кг</strong></li>
+                        </ul>
+
+                        <div class="card-calculator">
+                            <div class="calc-row">
+                                <label>Тривалість:</label>
+                                
+                                <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
+                                <div class="custom-dropdown">
+                                    <!-- Видима кнопка -->
+                                    <div class="dropdown-trigger">
+                                        <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                                    </div>
+                                    
+                                    <!-- Схований список опцій (з твоїми рідними value) -->
+                                    <div class="dropdown-options-list">
+                                        <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
+                                        <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
+                                        <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
+                                        <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
+                                        <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
+                                        <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="calc-row">
+                                <label>Кількість лодок:</label>
+                                <div class="card-qty-control">
+                                    <button class="card-qty-btn minus">-</button>
+                                    <span class="card-qty-value">1</span>
+                                    <button class="card-qty-btn plus">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="card-price-row">
+                                <span class="price-label">Разом:</span>
+                                <span class="price-amount"><span class="price-val">300</span> грн</span>
+                            </div>
+                            <div class="card-buttons">
+                                <button class="details-btn">Детальніше</button>
+                                <button class="book-btn">Забронювати</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Модальне вікно "Детальніше" -->
+    <div class="details-modal" id="details-modal">
+        <div class="modal-overlay" id="details-overlay"></div>
+        <div class="modal-content">
+            <button class="close-modal-btn" id="btn-close-modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-body">
+                <div class="modal-img-box">
+                    <img id="modal-product-img" src="" alt="">
+                </div>
+                <div class="modal-info-box">
+                    <h2 id="modal-product-name">Назва каяка</h2>
+                    
+                    <div class="modal-desc-section">
+                        <h3>Про каяк</h3>
+                        <p id="modal-product-desc">Детальний опис...</p>
+                    </div>
+
+                    <div class="modal-specs-section">
+                        <h3>Характеристики</h3>
+                        <ul id="modal-product-specs" class="product-specs">
+                            <!-- Сюда JS скопирует характеристики -->
+                        </ul>
+                    </div>
+
+                    <!-- Нова велика кнопка бронювання прямо в модалці -->
+                    <div class="modal-footer-action">
+                        <button class="modal-book-btn" id="modal-book-btn">
+                            <i class="fa-solid fa-calendar-check"></i> Забронювати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- БОКОВА ПАНЕЛЬ БРОНЮВАННЯ (DRAWER) -->
+    <div class="booking-drawer" id="booking-drawer">
+        <!-- Затемнення заднього фону -->
+        <div class="drawer-overlay" id="drawer-close-overlay"></div>
+        
+        <div class="drawer-content">
+            <!-- Шапка панелі -->
+            <div class="drawer-header">
+                <h2>Оформлення замовлення</h2>
+                <button class="close-drawer-btn" id="btn-close-drawer" type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Форма оформлення -->
+            <form id="booking-checkout-form" class="drawer-body-form">
+                
+                <!-- ================= ДИНАМИЧЕСКИЙ КОШИК TIMURTOUR ================= -->
+                <div class="booking-summary-box" style="margin-bottom: 24px;">
+                    <h3>Ваше замовлення</h3>
+                    
+                    <!-- Сюда JS будет на лету накидывать выбранные лодки списком -->
+                    <div id="cart-items-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto; margin-top: 12px; padding-right: 4px;">
+                        <!-- Карточки товаров сгенерируются через скрипт -->
+                    </div>
+                </div>
+                <!-- ================================================================ -->
+
+                <!-- Контактні дані клієнта -->
+                <div class="input-group">
+                    <label for="user-name" class="widget-title">Ваше Ім'я *</label>
+                    <input type="text" id="user-name" class="drawer-input" placeholder="Введіть ваше ім'я" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="user-phone" class="widget-title">Номер телефону *</label>
+                    <input type="tel" id="user-phone" class="drawer-input" placeholder="+380 (__) ___-__-__" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="widget-title">Оберіть дату *</label>
+                    <button type="button" id="btn-open-calendar" style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 16px; border-radius: 12px; cursor: pointer; font-weight: 600; color: #0f172a; transition: all 0.2s; font-family: sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                        <span id="selected-date-text" style="display: flex; align-items: center; gap: 8px; color: #64748b;">
+                            <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i> Натисніть, щоб обрати дату
+                        </span>
+                        <i class="fa-solid fa-chevron-right" style="color: #94a3b8; font-size: 0.85rem;"></i>
+                    </button>
+                </div>
+
+                <!-- Вибір часу -->
+                <div class="input-group">
+                    <label class="widget-title">Доступний час *</label>
+                    <div class="time-slots-grid" id="time-slots-grid">
+                        <!-- Слоти згенеруються через JS -->
+                    </div>
+                </div>
+
+                <!-- Прихований інпут для збору дати/часу в n8n -->
+                <input type="hidden" id="booking-datetime">
+
+                <!-- Підвал з фінальною ціною та кнопкою відправки -->
+                <div class="drawer-footer">
+                    <div class="price-row">
+                        <span class="price-label">Всього:</span>
+                        <div class="total-price">
+                            <!-- МЕНЯЕМ ID С summary-price-val НА cart-grand-total ДЛЯ НОВОГО JS -->
+                            <span id="cart-grand-total">0</span> грн
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-booking-btn">
+                        <i class="fa-solid fa-calendar-check"></i> Забронювати
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ПЛАВАЮЧА КНОПКА КОШИКА (ТЕРМІНАЛ) -->
+    <div id="floating-cart" style="position: fixed; bottom: 24px; right: 24px; background: #0284c7; color: #fff; padding: 14px 24px; border-radius: 50px; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4); cursor: pointer; display: none; align-items: center; gap: 12px; z-index: 999; font-weight: 700; transition: all 0.2s ease; border: 2px solid rgba(255,255,255,0.1);">
+        <i class="fa-solid fa-basket-shopping" style="font-size: 1.2rem;"></i>
+        <span style="font-size: 0.95rem; letter-spacing: 0.5px;">Кошик: <span id="floating-cart-count">0</span> човн. (<span id="floating-cart-total">0</span> грн)</span>
+    </div>
+
+    <!-- МОДАЛЬНЕ ВІКНО ПОВНОЦІННОГО КАЛЕНДАРЯ (ЦЕНТР ЕКРАНУ) -->
+    <div id="calendar-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 16px;">
+        <div id="calendar-modal-overlay" style="position: absolute; width: 100%; height: 100%; cursor: pointer;"></div>
+        
+        <!-- Увеличили max-width до 420px и добавили сочные отступы -->
+    <div style="position: relative; background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 28px; z-index: 10001; font-family: sans-serif; border: 1px solid #e2e8f0;">
+            
+            <!-- Шапка: навигация по месяцам -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button type="button" id="cal-prev-month" style="background: #f1f5f9; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0284c7; transition: all 0.2s;">&larr;</button>
+                <h3 id="cal-month-year-title" style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; text-transform: capitalize; letter-spacing: 0.3px;">Липень 2026</h3>
+                <button type="button" id="cal-next-month" style="background: #f1f5f9; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0284c7; transition: all 0.2s;">&rarr;</button>
+            </div>
+
+            <!-- Дни недели (Сетка) -->
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 6px; margin-bottom: 12px;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Пн</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Вт</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Ср</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Чт</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Пт</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Сб</span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Нд</span>
+            </div>
+
+            <!-- Матрица дней месяца -->
+            <div id="cal-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;">
+                <!-- Генерируется динамически через JS -->
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО УСПЕШНОГО БРОНИРОВАНИЯ -->
+    <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 20000; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
+        <div style="background: #ffffff; width: 100%; max-width: 400px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 32px; text-align: center; border: 1px solid #e2e8f0; transform: scale(0.9); transition: all 0.3s ease;">
+            
+            <!-- Большая сочная зеленая галочка -->
+            <div style="width: 72px; height: 72px; background: #f0fdf4; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #bbf7d0;">
+                <svg style="width: 36px; height: 36px; color: #16a34a;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 0;">Заявка принята!</h3>
+            <p style="font-size: 0.95rem; color: #64748b; line-height: 1.5; margin: 0 0 24px 0;">Ваше замовлення успішно оформлене. Очікуйте на дзвінок менеджера для підтвердження броні!</p>
+            
+            <!-- Кнопка закрытия, возвращающая на сайт -->
+            <button type="button" id="close-success-btn" style="width: 100%; background: #0284c7; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
+                Чудово
+            </button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОВЕРКИ ДАННЫХ ПЕРЕД ОТПРАВКОЙ -->
+    <div id="check-order-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 19999; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
+        <div style="background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 28px; border: 1px solid #e2e8f0; transform: scale(0.9); transition: all 0.2s ease;">
+            
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; text-align: center;">Перевірте ваші дані</h3>
+            <p style="font-size: 0.9rem; color: #64748b; line-height: 1.4; margin: 0 0 20px 0; text-align: center;">Будь ласка, переконайтеся, що все вказано правильно, щоб уникнути помилок при оренді.</p>
+            
+            <!-- Сюда JS вставит данные -->
+            <div id="check-order-details" style="background:#f8fafc; border-radius:16px; padding:16px; border:1px solid #e2e8f0; margin-bottom:24px; display:flex; flex-direction:column; gap:12px; font-size:0.95rem; max-height:50vh; overflow-y:auto; scrollbar-width:thin;">
+            </div>
+
+            <!-- ДВЕ КНОПКИ: НАЗАД И ПОДТВЕРДИТЬ -->
+            <div style="display: flex; gap: 12px;">
+                <button type="button" id="check-back-btn" style="flex: 1; background: #f1f5f9; color: #0f172a; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                    Назад
+                </button>
+                <button type="button" id="check-confirm-btn" style="flex: 1; background: #16a34a; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">
+                    Забронювати
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            
+            <!-- Блок Бренда -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <span>Timur</span><span class="footer-logo-accent">Tour</span>
+                </div>
+                <p class="footer-brand-text">
+                    Найкращий прокат професійних та аматорських каяків у Дніпрі. Забезпечуємо повну ліквідність вашого відпочинку на воді.
+                </p>
+            </div>
+
+            <!-- Навигация по флоту -->
+            <div>
+                <h4 class="footer-title">Наш Флот</h4>
+                <ul class="footer-links">
+                    <li><a href="./catalog.html">LiteRowing 9.5</a></li>
+                    <li><a href="./catalog.html">SpeedRowing 16.0</a></li>
+                    <li><a href="./catalog.html">Perception Carolina 12/14</a></li>
+                </ul>
+            </div>
+
+            <!-- Контакты и Локация -->
+            <div>
+                <h4 class="footer-title">Контакти</h4>
+                <ul class="footer-contacts">
+                    <li>
+                        <i class="fa-solid fa-location-dot" style="color: #0284c7; width: 16px;"></i>
+                        <span>м. Дніпро, Набережна Перемоги</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone" style="color: #10b981; width: 16px;"></i>
+                        <a href="tel:+380000000000">+38 (000) 000-00-00</a>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope" style="color: #f97316; width: 16px;"></i>
+                        <a href="mailto:info@timurtour.com">info@timurtour.com</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Нижняя плашка -->
+        <div class="footer-bottom">
+            <div>
+                &copy; 2026 TIMURTOUR. Всі права захищені.
+            </div>
+            <div class="footer-bottom-links">
+                <a href="#">Політика конфіденційності</a>
+                <a href="#">Правила прокату</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="catalog.js"></script>
+</body>
+</html>
