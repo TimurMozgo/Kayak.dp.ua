@@ -13,16 +13,59 @@
 <body>
 
     <!-- Навигация -->
-    <header class="catalog-header">
+    <header class="main-header">
         <div class="header-container">
-            <a href="index.html" class="back-home-btn">
-                <i class="fa-solid fa-arrow-left"></i> На головну
-            </a>
-            <div class="logo">Timur<span>TOUR</span></div>
-            <div class="lang-switcher">
-                <span class="lang-item active">UA</span>
+            
+            <!-- Левая часть: Соцсети -->
+            <div class="social-block">
+                <a href="https://instagram.com" target="_blank" class="social-btn" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://telegram.org" target="_blank" class="social-btn" aria-label="Telegram">
+                    <i class="fa-brands fa-telegram"></i>
+                </a>
             </div>
+
+            <!-- Центр: Твой логотип -->
+            <div class="logo-block">
+                <img src="./img/kayakdnepr.png" class="logo" alt="logo kayakdpua">
+            </div>
+
+            <!-- Правая часть: Телефон и Языки -->
+            <div class="meta-block">
+                <a href="tel:+380637100636" class="phone-btn">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>+380637100636</span>
+                </a>
+                <div class="lang-switcher">
+                    <a href="#" class="lang-item active">ua</a>
+                    <span class="lang-divider">|</span>
+                    <a href="#" class="lang-item">ru</a>
+                </div>
+            </div>
+
         </div>
+
+        <button class="burger-menu-btn" id="burgerToggle" aria-label="Відкрити меню">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Виїзне меню (Панель) -->
+        <nav class="mobile-nav-panel" id="mobileNav">
+            <ul class="mobile-nav-list">
+                <!-- Твоя ссылка на каталог -->
+                <li><a href="./index.html" class="catalog-link">На головну</a></li>
+            </ul>
+            
+            <div class="mobile-nav-footer">
+                <div class="lang-switcher-mobile">
+                    <a href="#" class="active">ua</a> | <a href="#">ru</a>
+                </div>
+                <a href="tel:+380637100636" class="mobile-phone">+38 (063) 710-06-36</a>
+            </div>
+        </nav>
     </header>
 
     <main class="catalog-main">
@@ -42,7 +85,7 @@
                         <img src="./img/LiteRowing_9.5.webp" alt="LiteRowing 9.5">
 
                         <!-- Вставлять внутрь <div class="product-img-box"> -->
-                        <div class="product-badge" style="position: absolute; top: 12px; right: 12px; left: auto; background: #025338; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); font-family: sans-serif; opacity: 1 !important; visibility: visible !important; display: block !important;">
+                        <div class="product-badge badge-top-beginner">
                             🔰 ТОП ДЛЯ ПОЧАТКІВЦІВ
                         </div>
                     </div>
@@ -176,7 +219,7 @@
                         <img src="./img/SpeedRowing_16.0.webp" alt="SpeedRowing 16.0">
 
                         <!-- Вставлять внутрь <div class="product-img-box"> -->
-                        <div class="product-badge" style="position: absolute; top: 12px; right: 12px; left: auto; background: #a94600; color: #ffffff; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); font-family: sans-serif; opacity: 1 !important; visibility: visible !important; display: block !important;">
+                        <div class="product-badge badge-speed">
                             ⚡ ТОП ШВИДКОСТІ
                         </div>
                     </div>
@@ -448,7 +491,8 @@
             <!-- Блок Бренда -->
             <div class="footer-brand">
                 <div class="footer-logo">
-                    <span>Timur</span><span class="footer-logo-accent">Tour</span>
+                    <!-- Прописали правильный путь к новому логотипу -->
+                    <img src="./img/kayakdnepr.png" class="footer-logo-img" alt="logo kayakdpua">
                 </div>
                 <p class="footer-brand-text">
                     Найкращий прокат професійних та аматорських каяків у Дніпрі. Забезпечуємо повну ліквідність вашого відпочинку на воді.
@@ -471,15 +515,11 @@
                 <ul class="footer-contacts">
                     <li>
                         <i class="fa-solid fa-location-dot" style="color: #0284c7; width: 16px;"></i>
-                        <span>м. Дніпро, Набережна Перемоги</span>
+                        <span>«Ж/м Парус», «Яхт-клуб Січ»</span>
                     </li>
                     <li>
                         <i class="fa-solid fa-phone" style="color: #10b981; width: 16px;"></i>
                         <a href="tel:+380000000000">+38 (000) 000-00-00</a>
-                    </li>
-                    <li>
-                        <i class="fa-solid fa-envelope" style="color: #f97316; width: 16px;"></i>
-                        <a href="mailto:info@timurtour.com">info@timurtour.com</a>
                     </li>
                 </ul>
             </div>
@@ -489,7 +529,7 @@
         <!-- Нижняя плашка -->
         <div class="footer-bottom">
             <div>
-                &copy; 2026 TIMURTOUR. Всі права захищені.
+                &copy; 2026 kayak.dp.ua. Всі права захищені.
             </div>
             <div class="footer-bottom-links">
                 <a href="#">Політика конфіденційності</a>
