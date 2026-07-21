@@ -11,6 +11,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -1379,30 +1380,142 @@ body {
     color: #0284c7 !important; /* Подсвечиваем главную ссылку */
 }
 
-.mobile-nav-footer {
-    margin-top: auto;
-    border-top: 1px solid #eee;
-    padding-top: 24px;
+/* ==========================================================================
+   CALENDAR MODAL (OPTIMIZED & RESPONSIVE)
+   ========================================================================== */
+
+/* Основной оверлей (фон) */
+#calendar-modal,
+.calendar-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    box-sizing: border-box;
+}
+
+#calendar-modal-overlay,
+.calendar-overlay {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+/* Карточка окна календаря */
+.calendar-window,
+#calendar-modal > div:nth-child(2) {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    padding: 24px 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    font-family: system-ui, -apple-system, sans-serif;
+    z-index: 10001;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Шапка с навигацией по месяцам */
+.calendar-header,
+#calendar-modal > div:nth-child(2) > div:first-child {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.mobile-phone {
-    text-decoration: none;
-    font-weight: 700;
-    color: #10b981;
+#cal-prev-month,
+#cal-next-month,
+.calendar-nav-btn {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f1f5f9;
+    color: #0284c7;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+#cal-prev-month:hover,
+#cal-next-month:hover,
+.calendar-nav-btn:hover {
+    background: #e2e8f0;
+    color: #0369a1;
+}
+
+#cal-month-year-title,
+.calendar-title {
+    margin: 0;
     font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
 }
 
-.lang-switcher-mobile a {
-    text-decoration: none;
-    color: #888;
-    font-weight: 600;
+/* Дни недели (Пн, Вт, Ср...) */
+.calendar-weekdays,
+#calendar-modal > div:nth-child(2) > div:nth-child(2) {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
+    margin-bottom: 12px;
 }
-.lang-switcher-mobile a.active {
-    color: #111;
+
+.calendar-weekdays span,
+#calendar-modal > div:nth-child(2) > div:nth-child(2) span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
 }
+
+/* Выходные дни (Сб, Нд) */
+.calendar-weekdays span.weekend,
+#calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(6),
+#calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(7) {
+    color: #ef4444;
+}
+
+/* Сетка ячеек и дней месяца */
+#cal-days-grid,
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Все элементы внутри сетки (пустые дивы и кнопки дат) */
+#cal-days-grid > *,
+.calendar-days-grid > * {
+    width: 100%;
+    aspect-ratio: 1; /* Гарантирует идеальные пропорции ячеек */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+
 
 /*==================================================
                     MOBILE HEADER
@@ -1554,36 +1667,7 @@ body {
         gap:18px;
     }
 
-    .lang-switcher-mobile{
-        display:flex;
-        justify-content:center;
-        gap:12px;
-        font-weight:700;
-    }
-
-    .lang-switcher-mobile a{
-        color:#0f172a;
-        text-decoration:none;
-    }
-
-    .lang-switcher-mobile .active{
-        color:#0284c7;
-    }
-
-    .mobile-phone{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        width:100%;
-        height:56px;
-        border-radius:18px;
-        background:#0284c7;
-        color:#ffffff;
-        font-weight:700;
-        text-decoration:none;
-    }
-
-        .catalog-main{
+    .catalog-main{
         padding:24px 0 40px;
     }
 
@@ -2044,10 +2128,10 @@ body {
         margin-bottom:18px;
     }
 
-    .price-label{
+    .price-total{
         font-size:1rem;
         font-weight:700;
-        color:#64748b;
+        color:#000;
     }
 
     .total-price{
@@ -2071,10 +2155,6 @@ body {
         gap:12px;
         box-shadow:0 16px 35px rgba(2,132,199,.25);
     }
-
-    /*=========================================
-        CART ITEMS MOBILE
-    =========================================*/
 
     #cart-items-container{
         display:flex;
@@ -2200,6 +2280,122 @@ body {
     #cart-items-container .remove-cart-item:hover{
         background:#fee2e2;
         color:#ef4444;
+    }
+    
+    /* ==========================================================================
+    ПОЛНОСТЬЮ АДАПТИВНЫЙ КАЛЕНДАРЬ (FULL MOBILE & DESKTOP)
+    ========================================================================== */
+
+    /* Оверлей / Фон */
+    #calendar-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        box-sizing: border-box;
+    }
+
+    #calendar-modal-overlay {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+    }
+
+    /* Белая карточка модалки */
+    #calendar-modal > div:nth-child(2) {
+        position: relative;
+        width: 92%;
+        max-width: 340px; /* Идеальная ширина для симметрии */
+        padding: 20px 14px; /* Симметричные отступы */
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        font-family: system-ui, -apple-system, sans-serif;
+        z-index: 10001;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Шапка (Месяц + Кнопки) */
+    #calendar-modal > div:nth-child(2) > div:first-child {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    #cal-prev-month,
+    #cal-next-month {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f1f5f9;
+        color: #0284c7;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+
+    #cal-prev-month:hover,
+    #cal-next-month:hover {
+        background: #e2e8f0;
+    }
+
+    #cal-month-year-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+        text-transform: capitalize;
+    }
+
+    /* Дни недели (ПН ВТ СР ЧТ ПТ СБ НД) */
+    #calendar-modal > div:nth-child(2) > div:nth-child(2) {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        text-align: center;
+        margin-bottom: 8px;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #calendar-modal > div:nth-child(2) > div:nth-child(2) span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #94a3b8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Выходные подсвечиваем красным */
+    #calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(6),
+    #calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(7) {
+        color: #ef4444;
+    }
+
+    /* Сетка с числами */
+    #cal-days-grid {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     /*=========================================

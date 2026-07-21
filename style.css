@@ -17,6 +17,7 @@
     box-sizing: border-box;
     font-family: 'Plus Jakarta Sans', sans-serif;
     transition: all 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -217,7 +218,32 @@ body {
 }
 
 .brand-highlight {
-    color: var(--primary-blue);
+    /* 1. Делаем жирный шрифт, чтобы градиент раскрылся во всей красе */
+    font-weight: 800; 
+
+    /* 2. Сочный градиент с ярким белым бликом по центру */
+    background: linear-gradient(
+        110deg, 
+        #0284c7 0%,    /* Насыщенный синий */
+        #00d2ff 25%,   /* Неоновый циан */
+        #ffffff 50%,   /* ЯРКИЙ БЕЛЫЙ БЛИК (пробегающий луч) */
+        #7c3aed 75%,   /* Сочный фиолетовый */
+        #0284c7 100%   /* Возврат к синему */
+    );
+    background-size: 200% auto;
+
+    /* 3. Магия обрезки фона по буквам */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+
+    /* 4. Неоновый объем (легкий сочный ореол вокруг букв) */
+    filter: drop-shadow(0px 2px 8px rgba(0, 168, 255, 0.3));
+
+    /* 5. Динамичная анимация */
+    animation: shineGradient 3s linear infinite;
+
     position: relative;
     display: inline-block;
 }
@@ -226,13 +252,24 @@ body {
 .brand-highlight::after {
     content: '';
     position: absolute;
-    bottom: 4px;
+    bottom: 2px;
     left: 0;
     width: 100%;
-    height: 8px;
-    background: rgba(0, 168, 255, 0.15);
+    height: 6px;
+    background: linear-gradient(90deg, #00d2ff, #7c3aed);
+    opacity: 0.25;
     z-index: -1;
     border-radius: 4px;
+}
+
+/* Анимация прокрутки луча */
+@keyframes shineGradient {
+    0% {
+        background-position: 0% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
 }
 
 .hero-subtitle {
@@ -756,31 +793,6 @@ body {
 
 .catalog-link {
     color: #0284c7 !important; /* Подсвечиваем главную ссылку */
-}
-
-.mobile-nav-footer {
-    margin-top: auto;
-    border-top: 1px solid #eee;
-    padding-top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.mobile-phone {
-    text-decoration: none;
-    font-weight: 700;
-    color: #10b981;
-    font-size: 1.1rem;
-}
-
-.lang-switcher-mobile a {
-    text-decoration: none;
-    color: #888;
-    font-weight: 600;
-}
-.lang-switcher-mobile a.active {
-    color: #111;
 }
 
 @media (max-width: 768px) {

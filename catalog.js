@@ -272,31 +272,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ================= ГЕНЕРАЦИЯ МАТРИЧНОГО КАЛЕНДАРЯ НА ЛЮБОЙ МЕСЯЦ =================
+    // ================= ГЕНЕРАЦИЯ МАТРИЧНОГО КАЛЕНДАРЯ =================
+    
     function renderFullCalendar() {
         const year = navDate.getFullYear();
         const month = navDate.getMonth();
         
-        // Пишем месяц в шапку модалки
+        // Заголовок месяца
         calMonthYearTitle.textContent = `${ukMonths[month]} ${year}`;
         calDaysGrid.innerHTML = "";
 
-        // Смещение дней (какой день недели первый в месяце)
-        let firstDayIndex = new Date(year, month, 1).getDay();
-        firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; // Делаем Пн = 0, Вс = 6
+        // Правильный индекс первого дня недели (Пн = 0, Вт = 1, ..., Вс = 6)
+        let firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
 
-        // Сколько всего дней в текущем месяце
+        // Всего дней в текущем месяце
         const totalDays = new Date(year, month + 1, 0).getDate();
 
-        // Заполняем пустые слоты до начала месяца
+        // 1. Пустые слоты до начала месяца
         for (let i = 0; i < firstDayIndex; i++) {
-            calDaysGrid.insertAdjacentHTML("beforeend", "<div></div>");
+            const emptyDiv = document.createElement("div");
+            emptyDiv.style.cssText = "width: 100%; aspect-ratio: 1;";
+            calDaysGrid.appendChild(emptyDiv);
         }
 
-        // Сегодняшняя дата в формате YYYY-MM-DD для сверки
         const todayStr = new Date().toISOString().split('T')[0];
 
-        // Генерируем дни
+        // 2. Генерация дней месяца
         for (let day = 1; day <= totalDays; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isPast = dateStr < todayStr;
@@ -306,8 +307,24 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.type = "button";
             btn.textContent = day;
             
-            // Стилизация кнопок дней на лету
-            btn.style.cssText = `width: 46px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; margin: auto; transition: all 0.15s;`;
+            // ЧИСТЫЙ РЕЗИНОК-СТИЛЬ: Авто-размер, никаких px ширины!
+            btn.style.cssText = `
+                width: 100%; 
+                max-width: 38px; 
+                aspect-ratio: 1; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                border-radius: 50%; 
+                border: none; 
+                font-weight: 700; 
+                font-size: 0.85rem; 
+                cursor: pointer; 
+                margin: 0 auto; 
+                padding: 0;
+                box-sizing: border-box;
+                transition: all 0.15s ease;
+            `;
 
             if (isPast) {
                 btn.style.background = "none";
@@ -326,7 +343,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.addEventListener("mouseleave", () => btn.style.background = "#f8fafc");
             }
 
-            // Клик по конкретному дню
             if (!isPast) {
                 btn.addEventListener("click", () => {
                     selectedDate = dateStr;
@@ -341,18 +357,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Листание месяцев
+    // Листание месяцев (с защитой от сдвига 31-х чисел)
     calPrevBtn.addEventListener("click", () => {
-        // Не пускаем листать назад дальше текущего месяца
         const currentRealDate = new Date();
         if (navDate.getFullYear() === currentRealDate.getFullYear() && navDate.getMonth() === currentRealDate.getMonth()) {
             return;
         }
+        navDate.setDate(1); // Фиксируем 1-е число перед сдвигом
         navDate.setMonth(navDate.getMonth() - 1);
         renderFullCalendar();
     });
 
     calNextBtn.addEventListener("click", () => {
+        navDate.setDate(1); // Фиксируем 1-е число перед сдвигом
         navDate.setMonth(navDate.getMonth() + 1);
         renderFullCalendar();
     });
@@ -485,7 +502,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // КНОПКА «ЗАБРОНЮВАТИ» В ПЛАШКЕ ПРОВЕРКИ: Вот тут реальный улет данных в n8n!
     // КНОПКА «ЗАБРОНЮВАТИ» В ПЛАШКЕ ПРОВЕРКИ: Отправка данных на вебхук n8n
     document.getElementById("check-confirm-btn")?.addEventListener("click", () => {
         // Прячем окно проверки
@@ -542,7 +558,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedDate = null;
         selectedTime = null;
         if (selectedDateText) {
-            selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i> Натисніть, щоб обрати дату`;
+            selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i> Виберіть бажану дату`;
             selectedDateText.style.color = "#64748b";
         }
         
@@ -572,3 +588,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// Единый контейнер для всех событий загрузки DOM
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ================= ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ =================
+    const langItems = document.querySelectorAll('.lang-item');
+
+    langItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            langItems.forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            
+            const selectedLang = item.getAttribute('data-lang');
+            console.log(`Язык переключен на: ${selectedLang}`);
+        });
+    });
+
+    // ================= ЛОГИКА КНОПКИ ДЕЙСТВИЯ (CTA) =================
+    const ctaBtn = document.getElementById('cta-order-btn');
+
+    if (ctaBtn) {
+        ctaBtn.addEventListener('click', () => {
+            console.log('Клик по кнопке заказа. Логика перехода к форме.');
+            alert('Тут сработает логика: откроется форма бронирования или скролл вниз.');
+        });
+    }
+
+    // ================= ЛОГИКА БУРГЕР-МЕНЮ =================
+    const burgerBtn = document.getElementById('burgerToggle');
+    const mobileNav = document.getElementById('mobileNav');
+
+    if (burgerBtn && mobileNav) {
+        burgerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            burgerBtn.classList.toggle('active');
+            mobileNav.classList.toggle('open');
+            console.log('Бургер успешно сработал! Классы добавлены.');
+        });
+    } else {
+        console.error('Аудитор недоволен: Кнопка бургера или панель меню не найдены в HTML!');
+    }
+});

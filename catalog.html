@@ -58,13 +58,6 @@
                 <!-- Твоя ссылка на каталог -->
                 <li><a href="./index.html" class="catalog-link">На головну</a></li>
             </ul>
-            
-            <div class="mobile-nav-footer">
-                <div class="lang-switcher-mobile">
-                    <a href="#" class="active">ua</a> | <a href="#">ru</a>
-                </div>
-                <a href="tel:+380637100636" class="mobile-phone">+38 (063) 710-06-36</a>
-            </div>
         </nav>
     </header>
 
@@ -367,7 +360,7 @@
                     <label class="widget-title">Оберіть дату *</label>
                     <button type="button" id="btn-open-calendar" style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 16px; border-radius: 12px; cursor: pointer; font-weight: 600; color: #0f172a; transition: all 0.2s; font-family: sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
                         <span id="selected-date-text" style="display: flex; align-items: center; gap: 8px; color: #64748b;">
-                            <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i> Натисніть, щоб обрати дату
+                            <i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i>Виберіть бажану дату
                         </span>
                         <i class="fa-solid fa-chevron-right" style="color: #94a3b8; font-size: 0.85rem;"></i>
                     </button>
@@ -387,7 +380,7 @@
                 <!-- Підвал з фінальною ціною та кнопкою відправки -->
                 <div class="drawer-footer">
                     <div class="price-row">
-                        <span class="price-label">Всього:</span>
+                        <span class="price-total">Всього:</span>
                         <div class="total-price">
                             <!-- МЕНЯЕМ ID С summary-price-val НА cart-grand-total ДЛЯ НОВОГО JS -->
                             <span id="cart-grand-total">0</span> грн
@@ -409,35 +402,34 @@
     </div>
 
     <!-- МОДАЛЬНЕ ВІКНО ПОВНОЦІННОГО КАЛЕНДАРЯ (ЦЕНТР ЕКРАНУ) -->
-    <div id="calendar-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 16px;">
-        <div id="calendar-modal-overlay" style="position: absolute; width: 100%; height: 100%; cursor: pointer;"></div>
-        
-        <!-- Увеличили max-width до 420px и добавили сочные отступы -->
-    <div style="position: relative; background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 28px; z-index: 10001; font-family: sans-serif; border: 1px solid #e2e8f0;">
-            
+    <div id="calendar-modal" class="calendar-modal">
+        <div id="calendar-modal-overlay" class="calendar-overlay"></div>
+
+        <div class="calendar-window">
+
             <!-- Шапка: навигация по месяцам -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <button type="button" id="cal-prev-month" style="background: #f1f5f9; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0284c7; transition: all 0.2s;">&larr;</button>
-                <h3 id="cal-month-year-title" style="margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; text-transform: capitalize; letter-spacing: 0.3px;">Липень 2026</h3>
-                <button type="button" id="cal-next-month" style="background: #f1f5f9; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0284c7; transition: all 0.2s;">&rarr;</button>
+            <div class="calendar-header">
+                <button type="button" id="cal-prev-month" class="calendar-nav-btn">&larr;</button>
+                <h3 id="cal-month-year-title" class="calendar-title">Липень 2026</h3>
+                <button type="button" id="cal-next-month" class="calendar-nav-btn">&rarr;</button>
             </div>
 
             <!-- Дни недели (Сетка) -->
-            <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 6px; margin-bottom: 12px;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Пн</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Вт</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Ср</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Чт</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Пт</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Сб</span>
-                <span style="font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase;">Нд</span>
+            <div class="calendar-weekdays">
+                <span>Пн</span>
+                <span>Вт</span>
+                <span>Ср</span>
+                <span>Чт</span>
+                <span>Пт</span>
+                <span class="weekend">Сб</span>
+                <span class="weekend">Нд</span>
             </div>
 
             <!-- Матрица дней месяца -->
-            <div id="cal-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;">
+            <div id="cal-days-grid" class="calendar-days-grid">
                 <!-- Генерируется динамически через JS -->
             </div>
-            
+
         </div>
     </div>
 
