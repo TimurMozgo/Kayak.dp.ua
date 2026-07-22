@@ -1,51 +1,119 @@
-// Безопасно инициализируем Telegram WebApp, чтобы скрипт не падал в обычном браузере
+// ==========================================================================
+// 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEBAPP
+// ==========================================================================
 const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 
 if (tg) {
-    // Код выполнится только если мы внутри Telegram
     tg.expand();
     tg.ready();
     console.log("Telegram WebApp успешно запущен!");
 } else {
-    // Защита от падения: если открыли просто в Chrome/Safari
-    console.log("Режим браузера: Telegram WebApp не обнаружен, включаем обычный режим.");
+    console.log("Режим браузера: Telegram WebApp не обнаружен.");
 }
 
-// Десктопный скрипт: минимум воды, максимум конверсии
-document.addEventListener("DOMContentLoaded", () => {
-    const ctaButton = document.getElementById("cta-btn");
+// ==========================================================================
+// 2. ХРАНИЛИЩЕ И УПРАВЛЕНИЕ ЗАКАЗАМИ (LOCALSTORAGE)
+// ==========================================================================
+let userOrders = JSON.parse(localStorage.getItem('timurtour_orders')) || [];
 
-    // Проверяем наличие кнопки перед вешанием события
-    if (ctaButton) {
-        ctaButton.addEventListener("click", () => {
-            const modalHtml = `
-                <div id="demo-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                    <div style="background: #070b19; border: 1px solid rgba(0, 242, 254, 0.3); padding: 40px; border-radius: 20px; max-width: 500px; text-align: center; color: #fff;">
-                        <h2 style="margin-bottom: 15px; font-family: 'Outfit', sans-serif;">🚀 Прототип загружен</h2>
-                        <p style="color: #a0aec0; margin-bottom: 25px; line-height: 1.5; font-family: 'Outfit', sans-serif;">Богдан, привет! По клику на эту кнопку клиенты будут переходить в каталог, выбирать лодку и оплачивать в два клика. Без почты и звонков.</p>
-                        <button onclick="document.getElementById('demo-modal').remove()" style="background: linear-gradient(135deg, #00f2fe, #0072ff); border: none; padding: 12px 30px; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; font-family: 'Outfit', sans-serif;">Круто, закрыть</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        });
+function addNewOrder(newBooking) {
+    userOrders.unshift(newBooking);
+    localStorage.setItem('timurtour_orders', JSON.stringify(userOrders));
+    renderOrders();
+}
+
+function openLocation(orderId) {
+    console.log(`Маршрут / локація для замовлення №${orderId}`);
+}
+
+function repeatBooking(productId) {
+    console.log(`Повторне замовлення товару: ${productId}`);
+    const startTabBtn = document.querySelector('.bottom_nav .nav_item');
+    if (startTabBtn) startTabBtn.click();
+}
+
+// ==========================================================================
+// 3. ДИНАМІЧЕСКИЙ РЕНДЕР РОЗДІЛУ «МОЇ ЗАМОВЛЕННЯ»
+// ==========================================================================
+function renderOrders() {
+    const container = document.getElementById('orders-container');
+
+    if (!container) return;
+
+    // --- ЕСЛИ ЗАКАЗОВ НЕТ ---
+    if (!userOrders || userOrders.length === 0) {
+        container.innerHTML = `
+            <div class="orders_empty">
+                <div class="empty_icon">🛶</div>
+                <h3>У вас поки немає замовлень</h3>
+                <p>Оберіть каяк у каталозі та вирушайте у яскраву пригоду на воді!</p>
+                <a href="./catalog.html" class="btn_to_catalog">
+                    Перейти до каталогу
+                </a>
+            </div>
+        `;
+        return;
     }
 
-    // Плавный скролл при клике на ссылки в навигации
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            console.log('Скролл к блоку: ' + this.getAttribute('href'));
-        });
+    // --- ЕСЛИ ЗАКАЗЫ ЕСТЬ (выводим полный реестр заявок) ---
+    let cardsHtml = '<div class="orders_list">';
+
+    userOrders.forEach((order) => {
+        const isConfirmed = order.status === 'confirmed' || order.status === 'active';
+        const badgeClass = isConfirmed ? 'badge_confirmed' : 'badge_completed';
+        const badgeText = isConfirmed ? '🟢 Підтверджено' : '🏁 Завершено';
+        
+        const btnHtml = isConfirmed 
+            ? `<button class="order_btn_details" onclick="openLocation('${order.id}')">Маршрут / Локація</button>`
+            : `<button class="order_btn_repeat" onclick="repeatBooking('${order.productId}')">Замовити знову</button>`;
+
+        cardsHtml += `
+            <div class="order_card">
+                <div class="order_card_header">
+                    <span class="order_id">№ ${order.id}</span>
+                    <span class="order_badge ${badgeClass}">${badgeText}</span>
+                </div>
+
+                <div class="order_card_body">
+                    <div class="order_thumb">
+                        <img src="${order.img || './img/LiteRowing_9.5.webp'}" alt="${order.productName}">
+                    </div>
+                    <div class="order_details">
+                        <h3 class="order_product_title">${order.productName}</h3>
+                        <div class="order_meta">
+                            <span>🛶 ${order.quantity} шт.</span>
+                            <span>⏱️ ${order.duration}</span>
+                        </div>
+                        <div class="order_time_box">
+                            📅 <strong>${order.date}</strong> о <strong>${order.time}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order_card_footer">
+                    <div class="order_price_box">
+                        <span class="price_label">${isConfirmed ? 'До сплати:' : 'Сплачено:'}</span>
+                        <span class="price_val">${order.totalPrice} грн</span>
+                    </div>
+                    ${btnHtml}
+                </div>
+            </div>
+        `;
     });
-});
 
-// Единый контейнер для всех событий загрузки DOM
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // ================= ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЯЗЫКОВ =================
+    cardsHtml += '</div>';
+    container.innerHTML = cardsHtml;
+}
+
+// ==========================================================================
+// 4. ГЛАВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ
+// ==========================================================================
+function initApp() {
+    // 4.1. Отрисовываем заказы из localStorage
+    renderOrders();
+
+    // 4.2. Переключение языков
     const langItems = document.querySelectorAll('.lang-item');
-
     langItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -53,32 +121,81 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.add('active');
             
             const selectedLang = item.getAttribute('data-lang');
-            console.log(`Язык переключен на: ${selectedLang}`);
+            console.log(`Мову змінено на: ${selectedLang}`);
         });
     });
 
-    // ================= ЛОГИКА КНОПКИ ДЕЙСТВИЯ (CTA) =================
-    const ctaBtn = document.getElementById('cta-order-btn');
+    // 4.3. НАВИГАЦИЯ ПО ТАБАМ И ВНЕШНИМ ССЫЛКАМ
+    const navItems = document.querySelectorAll('.bottom_nav .nav_item');
 
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const href = item.getAttribute('href');
+
+            // ЕСЛИ ССЫЛКА ВЕДЕТ НА ОТДЕЛЬНУЮ СТРАНИЦУ (например, catalog.html) — ОТПУСКАЕМ ТОРМОЗА
+            if (href && !href.startsWith('#')) {
+                return; // Браузер спокойно перейдет по ссылке
+            }
+
+            // ДЛЯ ВНУТРЕННИХ ТАБОВ — ПЕРЕХВАТЫВАЕМ И КРУТИМ ЛОГИКУ
+            e.preventDefault();
+
+            // 1. Снимаем active со всех кнопок меню
+            navItems.forEach(btn => btn.classList.remove('active'));
+
+            // 2. Снимаем active со всех вкладок
+            document.querySelectorAll('.tab_content').forEach(tab => tab.classList.remove('active'));
+
+            // 3. Подсвечиваем нажатую кнопку
+            item.classList.add('active');
+
+            // 4. Находим ID нужного блока
+            let targetTabId = item.getAttribute('data-tab');
+            if (!targetTabId) {
+                if (href && href.startsWith('#')) {
+                    targetTabId = 'tab-' + href.replace('#', '');
+                }
+            }
+
+            // 5. Показываем нужный блок
+            if (targetTabId) {
+                const targetTab = document.getElementById(targetTabId);
+                if (targetTab) {
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                    
+                    targetTab.classList.add('active');
+                }
+            }
+        });
+    });
+
+    // 4.4. Кнопка CTA
+    const ctaBtn = document.getElementById('cta-order-btn') || document.getElementById('cta-btn');
     if (ctaBtn) {
         ctaBtn.addEventListener('click', () => {
-            console.log('Клик по кнопке заказа. Логика перехода к форме.');
-            alert('Тут сработает логика: откроется форма бронирования или скролл вниз.');
+            const startTabBtn = document.querySelector('.bottom_nav .nav_item');
+            if (startTabBtn) startTabBtn.click();
         });
     }
 
-    // ================= ЛОГИКА БУРГЕР-МЕНЮ =================
-    const burgerBtn = document.getElementById('burgerToggle');
-    const mobileNav = document.getElementById('mobileNav');
-
-    if (burgerBtn && mobileNav) {
-        burgerBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            burgerBtn.classList.toggle('active');
-            mobileNav.classList.toggle('open');
-            console.log('Бургер успешно сработал! Классы добавлены.');
-        });
-    } else {
-        console.error('Аудитор недоволен: Кнопка бургера или панель меню не найдены в HTML!');
+    // 4.5. АВТОПЕРЕКЛЮЧЕНИЕ НА ВКЛАДКУ, ЕСЛИ ПЕРЕШЛИ ПО ХЭШУ (например, index.html#orders)
+    if (window.location.hash === '#orders') {
+        const ordersBtn = document.querySelector('.bottom_nav .nav_item[data-tab="tab-orders"]') || 
+                          document.querySelector('.bottom_nav .nav_item[href="#orders"]');
+        if (ordersBtn) {
+            ordersBtn.click(); // Имитируем клик по вкладке "Замовлення"
+        }
     }
-});
+}
+
+
+// ==========================================================================
+// 5. БЕЗОПАСНЫЙ ЗАПУСК (НЕ ЗАВИСИТ ОТ СКОРОСТИ ЗАГРУЗКИ DOM)
+// ==========================================================================
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}

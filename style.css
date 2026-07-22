@@ -1,11 +1,11 @@
 /* Переписали цвета на светлые, сочные и свежие */
 :root {
     --bg-light: #ffffff;
-    --bg-section: #f4f8fb; /* Мягкий водяной оттенок */
-    --text-main: #0f172a; /* Глубокий темный для дорогой контрастной типографики */
+    --bg-section: #f4f8fb; 
+    --text-main: #0f172a; 
     --text-muted: #475569;
-    --primary-blue: #0088cc; /* Цвет чистой воды/Телеграма */
-    --accent-yellow: #ffb703; /* Солнечный акцент под логотип */
+    --primary-blue: #0088cc; 
+    --accent-yellow: #ffb703; 
     --accent-blue-vibrant: #00a8ff;
     --glass-white: rgba(255, 255, 255, 0.75);
     --border-light: rgba(0, 0, 0, 0.06);
@@ -20,10 +20,15 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-body {
-    background-color: var(--bg-light);
-    color: var(--text-main);
-    overflow-x: hidden;
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
 }
 
 /* ================= ШАПКА САЙТА (2026 Style) ================= */
@@ -433,6 +438,197 @@ body {
     margin: 0;
 }
 
+/* ==========================================
+   Grid-контейнер для блока .more_often
+   ========================================== */
+.more_often_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================
+   Секция и заголовок блока .more_often
+   ========================================== */
+.more_often_section {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.more_often_title {
+  text-align: center;
+  margin-bottom: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Бейдж-плашка над заголовком */
+.more_often_badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 18px;
+  background: rgba(255, 78, 80, 0.1);
+  color: #ff4e50;
+  border: 1px solid rgba(255, 78, 80, 0.25);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(255, 78, 80, 0.15);
+}
+
+/* Главный H2 заголовок */
+.more_often_title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+  background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Название внутри карточки (чтобы не путалось с главным заголовком) */
+.more_often_card .card_title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+/* ==========================================
+   Карточка товара
+   ========================================== */
+.more_often_card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 114, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              box-shadow 0.4s ease, 
+              border-color 0.4s ease;
+}
+
+/* Верхняя полоска-акцент при наведении */
+.more_often_card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #00c6ff, #0072ff, #ff4e50);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Hover-эффект карточки */
+.more_often_card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 22px 45px rgba(0, 114, 255, 0.18);
+  border-color: rgba(0, 198, 255, 0.4);
+}
+
+.more_often_card:hover::before {
+  opacity: 1;
+}
+
+/* ==========================================
+   Блок картинки + Zoom эффект
+   ========================================== */
+.more_often_img {
+  width: 100%;
+  height: 220px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.more_often_img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.more_often_card:hover .more_often_img img {
+  transform: scale(1.08);
+}
+
+/* ==========================================
+   Заголовок (Стильный градиент)
+   ========================================== */
+.more_often_title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.3;
+  background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================
+   Описание
+   ========================================== */
+
+.more_often_desc {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1;
+  text-align: center; 
+}
+
+/* ==========================================
+   Яркая градиентная кнопка
+   ========================================== */
+.more_often_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  box-shadow: 0 8px 20px rgba(0, 114, 255, 0.35);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+/* Hover-эффект кнопки (взрывной огонь) */
+.more_often_btn:hover {
+  background: linear-gradient(135deg, #ff4e50 0%, #f9d423 100%);
+  box-shadow: 0 10px 25px rgba(255, 78, 80, 0.45);
+  transform: translateY(-2px) scale(1.02);
+  color: #ffffff;
+}
+
+.more_often_btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
 /* ================= КЛАССИЧЕСКИЙ БЛОК С ФОНОМ ================= */
 .benefits-classic-section {
     position: relative;
@@ -686,125 +882,320 @@ body {
     background: #94a3b8; 
 }
 
-/* ================= СТИЛІ БУРГЕР-МЕНЮ ================= */
-.burger-menu-btn {
-    display: none; /* Скрываем на больших экранах */
-    flex-direction: column;
-    justify-content: space-between;
-    width: 28px;
-    height: 20px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    z-index: 9999 !important;
-}
-
-.burger-menu-btn span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: #111; /* Цвет полосок бургера */
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-/* Анимация превращения в крестик */
-.burger-menu-btn.active span:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
-}
-.burger-menu-btn.active span:nth-child(2) {
-    opacity: 0;
-}
-.burger-menu-btn.active span:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
-}
-
-/* Выезжающая панель */
-.mobile-nav-panel {
+/* ==========================================
+   1. ФИКСИРОВАННОЕ НИЖНЕЕ МЕНЮ
+   ========================================== */
+.bottom_nav {
     position: fixed;
-    top: 0;
-    right: -100%; /* Прячем за правый край экрана */
-    width: 280px;
-    height: 100vh;
-    background-color: #ffffff;
-    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 65px;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.nav_item {
     display: flex;
     flex-direction: column;
-    padding: 80px 24px 30px;
-    transition: right 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: 999;
-}
-
-.mobile-nav-panel.open {
-    right: 0; /* Открываем сделку (выдвигаем меню) */
-}
-
-.mobile-nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-.mobile-nav-list a {
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    color: #333;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: color 0.2s;
+    color: #5a6e85;
+    gap: 4px;
+    flex: 1;
+    max-width: 120px;
+    transition: color 0.2s ease;
+    cursor: pointer;
 }
 
-.catalog-link {
-    color: #0284c7 !important; /* Подсвечиваем главную ссылку */
+.nav_icon_box {
+    width: 56px;
+    height: 30px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav_label {
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav_item.active .nav_icon_box {
+    background-color: #dbeafe;
+    color: #00388c;
+}
+
+.nav_item.active .nav_label {
+    color: #00388c;
+    font-weight: 700;
+}
+
+/* ==========================================
+   2. ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК (ТАБОВ)
+   ========================================== */
+.tab_content {
+    display: none;
+    width: 100%;
+    min-height: calc(100vh - 65px);
+    /* ФИКС: отступ снизу, чтобы меню не перекрывало футер */
+    padding-bottom: 80px; 
+}
+
+.tab_content.active {
+    display: block !important;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ==========================================
+   3. СТИЛИ РАЗДЕЛА «МОЇ ЗАМОВЛЕННЯ»
+   ========================================== */
+.orders_section {
+    padding: 20px 16px; 
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.orders_header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.orders_title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* --- Пустое состояние (Заказов нет) --- */
+.orders_empty {
+    text-align: center;
+    padding: 40px 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    margin-top: 10px;
+}
+
+.empty_icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.orders_empty h3 {
+    font-size: 18px;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.orders_empty p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+}
+
+.btn_to_catalog {
+    background: #00388c;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+
+.btn_to_catalog:hover {
+    background: #002866;
+}
+
+/* --- Карточка заказа --- */
+.orders_list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.order_card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.order_card_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 12px;
+}
+
+.order_id {
+    font-weight: 700;
+    color: #334155;
+    font-size: 14px;
+}
+
+.order_badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.badge_confirmed {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge_completed {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.order_card_body {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.order_thumb img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.order_details {
+    flex: 1;
+}
+
+.order_product_title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+}
+
+.order_meta {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.order_time_box {
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.order_card_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.order_price_box {
+    display: flex;
+    flex-direction: column;
+}
+
+.price_label {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.price_val {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.order_btn_details, .order_btn_repeat {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order_btn_details:hover {
+    background: #e2e8f0;
 }
 
 @media (max-width: 768px) {
-    /* --- 1. ШАПКА (HEADER) --- */
-    .main-header {
-        position: relative !important;
-        min-height: 64px !important;
-        display: flex !important;
-        align-items: center !important;
-        padding: 0 20px !important;
+    .main-header{
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:72px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:0 18px;
+        background:rgba(255,255,255,.88);
+        backdrop-filter:blur(20px);
+        -webkit-backdrop-filter:blur(20px);
+        border-bottom:1px solid rgba(15,23,42,.08);
+        z-index:1000;
     }
 
-    .header-container {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        width: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    .header-container{
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
     }
 
-    .social-block, .meta-block {
-        display: none !important;
+    .social-block,
+    .meta-block{
+        display:none;
     }
 
-    /* Показываем бургер-кнопку */
-    .burger-menu-btn {
-        display: flex !important;
-        position: absolute !important;
-        right: 20px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important; 
-        margin: 0 !important;
+    .logo-block{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:100%;
     }
 
-    /* LOGO KAYAK DP UA*/
-
-    .logo-block {
-        /* Центрируем блок по вертикали в мобильной шапке */
-        display: flex !important;
-        align-items: center !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    .logo-block .logo {
-        height: 66px !important; /* Уменьшаем размер, чтобы логотип не прижимался к краям экрана и бургеру */
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06)) !important;
+    .logo{
+        width:170px;
+        max-width:75%;
+        height:auto;
+        object-fit:contain;
     }
 
     /* --- 2. ГЛАВНЫЙ ЭКРАН (HERO) --- */
@@ -838,12 +1229,15 @@ body {
     }
 
     .section-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem; 
+        line-height: 1.35;
         text-align: center;
+        text-wrap: balance; 
+        letter-spacing: -0.02em; 
     }
 
     .cards-grid {
-        grid-template-columns: 1fr; /* Выстраиваем карточки в один столбец */
+        grid-template-columns: 1fr; 
         gap: 30px;
     }
 
@@ -924,8 +1318,6 @@ body {
         gap: 40px;
         text-align: center;
     }
-
-   
 
     .footer-contacts li {
         justify-content: center; /* Центрируем иконки контактов */
