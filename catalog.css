@@ -311,6 +311,19 @@ body, html {
     text-transform: uppercase;
 }
 
+.badge-exclusive {
+    position: absolute; 
+    top: 12px; 
+    right: 12px; 
+    background: #75caae; 
+    color: #ffffff; 
+    padding: 6px 12px; 
+    border-radius: 8px; 
+    font-size: 0.75rem; 
+    font-weight: 800; 
+    text-transform: uppercase;
+}
+
 /* ==========================================================================
    ИДЕАЛЬНЫЙ КАЛЬКУЛЯТОР ДЛЯ TIMURTOUR (ДЕСКТОП-ФОКУС)
    ========================================================================== */
@@ -1738,6 +1751,105 @@ body, html {
 
 .order_btn_details:hover {
     background: #e2e8f0;
+}
+
+/* Контейнер шага оплаты */
+.payment-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 1. Сводка заказа */
+.payment-summary-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.payment-summary-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #0f172a;
+}
+
+.payment-summary-date {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.payment-summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+/* 2. Реквизиты */
+.payment-card-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card-number-copier {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #0f172a;
+    cursor: pointer;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    transition: background 0.2s;
+}
+
+.card-number-copier:hover {
+    background: #e2e8f0;
+}
+
+/* 3. Кнопка прикрепления файла */
+.file-upload-box {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-upload-box:hover {
+    border-color: #0284c7;
+    background: #e0f2fe;
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.upload-icon {
+    font-size: 1.8rem;
+    color: #0284c7;
+    transform: rotate(-45deg);
 }
 
 /*==================================================

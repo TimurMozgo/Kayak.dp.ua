@@ -600,12 +600,90 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ==========================================
+    // ЭТАП 1: Переход с проверки на Шаг 3 (Оплата и Загрузка чека)
+    // ==========================================
     document.getElementById("check-confirm-btn")?.addEventListener("click", () => {
+        // 1. Закрываем модалку проверки (если она была открыта)
         const checkModal = document.getElementById("check-order-modal");
         if (checkModal) checkModal.style.display = "none";
 
+        // 2. Переключаем шаги внутри боковой панели (Drawer)
+        const stepCheckout = document.getElementById("drawer-step-checkout");
+        const stepPayment = document.getElementById("drawer-step-payment");
+
+        if (stepCheckout) stepCheckout.style.display = "none";
+        if (stepPayment) stepPayment.style.display = "block";
+
+        // 3. Обновляем суммы на шаге оплаты
+        const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        const payPriceElem = document.getElementById("pay-item-price");
+        const payDepositElem = document.getElementById("pay-deposit-amount");
+
+        if (payPriceElem) payPriceElem.innerText = `${totalCartPrice} UAH`;
+        if (payDepositElem) payDepositElem.innerText = `${totalCartPrice} грн`;
+    });
+
+    // ==========================================
+    // 1. Вспомогательная функция: сброс картинок и возврат на Шаг 1
+    // ==========================================
+    function resetBookingState() {
+        // Очищаем input файла и превью картинки
+        const fileInput = document.getElementById('receipt-file-input');
+        const idleState = document.getElementById('upload-idle-state');
+        const previewState = document.getElementById('upload-preview-state');
+        const previewImg = document.getElementById('receipt-preview-img');
+
+        if (fileInput) fileInput.value = '';
+        if (previewImg) previewImg.src = '';
+        if (idleState) idleState.style.display = 'flex';
+        if (previewState) previewState.style.display = 'none';
+
+        // Переключаем шторку обратно на Шаг 1 (Корзина)
+        const stepCart = document.getElementById('drawer-step-cart');
+        const stepCheckout = document.getElementById('drawer-step-checkout');
+        const stepPayment = document.getElementById('drawer-step-payment');
+
+        if (stepCart) stepCart.style.display = 'block';
+        if (stepCheckout) stepCheckout.style.display = 'none';
+        if (stepPayment) stepPayment.style.display = 'none';
+    }
+    
+    // ==========================================
+    // 2. Обработчик клика кнопки «Підтвердити та надіслати»
+    // ==========================================
+
+
+    document.getElementById("btn-submit-final-booking")?.addEventListener("click", () => {
+        const fileInput = document.getElementById("receipt-file-input");
+        const uploadZone = document.getElementById("upload-zone");
+
+        // 🛑 1. ЖЕСТКИЙ СТОП-КРАН: Если чека нет — отменяем ордер!
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            alert("⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!");
+            
+            // Визуально подсвечиваем зону загрузки красным
+            if (uploadZone) {
+                uploadZone.style.border = "2px dashed #ef4444";
+                uploadZone.style.backgroundColor = "#fef2f2";
+                uploadZone.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            
+            return; // ⛔ РАЗВОРОТ! Код ниже НЕ выполнится, ничего не сохранится и не улетит!
+        }
+
+        // Если чек на месте — сбрасываем подсветку
+        if (uploadZone) {
+            uploadZone.style.border = "";
+            uploadZone.style.backgroundColor = "";
+        }
+
+        // --------------------------------------------------
+        // 2. Если чек есть — собираем данные и оформляем
+        // --------------------------------------------------
         const nameInput = document.getElementById("user-name");
         const phoneInput = document.getElementById("user-phone");
+        const hiddenDateTimeInput = document.getElementById("booking-datetime");
 
         const name = nameInput ? nameInput.value.trim() : "";
         const phone = phoneInput ? phoneInput.value.trim() : "";
@@ -630,38 +708,48 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        console.log("✈️ Отправка пакета Аудитору:", payload);
+        // 3. Сохраняем в историю заказов
+        if (typeof saveOrderToHistory === "function") {
+            saveOrderToHistory(payload.booking);
+        }
 
-        fetch("https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52", {
+        // 4. Пакуем FormData и отправляем n8n
+        const formData = new FormData();
+        formData.append("payload", JSON.stringify(payload));
+        formData.append("receipt_file", fileInput.files[0]);
+
+        console.log("✈️ Чек на месте. Отправляем Аудитору в n8n...");
+
+        fetch("https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: formData
         })
         .then(response => {
-            if (!response.ok) throw new Error("Ошибка сети при отправке");
-            console.log("✅ Данные успешно доставлены в n8n!");
+            if (!response.ok) throw new Error("Ошибка сети");
+            console.log("✅ Успешно доставлено!");
         })
-        .catch(error => {
-            console.error("❌ Ошибка отправки:", error);
-        });
+        .catch(err => console.error("❌ Ошибка:", err));
 
-        // Сброс состояния после отправки
+        // 5. Чистим корзину, шторку и форму
         cart = [];
         selectedDate = null;
         selectedTime = null;
-        if (selectedDateText) {
-            selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-days" style="color: #0284c7; font-size: 1.1rem;"></i> Виберіть бажану дату`;
-            selectedDateText.style.color = "#64748b";
-        }
         
-        saveAndUpdateCart();
+        if (typeof saveAndUpdateCart === "function") saveAndUpdateCart();
+        
+        const checkoutForm = document.getElementById("booking-checkout-form");
         if (checkoutForm) checkoutForm.reset();
-        window.closeBookingDrawer();
 
+        if (typeof resetBookingState === "function") resetBookingState();
+        if (typeof window.closeBookingDrawer === "function") window.closeBookingDrawer();
+
+        // 6. Показываем успех
         const successModal = document.getElementById("success-modal");
         if (successModal) {
             successModal.style.display = "flex";
-            setTimeout(() => { if (successModal.firstElementChild) successModal.firstElementChild.style.transform = "scale(1)"; }, 50);
+            setTimeout(() => { 
+                if (successModal.firstElementChild) successModal.firstElementChild.style.transform = "scale(1)"; 
+            }, 50);
         }
     });
 
@@ -691,4 +779,227 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("click", () => {
         document.querySelectorAll(".custom-dropdown").forEach(el => el.classList.remove("open"));
     });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ----------------------------------------------------
+    // 1. Копирование IBAN по клику
+    // ----------------------------------------------------
+    const copyIbanBtn = document.getElementById('copy-iban-btn');
+    if (copyIbanBtn) {
+        copyIbanBtn.addEventListener('click', () => {
+            const ibanTextElem = document.getElementById('iban-text');
+            const copyIcon = document.getElementById('copy-iban-icon');
+
+            if (ibanTextElem) {
+                // Чистим от пробелов для удобной вставки в банковское приложение
+                const cleanIban = ibanTextElem.innerText.replace(/\s+/g, '');
+
+                navigator.clipboard.writeText(cleanIban).then(() => {
+                    // Визуальный фидбек: меняем иконку на зелёную галочку
+                    if (copyIcon) {
+                        copyIcon.className = 'fa-solid fa-check';
+                        copyIcon.style.color = '#10b981';
+
+                        setTimeout(() => {
+                            copyIcon.className = 'fa-regular fa-copy';
+                            copyIcon.style.color = '#0284c7';
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    console.error('Ошибка копирования IBAN:', err);
+                });
+            }
+        });
+    }
+
+    // ----------------------------------------------------
+    // 2. Выбор скриншота (Клик, Drag-and-Drop или Ctrl+V)
+    // ----------------------------------------------------
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('receipt-file-input');
+    const idleState = document.getElementById('upload-idle-state');
+    const previewState = document.getElementById('upload-preview-state');
+    const previewImg = document.getElementById('receipt-preview-img');
+
+    function renderImagePreview(file) {
+        if (file && file.type.startsWith('image/')) {
+            const imageUrl = URL.createObjectURL(file);
+            previewImg.src = imageUrl;
+            idleState.style.display = 'none';
+            previewState.style.display = 'block';
+            
+            // Если была красная подсветка ошибки — снимаем её
+            if (uploadZone) {
+                uploadZone.style.border = '';
+                uploadZone.style.backgroundColor = '';
+            }
+        }
+    }
+
+    if (uploadZone && fileInput) {
+        // Клик по дропзоне открывает системный выбор файла
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Загрузка через системное окно
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                renderImagePreview(e.target.files[0]);
+            }
+        });
+
+        // Возможность просто вставить скриншот через Ctrl+V на странице!
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+
+                    // Передаем файл в наш input
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(blob);
+                    fileInput.files = dataTransfer.files;
+
+                    renderImagePreview(blob);
+                    break;
+                }
+            }
+        });
+    }
+
+    // ----------------------------------------------------
+    // 3. Проверка чека при клике на «Підтвердити та надіслати»
+    // ----------------------------------------------------
+    const submitBtn = document.getElementById('btn-submit-final-booking');
+
+    if (submitBtn) {
+        submitBtn.addEventListener('click', (e) => {
+            // 🛑 ПРОВЕРКА: если файл НЕ прикреплен — блокируем отправку!
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                alert('⚠️ Будь ласка, завантажте скріншот або квитанцію про оплату!');
+
+                if (uploadZone) {
+                    uploadZone.style.border = '2px dashed #ef4444';
+                    uploadZone.style.backgroundColor = '#fef2f2';
+                    uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                return false; // Отмена ордера!
+            }
+        });
+    }
+
+});
+
+// ==========================================
+// СОХРАНЕНИЕ И ОТОБРАЖЕНИЕ ИСТОРИИ ЗАКАЗОВ
+// ==========================================
+
+// 1. Функция записи заказа в localStorage
+
+function saveOrderToHistory(bookingData) {
+    if (!bookingData || !bookingData.items || bookingData.items.length === 0) return;
+
+    // 1. Считываем заказы из ключа timurtour_orders
+    let existingOrders = [];
+    try {
+        existingOrders = JSON.parse(localStorage.getItem('timurtour_orders')) || [];
+    } catch (e) {
+        existingOrders = [];
+    }
+
+    const mainItem = bookingData.items[0];
+    const totalQuantity = bookingData.items.reduce((sum, item) => sum + item.quantity, 0);
+
+    // Разделяем текущую дату и время
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+
+    // 2. Собираем объект ровно под требования script.js
+    const newOrder = {
+        id: Math.floor(100000 + Math.random() * 900000).toString(),
+        productId: mainItem.productId || 'kayak-1',
+        productName: bookingData.items.length > 1 
+            ? `${mainItem.productName} (+ ще ${bookingData.items.length - 1})` 
+            : mainItem.productName,
+        quantity: totalQuantity,
+        duration: mainItem.duration || '1 год',
+        date: dateStr,
+        time: timeStr,
+        totalPrice: bookingData.totalPrice,
+        status: 'active', // Чтобы сразу загорался плашка "🟢 Підтверджено"
+        img: mainItem.img || './img/LiteRowing_9.5.webp'
+    };
+
+    // 3. Записываем в localStorage
+    existingOrders.unshift(newOrder);
+    localStorage.setItem('timurtour_orders', JSON.stringify(existingOrders));
+
+    console.log("📦 Заказ сохранен в timurtour_orders:", newOrder);
+}
+
+
+// 2. Функция отрисовки карточек в #orders-container
+
+function renderOrdersHistory() {
+    const container = document.getElementById('orders-container');
+    if (!container) return;
+
+    let orders = [];
+    try {
+        orders = JSON.parse(localStorage.getItem('user_orders')) || [];
+    } catch (e) {
+        orders = [];
+    }
+
+    // Если нет заказов — выводим заглушку
+    if (orders.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+                <i class="fa-solid fa-box-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #cbd5e1;"></i>
+                <p style="margin: 0; font-weight: 600; font-size: 0.95rem;">У вас поки немає активних замовлень</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Рендерим заказы из памяти
+    container.innerHTML = orders.map(order => `
+        <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                <div>
+                    <strong style="font-size: 0.95rem; color: #0f172a;">${order.id}</strong>
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">${order.date}</div>
+                </div>
+                <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;">
+                    ${order.status}
+                </span>
+            </div>
+            
+            <div style="margin-bottom: 12px;">
+                ${order.items.map(item => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #334155; margin-bottom: 6px;">
+                        <span>${item.productName} ${item.duration ? `(${item.duration})` : ''} × ${item.quantity}</span>
+                        <strong style="color: #0f172a;">${item.totalPrice} грн</strong>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 10px; font-weight: 700;">
+                <span style="font-size: 0.85rem; color: #64748b;">Разом:</span>
+                <span style="font-size: 1.05rem; color: #10b981;">${order.totalPrice} грн</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 3. Вызываем отрисовку при стартe страницы
+document.addEventListener('DOMContentLoaded', () => {
+    renderOrdersHistory();
 });

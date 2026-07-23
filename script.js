@@ -35,9 +35,12 @@ function repeatBooking(productId) {
 // ==========================================================================
 // 3. ДИНАМІЧЕСКИЙ РЕНДЕР РОЗДІЛУ «МОЇ ЗАМОВЛЕННЯ»
 // ==========================================================================
-function renderOrders() {
-    const container = document.getElementById('orders-container');
 
+function renderOrders() {
+
+    userOrders = JSON.parse(localStorage.getItem('timurtour_orders')) || [];
+
+    const container = document.getElementById('orders-container');
     if (!container) return;
 
     // --- ЕСЛИ ЗАКАЗОВ НЕТ ---
