@@ -54,6 +54,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const ukMonthsGenitive = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     const availableTimeSlots = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"];
 
+
+    if (window.Telegram?.WebApp) {
+
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
+        console.log("Telegram найден ✅");
+
+        console.log("initData:", Telegram.WebApp.initData);
+
+        console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+
+        console.log("user:", Telegram.WebApp.initDataUnsafe.user);
+
+    } else {
+
+        console.log("Telegram НЕ найден ❌");
+
+    }
     // ----------------- УПРАВЛЕНИЕ ШТОРКОЙ (DRAWER) И ШАГАМИ ----------------
     function showCartStep() {
         if (stepCart) stepCart.style.display = "block";
