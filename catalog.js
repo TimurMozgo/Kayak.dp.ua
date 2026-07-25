@@ -671,51 +671,72 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 2. Обработчик клика кнопки «Підтвердити та надіслати»
     // ==========================================
-    document.getElementById("btn-submit-final-booking")?.addEventListener("click", () => {
+    document.getElementById("btn-submit-final-booking")?.addEventListener("click", async () => {
+
         const fileInput = document.getElementById("receipt-file-input");
         const uploadZone = document.getElementById("upload-zone");
 
-        // 🛑 1. ЖЕСТКИЙ СТОП-КРАН: Если чека нет — отменяем ордер!
+        // Проверяем наличие чека
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+
             alert("⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!");
-            
-            // Визуально подсвечиваем зону загрузки красным
+
             if (uploadZone) {
                 uploadZone.style.border = "2px dashed #ef4444";
                 uploadZone.style.backgroundColor = "#fef2f2";
-                uploadZone.scrollIntoView({ behavior: "smooth", block: "center" });
+                uploadZone.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
             }
-            
-            return; // ⛔ РАЗВОРОТ!
+
+            return;
         }
 
-        // Если чек на месте — сбрасываем подсветку
         if (uploadZone) {
             uploadZone.style.border = "";
             uploadZone.style.backgroundColor = "";
         }
 
         // --------------------------------------------------
-        // 2. Достаем Telegram ID и собираем данные
+        // Получаем Telegram пользователя
         // --------------------------------------------------
-        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-        const telegramId = tgUser?.id ? String(tgUser.id) : "Сайт (Браузер)";
 
-        const nameInput = document.getElementById("user-name");
-        const phoneInput = document.getElementById("user-phone");
-        const hiddenDateTimeInput = document.getElementById("booking-datetime");
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
 
-        const name = nameInput ? nameInput.value.trim() : "";
-        const phone = phoneInput ? phoneInput.value.trim() : "";
-        const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        console.log("Telegram WebApp:", window.Telegram?.WebApp);
+        console.log("Telegram User:", tgUser);
+
+        const telegramId = tgUser?.id
+            ? String(tgUser.id)
+            : "Сайт (Браузер)";
+
+        // --------------------------------------------------
+        // Собираем данные
+        // --------------------------------------------------
+
+        const name =
+            document.getElementById("user-name")?.value.trim() || "";
+
+        const phone =
+            document.getElementById("user-phone")?.value.trim() || "";
+
+        const scheduledAt =
+            document.getElementById("booking-datetime")?.value || "";
+
+        const totalCartPrice =
+            cart.reduce((sum, item) => sum + item.totalPrice, 0);
 
         const payload = {
-            customer: { 
-                name, 
+
+            customer: {
+                name,
                 phone,
-                telegramId // 👈 ТЕПЕРЬ TELEGRAM ID ПЕРЕДАЕТСЯ В N8N!
+                telegramId
             },
+
             booking: {
+
                 items: cart.map(item => ({
                     productId: item.productId,
                     productName: item.productName,
@@ -723,232 +744,237 @@ document.addEventListener("DOMContentLoaded", () => {
                     quantity: item.quantity,
                     totalPrice: item.totalPrice
                 })),
+
                 totalPrice: totalCartPrice,
-                scheduledAt: hiddenDateTimeInput?.value || ""
+                scheduledAt
+
             },
+
             meta: {
                 source: "Website Catalog Verified Confirmation",
                 createdAt: new Date().toISOString()
             }
+
         };
 
-        // 3. Сохраняем в историю заказов
         if (typeof saveOrderToHistory === "function") {
             saveOrderToHistory(payload.booking);
         }
 
-        // 4. Пакуем FormData и отправляем n8n
         const formData = new FormData();
         formData.append("payload", JSON.stringify(payload));
         formData.append("receipt_file", fileInput.files[0]);
 
-        console.log("✈️ Чек на месте. Отправляем Аудитору в n8n...", payload);
+        console.log("📦 Payload:", payload);
 
-        fetch("https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Ошибка сети");
-            console.log("✅ Успешно доставлено!");
-        })
-        .catch(err => console.error("❌ Ошибка:", err));
+        try {
 
-        // 5. Чистим корзину, шторку и форму
-        cart = [];
-        selectedDate = null;
-        selectedTime = null;
-        
-        if (typeof saveAndUpdateCart === "function") saveAndUpdateCart();
-        
-        const checkoutForm = document.getElementById("booking-checkout-form");
-        if (checkoutForm) checkoutForm.reset();
+            const response = await fetch(
+                "https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
 
-        if (typeof resetBookingState === "function") resetBookingState();
-        if (typeof window.closeBookingDrawer === "function") window.closeBookingDrawer();
+            if (!response.ok) {
+                throw new Error("Ошибка отправки");
+            }
 
-        // 6. Показываем успех
-        const successModal = document.getElementById("success-modal");
-        if (successModal) {
-            successModal.style.display = "flex";
-            setTimeout(() => { 
-                if (successModal.firstElementChild) successModal.firstElementChild.style.transform = "scale(1)"; 
-            }, 50);
+            console.log("✅ Успешно отправлено в n8n");
+
+            // Очищаем корзину ТОЛЬКО после успешной отправки
+
+            cart = [];
+            selectedDate = null;
+            selectedTime = null;
+
+            if (typeof saveAndUpdateCart === "function") {
+                saveAndUpdateCart();
+            }
+
+            document.getElementById("booking-checkout-form")?.reset();
+
+            if (typeof resetBookingState === "function") {
+                resetBookingState();
+            }
+
+            window.closeBookingDrawer?.();
+
+            const successModal = document.getElementById("success-modal");
+
+            if (successModal) {
+
+                successModal.style.display = "flex";
+
+                setTimeout(() => {
+
+                    successModal.firstElementChild?.style.setProperty(
+                        "transform",
+                        "scale(1)"
+                    );
+
+                }, 50);
+
+            }
+
+            const closeSuccessBtn = document.getElementById("close-success-btn");
+
+            if (closeSuccessBtn) {
+
+                closeSuccessBtn.addEventListener("click", () => {
+
+                    const successModal = document.getElementById("success-modal");
+
+                    if (!successModal) return;
+
+                    successModal.style.display = "none";
+
+                });
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("❌ Не вдалося відправити бронювання. Спробуйте ще раз.");
+
         }
-    });
 
-    document.getElementById("close-success-btn")?.addEventListener("click", () => {
-        const successModal = document.getElementById("success-modal");
-        if (successModal) {
-            successModal.style.display = "none";
-            if (successModal.firstElementChild) successModal.firstElementChild.style.transform = "scale(0.9)";
-        }
-    });
-
-    // ----------------- ЯЗЫКОВОЙ ПЕРЕКЛЮЧАТЕЛЬ И CTA -----------------
-    document.querySelectorAll('.lang-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.querySelectorAll('.lang-item').forEach(el => el.classList.remove('active'));
-            item.classList.add('active');
-        });
-    });
-
-    const ctaBtn = document.getElementById('cta-order-btn');
-    if (ctaBtn) {
-        ctaBtn.addEventListener('click', window.openBookingDrawer);
-    }
-
-    // Закрытие dropdown по клику вне их зоны
-    document.addEventListener("click", () => {
-        document.querySelectorAll(".custom-dropdown").forEach(el => el.classList.remove("open"));
     });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+
     // ----------------------------------------------------
-    // 1. Копирование IBAN по клику
+    // 1. Копирование карты / IBAN
     // ----------------------------------------------------
     const copyIbanBtn = document.getElementById('copy-iban-btn');
+
     if (copyIbanBtn) {
+
         copyIbanBtn.addEventListener('click', () => {
+
             const ibanTextElem = document.getElementById('iban-text');
             const copyIcon = document.getElementById('copy-iban-icon');
 
-            if (ibanTextElem) {
-                // Чистим от пробелов для удобной вставки в банковское приложение
-                const cleanIban = ibanTextElem.innerText.replace(/\s+/g, '');
+            if (!ibanTextElem) return;
 
-                navigator.clipboard.writeText(cleanIban).then(() => {
-                    // Визуальный фидбек: меняем иконку на зелёную галочку
-                    if (copyIcon) {
-                        copyIcon.className = 'fa-solid fa-check';
-                        copyIcon.style.color = '#10b981';
+            const cleanIban = ibanTextElem.innerText.replace(/\s+/g, '');
 
-                        setTimeout(() => {
-                            copyIcon.className = 'fa-regular fa-copy';
-                            copyIcon.style.color = '#0284c7';
-                        }, 2000);
-                    }
-                }).catch(err => {
-                    console.error('Ошибка копирования IBAN:', err);
-                });
-            }
+            navigator.clipboard.writeText(cleanIban).then(() => {
+
+                if (!copyIcon) return;
+
+                copyIcon.className = 'fa-solid fa-check';
+                copyIcon.style.color = '#10b981';
+
+                setTimeout(() => {
+
+                    copyIcon.className = 'fa-regular fa-copy';
+                    copyIcon.style.color = '#0284c7';
+
+                }, 2000);
+
+            }).catch(err => {
+
+                console.error('Ошибка копирования:', err);
+
+            });
+
         });
+
     }
 
     // ----------------------------------------------------
-    // 2. Выбор скриншота + Фиксация файла
+    // 2. Работа со скриншотом оплаты
     // ----------------------------------------------------
-    let currentReceiptFile = null;
+
+    window.currentReceiptFile = null;
 
     const uploadZone = document.getElementById('upload-zone');
     const fileInput = document.getElementById('receipt-file-input');
+
     const idleState = document.getElementById('upload-idle-state');
     const previewState = document.getElementById('upload-preview-state');
     const previewImg = document.getElementById('receipt-preview-img');
 
-    // Функция отображения превью
     function renderImagePreview(file) {
-        if (file && file.type.startsWith('image/')) {
-            currentReceiptFile = file; // 👈 Сохраняем файл в переменную!
 
-            const imageUrl = URL.createObjectURL(file);
-            if (previewImg) previewImg.src = imageUrl;
-            if (idleState) idleState.style.display = 'none';
-            if (previewState) previewState.style.display = 'block';
+        if (!file) return;
 
-            if (uploadZone) {
-                uploadZone.style.border = '';
-                uploadZone.style.backgroundColor = '';
-            }
+        if (!file.type.startsWith('image/')) return;
+
+        window.currentReceiptFile = file;
+
+        const imageUrl = URL.createObjectURL(file);
+
+        if (previewImg) {
+            previewImg.src = imageUrl;
         }
+
+        if (idleState) {
+            idleState.style.display = 'none';
+        }
+
+        if (previewState) {
+            previewState.style.display = 'block';
+        }
+
+        if (uploadZone) {
+            uploadZone.style.border = '';
+            uploadZone.style.backgroundColor = '';
+        }
+
     }
 
-    // Навешиваем слушатели на выбор / вставку файла
     if (uploadZone && fileInput) {
-        uploadZone.addEventListener('click', () => fileInput.click());
 
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files[0]) {
-                renderImagePreview(e.target.files[0]);
-            }
+        uploadZone.addEventListener('click', () => {
+
+            fileInput.click();
+
         });
 
-        document.addEventListener('paste', (e) => {
-            const items = (e.clipboardData || e.originalEvent.clipboardData)?.items;
+        fileInput.addEventListener('change', e => {
+
+            const file = e.target.files?.[0];
+
+            if (file) {
+
+                renderImagePreview(file);
+
+            }
+
+        });
+
+        document.addEventListener('paste', e => {
+
+            const items = e.clipboardData?.items;
+
             if (!items) return;
 
-            for (let item of items) {
-                if (item.type.indexOf('image') !== -1) {
-                    const blob = item.getAsFile();
-                    renderImagePreview(blob);
+            for (const item of items) {
+
+                if (item.type.startsWith('image/')) {
+
+                    const file = item.getAsFile();
+
+                    if (file) {
+
+                        renderImagePreview(file);
+
+                    }
+
                     break;
+
                 }
+
             }
+
         });
-    }
 
-    // ----------------------------------------------------
-    // 3. Проверка чека при клике на «Підтвердити та надіслати»
-    // ----------------------------------------------------
-    const submitBtn = document.getElementById('btn-submit-final-booking');
-
-    if (submitBtn) {
-        // Используем e.stopImmediatePropagation(), чтобы перебить любые другие клики
-        submitBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            e.stopImmediatePropagation(); 
-
-            // Ищем файл либо из инпута, либо из нашей переменной
-            const fileToSend = currentReceiptFile || (fileInput && fileInput.files && fileInput.files[0]);
-
-            // 🛑 СТРОГАЯ ПРОВЕРКА: Если файла нет — РЕЗКО ВЫХОДИМ!
-            if (!fileToSend) {
-                alert('⚠️ Будь ласка, завантажте скріншот або квитанцію про оплату!');
-
-                if (uploadZone) {
-                    uploadZone.style.border = '2px dashed #ef4444';
-                    uploadZone.style.backgroundColor = '#fef2f2';
-                    uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                return; // ⛔ ДАЛЬШЕ КОД НЕ ИДЕТ, В ТЕЛЕГУ НИЧЕГО НЕ ЛЕТИТ!
-            }
-
-            // ✅ ЕСЛИ ЧЕК ЕСТЬ — СОБИРАЕМ FormData И ОТПРАВЛЯЕМ В N8N
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerText = 'Надсилання...';
-
-                const formData = new FormData();
-                
-                // Прикрепляем файл под ключом 'receipt' (или 'file', смотря как настроен webhook)
-                formData.append('receipt', fileToSend, fileToSend.name || 'receipt.jpg');
-
-                // Сюда же добавляешь остальные поля заказа, если есть:
-                // formData.append('phone', document.getElementById('user-phone').value);
-
-                // 🚀 Отправка на твой вебхук n8n
-                const response = await fetch('ТВОЙ_N8N_WEBHOOK_URL_СЮДА', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert('Дякуємо! Ваше замовлення успішно прийнято.');
-                    // Очищаем форму или закрываем окно
-                    location.reload(); 
-                } else {
-                    alert('Помилка при відправці замовлення. Спробуйте ще раз.');
-                }
-            } catch (error) {
-                console.error('Помилка:', error);
-                alert('Не вдалося зʼєднатися з сервером.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Підтвердити та надіслати';
-            }
-        });
     }
 
 });
