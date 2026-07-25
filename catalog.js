@@ -725,7 +725,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("✈️ Чек на месте. Отправляем Аудитору в n8n...", payload);
 
-        fetch("https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52", {
+        fetch("https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52", {
             method: "POST",
             body: formData
         })
