@@ -814,22 +814,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 2. Выбор скриншота (Клик, Drag-and-Drop или Ctrl+V)
+    // 2. Выбор скриншота + Фиксация файла
     // ----------------------------------------------------
+    let currentReceiptFile = null;
+
     const uploadZone = document.getElementById('upload-zone');
     const fileInput = document.getElementById('receipt-file-input');
     const idleState = document.getElementById('upload-idle-state');
     const previewState = document.getElementById('upload-preview-state');
     const previewImg = document.getElementById('receipt-preview-img');
 
+    // Функция отображения превью
     function renderImagePreview(file) {
         if (file && file.type.startsWith('image/')) {
+            currentReceiptFile = file; // 👈 Сохраняем файл в переменную!
+
             const imageUrl = URL.createObjectURL(file);
-            previewImg.src = imageUrl;
-            idleState.style.display = 'none';
-            previewState.style.display = 'block';
-            
-            // Если была красная подсветка ошибки — снимаем её
+            if (previewImg) previewImg.src = imageUrl;
+            if (idleState) idleState.style.display = 'none';
+            if (previewState) previewState.style.display = 'block';
+
             if (uploadZone) {
                 uploadZone.style.border = '';
                 uploadZone.style.backgroundColor = '';
@@ -837,31 +841,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Навешиваем слушатели на выбор / вставку файла
     if (uploadZone && fileInput) {
-        // Клик по дропзоне открывает системный выбор файла
-        uploadZone.addEventListener('click', () => {
-            fileInput.click();
-        });
+        uploadZone.addEventListener('click', () => fileInput.click());
 
-        // Загрузка через системное окно
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
                 renderImagePreview(e.target.files[0]);
             }
         });
 
-        // Возможность просто вставить скриншот через Ctrl+V на странице!
         document.addEventListener('paste', (e) => {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            const items = (e.clipboardData || e.originalEvent.clipboardData)?.items;
+            if (!items) return;
+
             for (let item of items) {
                 if (item.type.indexOf('image') !== -1) {
                     const blob = item.getAsFile();
-
-                    // Передаем файл в наш input
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(blob);
-                    fileInput.files = dataTransfer.files;
-
                     renderImagePreview(blob);
                     break;
                 }
@@ -875,12 +871,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('btn-submit-final-booking');
 
     if (submitBtn) {
-        submitBtn.addEventListener('click', (e) => {
-            // 🛑 ПРОВЕРКА: если файл НЕ прикреплен — блокируем отправку!
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                e.preventDefault();
-                e.stopPropagation();
+        // Используем e.stopImmediatePropagation(), чтобы перебить любые другие клики
+        submitBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopImmediatePropagation(); 
 
+            // Ищем файл либо из инпута, либо из нашей переменной
+            const fileToSend = currentReceiptFile || (fileInput && fileInput.files && fileInput.files[0]);
+
+            // 🛑 СТРОГАЯ ПРОВЕРКА: Если файла нет — РЕЗКО ВЫХОДИМ!
+            if (!fileToSend) {
                 alert('⚠️ Будь ласка, завантажте скріншот або квитанцію про оплату!');
 
                 if (uploadZone) {
@@ -888,8 +888,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     uploadZone.style.backgroundColor = '#fef2f2';
                     uploadZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
+                return; // ⛔ ДАЛЬШЕ КОД НЕ ИДЕТ, В ТЕЛЕГУ НИЧЕГО НЕ ЛЕТИТ!
+            }
 
-                return false; // Отмена ордера!
+            // ✅ ЕСЛИ ЧЕК ЕСТЬ — СОБИРАЕМ FormData И ОТПРАВЛЯЕМ В N8N
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Надсилання...';
+
+                const formData = new FormData();
+                
+                // Прикрепляем файл под ключом 'receipt' (или 'file', смотря как настроен webhook)
+                formData.append('receipt', fileToSend, fileToSend.name || 'receipt.jpg');
+
+                // Сюда же добавляешь остальные поля заказа, если есть:
+                // formData.append('phone', document.getElementById('user-phone').value);
+
+                // 🚀 Отправка на твой вебхук n8n
+                const response = await fetch('ТВОЙ_N8N_WEBHOOK_URL_СЮДА', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Дякуємо! Ваше замовлення успішно прийнято.');
+                    // Очищаем форму или закрываем окно
+                    location.reload(); 
+                } else {
+                    alert('Помилка при відправці замовлення. Спробуйте ще раз.');
+                }
+            } catch (error) {
+                console.error('Помилка:', error);
+                alert('Не вдалося зʼєднатися з сервером.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Підтвердити та надіслати';
             }
         });
     }
