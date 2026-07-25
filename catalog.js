@@ -648,12 +648,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (stepCheckout) stepCheckout.style.display = 'none';
         if (stepPayment) stepPayment.style.display = 'none';
     }
-    
+
     // ==========================================
     // 2. Обработчик клика кнопки «Підтвердити та надіслати»
     // ==========================================
-
-
     document.getElementById("btn-submit-final-booking")?.addEventListener("click", () => {
         const fileInput = document.getElementById("receipt-file-input");
         const uploadZone = document.getElementById("upload-zone");
@@ -669,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 uploadZone.scrollIntoView({ behavior: "smooth", block: "center" });
             }
             
-            return; // ⛔ РАЗВОРОТ! Код ниже НЕ выполнится, ничего не сохранится и не улетит!
+            return; // ⛔ РАЗВОРОТ!
         }
 
         // Если чек на месте — сбрасываем подсветку
@@ -679,8 +677,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --------------------------------------------------
-        // 2. Если чек есть — собираем данные и оформляем
+        // 2. Достаем Telegram ID и собираем данные
         // --------------------------------------------------
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        const telegramId = tgUser?.id ? String(tgUser.id) : "Сайт (Браузер)";
+
         const nameInput = document.getElementById("user-name");
         const phoneInput = document.getElementById("user-phone");
         const hiddenDateTimeInput = document.getElementById("booking-datetime");
@@ -690,7 +691,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
 
         const payload = {
-            customer: { name, phone },
+            customer: { 
+                name, 
+                phone,
+                telegramId // 👈 ТЕПЕРЬ TELEGRAM ID ПЕРЕДАЕТСЯ В N8N!
+            },
             booking: {
                 items: cart.map(item => ({
                     productId: item.productId,
@@ -718,7 +723,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("payload", JSON.stringify(payload));
         formData.append("receipt_file", fileInput.files[0]);
 
-        console.log("✈️ Чек на месте. Отправляем Аудитору в n8n...");
+        console.log("✈️ Чек на месте. Отправляем Аудитору в n8n...", payload);
 
         fetch("https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52", {
             method: "POST",
