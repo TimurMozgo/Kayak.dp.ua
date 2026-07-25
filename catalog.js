@@ -698,67 +698,78 @@ document.addEventListener("DOMContentLoaded", () => {
             uploadZone.style.backgroundColor = "";
         }
 
-        // --------------------------------------------------
-        // Получаем Telegram пользователя
-        // --------------------------------------------------
+       // --------------------------------------------------
+// Получаем данные Telegram (ВРЕМЕННАЯ ОТЛАДКА)
+// --------------------------------------------------
 
-        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
+const webApp = window.Telegram?.WebApp || null;
+const tgUser = webApp?.initDataUnsafe?.user || null;
 
-        console.log("Telegram WebApp:", window.Telegram?.WebApp);
-        console.log("Telegram User:", tgUser);
-        
+console.log("Telegram WebApp:", webApp);
+console.log("Telegram initData:", webApp?.initData);
+console.log("Telegram initDataUnsafe:", webApp?.initDataUnsafe);
+console.log("Telegram User:", tgUser);
 
-        const telegramId = tgUser?.id
-            ? String(tgUser.id)
-            : "Сайт (Браузер)";
+const telegramId = tgUser?.id
+    ? String(tgUser.id)
+    : "Сайт (Браузер)";
 
-        console.log("Telegram ID:", telegramId);
+console.log("Telegram ID:", telegramId);
 
-        // --------------------------------------------------
-        // Собираем данные
-        // --------------------------------------------------
+// --------------------------------------------------
+// Собираем данные
+// --------------------------------------------------
 
-        const name =
-            document.getElementById("user-name")?.value.trim() || "";
+const name =
+    document.getElementById("user-name")?.value.trim() || "";
 
-        const phone =
-            document.getElementById("user-phone")?.value.trim() || "";
+const phone =
+    document.getElementById("user-phone")?.value.trim() || "";
 
-        const scheduledAt =
-            document.getElementById("booking-datetime")?.value || "";
+const scheduledAt =
+    document.getElementById("booking-datetime")?.value || "";
 
-        const totalCartPrice =
-            cart.reduce((sum, item) => sum + item.totalPrice, 0);
+const totalCartPrice =
+    cart.reduce((sum, item) => sum + item.totalPrice, 0);
 
-        const payload = {
+const payload = {
 
-            customer: {
-                name,
-                phone,
-                telegramId
-            },
+    // 👇 Временная отладка. Потом удалим.
+    debug: {
+        telegramExists: !!window.Telegram,
+        webAppExists: !!webApp,
+        initData: webApp?.initData || null,
+        initDataUnsafe: webApp?.initDataUnsafe || null,
+        user: tgUser
+    },
 
-            booking: {
+    customer: {
+        name,
+        phone,
+        telegramId
+    },
 
-                items: cart.map(item => ({
-                    productId: item.productId,
-                    productName: item.productName,
-                    duration: item.durationText,
-                    quantity: item.quantity,
-                    totalPrice: item.totalPrice
-                })),
+    booking: {
 
-                totalPrice: totalCartPrice,
-                scheduledAt
+        items: cart.map(item => ({
+            productId: item.productId,
+            productName: item.productName,
+            duration: item.durationText,
+            quantity: item.quantity,
+            totalPrice: item.totalPrice
+        })),
 
-            },
+        totalPrice: totalCartPrice,
+        scheduledAt
 
-            meta: {
-                source: "Website Catalog Verified Confirmation",
-                createdAt: new Date().toISOString()
-            }
+    },
 
-        };
+    meta: {
+        source: "Website Catalog Verified Confirmation",
+        createdAt: new Date().toISOString()
+    }
+
+};
 
         if (typeof saveOrderToHistory === "function") {
             saveOrderToHistory(payload.booking);
