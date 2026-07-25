@@ -706,10 +706,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("Telegram WebApp:", window.Telegram?.WebApp);
         console.log("Telegram User:", tgUser);
+        
 
         const telegramId = tgUser?.id
             ? String(tgUser.id)
             : "Сайт (Браузер)";
+
+        console.log("Telegram ID:", telegramId);
 
         // --------------------------------------------------
         // Собираем данные
