@@ -698,78 +698,67 @@ document.addEventListener("DOMContentLoaded", () => {
             uploadZone.style.backgroundColor = "";
         }
 
-       // --------------------------------------------------
-// Получаем данные Telegram (ВРЕМЕННАЯ ОТЛАДКА)
-// --------------------------------------------------
+        // --------------------------------------------------
+        // Получаем Telegram пользователя
+        // --------------------------------------------------
 
-const webApp = window.Telegram?.WebApp || null;
-const tgUser = webApp?.initDataUnsafe?.user || null;
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
 
-console.log("Telegram WebApp:", webApp);
-console.log("Telegram initData:", webApp?.initData);
-console.log("Telegram initDataUnsafe:", webApp?.initDataUnsafe);
-console.log("Telegram User:", tgUser);
+        console.log("Telegram WebApp:", window.Telegram?.WebApp);
+        console.log("Telegram User:", tgUser);
+        
 
-const telegramId = tgUser?.id
-    ? String(tgUser.id)
-    : "Сайт (Браузер)";
+        const telegramId = tgUser?.id
+            ? String(tgUser.id)
+            : "Сайт (Браузер)";
 
-console.log("Telegram ID:", telegramId);
+        console.log("Telegram ID:", telegramId);
 
-// --------------------------------------------------
-// Собираем данные
-// --------------------------------------------------
+        // --------------------------------------------------
+        // Собираем данные
+        // --------------------------------------------------
 
-const name =
-    document.getElementById("user-name")?.value.trim() || "";
+        const name =
+            document.getElementById("user-name")?.value.trim() || "";
 
-const phone =
-    document.getElementById("user-phone")?.value.trim() || "";
+        const phone =
+            document.getElementById("user-phone")?.value.trim() || "";
 
-const scheduledAt =
-    document.getElementById("booking-datetime")?.value || "";
+        const scheduledAt =
+            document.getElementById("booking-datetime")?.value || "";
 
-const totalCartPrice =
-    cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        const totalCartPrice =
+            cart.reduce((sum, item) => sum + item.totalPrice, 0);
 
-const payload = {
+        const payload = {
 
-    // 👇 Временная отладка. Потом удалим.
-    debug: {
-        telegramExists: !!window.Telegram,
-        webAppExists: !!webApp,
-        initData: webApp?.initData || null,
-        initDataUnsafe: webApp?.initDataUnsafe || null,
-        user: tgUser
-    },
+            customer: {
+                name,
+                phone,
+                telegramId
+            },
 
-    customer: {
-        name,
-        phone,
-        telegramId
-    },
+            booking: {
 
-    booking: {
+                items: cart.map(item => ({
+                    productId: item.productId,
+                    productName: item.productName,
+                    duration: item.durationText,
+                    quantity: item.quantity,
+                    totalPrice: item.totalPrice
+                })),
 
-        items: cart.map(item => ({
-            productId: item.productId,
-            productName: item.productName,
-            duration: item.durationText,
-            quantity: item.quantity,
-            totalPrice: item.totalPrice
-        })),
+                totalPrice: totalCartPrice,
+                scheduledAt
 
-        totalPrice: totalCartPrice,
-        scheduledAt
+            },
 
-    },
+            meta: {
+                source: "Website Catalog Verified Confirmation",
+                createdAt: new Date().toISOString()
+            }
 
-    meta: {
-        source: "Website Catalog Verified Confirmation",
-        createdAt: new Date().toISOString()
-    }
-
-};
+        };
 
         if (typeof saveOrderToHistory === "function") {
             saveOrderToHistory(payload.booking);
@@ -784,7 +773,7 @@ const payload = {
         try {
 
             const response = await fetch(
-                "https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52",
+                "https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52",
                 {
                     method: "POST",
                     body: formData
