@@ -757,17 +757,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 🎯 СОХРАНЯЕМ ПОЛНЫЙ ЗАКАЗ В ИСТОРИЮ (Только после успешной отправки!)
             if (typeof saveOrderToHistory === "function") {
-                const orderToSave = {
-                    id: "ORD-" + Date.now().toString().slice(-5),
-                    customer: payload.customer,
+                saveOrderToHistory({
                     items: payload.booking.items,
                     totalPrice: payload.booking.totalPrice,
-                    scheduledAt: payload.booking.scheduledAt,
-                    createdAt: payload.meta.createdAt,
-                    status: "В обробці"
-                };
-                
-                saveOrderToHistory(orderToSave);
+                    scheduledAt: payload.booking.scheduledAt
+                });
             }
 
             // Очищаем корзину
@@ -952,15 +946,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // СОХРАНЕНИЕ И ОТОБРАЖЕНИЕ ИСТОРИИ ЗАКАЗОВ
 // ==========================================
 
-// 1. Функция записи заказа в localStorage
-
 function saveOrderToHistory(bookingData) {
     if (!bookingData || !bookingData.items || bookingData.items.length === 0) return;
 
-    // 1. Считываем заказы из ключа timurtour_orders
+    // 1. Считываем заказы из ключа kayakdpua_orders
     let existingOrders = [];
     try {
-        existingOrders = JSON.parse(localStorage.getItem('timurtour_orders')) || [];
+        existingOrders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
     } catch (e) {
         existingOrders = [];
     }
@@ -968,12 +960,12 @@ function saveOrderToHistory(bookingData) {
     const mainItem = bookingData.items[0];
     const totalQuantity = bookingData.items.reduce((sum, item) => sum + item.quantity, 0);
 
-    // Разделяем текущую дату и время
+    // Разделяем и форматируем дату/время
     const now = new Date();
     const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
 
-    // 2. Собираем объект ровно под требования script.js
+    // 2. Собираем объект строго под структуру kayakdpua
     const newOrder = {
         id: Math.floor(100000 + Math.random() * 900000).toString(),
         productId: mainItem.productId || 'kayak-1',
@@ -981,23 +973,26 @@ function saveOrderToHistory(bookingData) {
             ? `${mainItem.productName} (+ ще ${bookingData.items.length - 1})` 
             : mainItem.productName,
         quantity: totalQuantity,
-        duration: mainItem.duration || '1 год',
-        date: dateStr,
-        time: timeStr,
+        duration: mainItem.duration || '1 година',
+        scheduledAt: bookingData.scheduledAt 
+            ? bookingData.scheduledAt.replace('T', ' o ') 
+            : `${dateStr} o ${timeStr}`,
         totalPrice: bookingData.totalPrice,
-        status: 'active', // Чтобы сразу загорался плашка "🟢 Підтверджено"
+        status: 'Підтверджено',
         img: mainItem.img || './img/LiteRowing_9.5.webp'
     };
 
-    // 3. Записываем в localStorage
+    // 3. Сохраняем В НАЧАЛО списка в kayakdpua_orders
     existingOrders.unshift(newOrder);
-    localStorage.setItem('timurtour_orders', JSON.stringify(existingOrders));
+    localStorage.setItem('kayakdpua_orders', JSON.stringify(existingOrders));
 
-    console.log("📦 Заказ сохранен в timurtour_orders:", newOrder);
+    console.log("📦 Замовлення збережено в kayakdpua_orders:", newOrder);
+
+    // 4. Мгновенно перерисовываем историю на экране
+    if (typeof renderOrdersHistory === 'function') {
+        renderOrdersHistory();
+    }
 }
-
-
-// 2. Функция отрисовки карточек в #orders-container
 
 function renderOrdersHistory() {
     const container = document.getElementById('orders-container');
@@ -1005,12 +1000,13 @@ function renderOrdersHistory() {
 
     let orders = [];
     try {
-        orders = JSON.parse(localStorage.getItem('user_orders')) || [];
+        // Читаем строго из ключа kayakdpua_orders
+        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
     } catch (e) {
         orders = [];
     }
 
-    // Если нет заказов — выводим заглушку
+    // Заглушка, если нет активных заказов
     if (orders.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: #94a3b8;">
@@ -1021,32 +1017,45 @@ function renderOrdersHistory() {
         return;
     }
 
-    // Рендерим заказы из памяти
+    // Рендерим карточки под твои макеты
     container.innerHTML = orders.map(order => `
-        <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                <div>
-                    <strong style="font-size: 0.95rem; color: #0f172a;">${order.id}</strong>
-                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">${order.date}</div>
-                </div>
-                <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;">
-                    ${order.status}
+        <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            
+            <!-- Шапка карточки -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">№ ${order.id}</span>
+                <span style="background: #dcfce7; color: #166534; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 99px; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 7px; height: 7px; background: #22c55e; border-radius: 50%;"></span>
+                    ${order.status || 'Підтверджено'}
                 </span>
             </div>
-            
-            <div style="margin-bottom: 12px;">
-                ${order.items.map(item => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #334155; margin-bottom: 6px;">
-                        <span>${item.productName} ${item.duration ? `(${item.duration})` : ''} × ${item.quantity}</span>
-                        <strong style="color: #0f172a;">${item.totalPrice} грн</strong>
+
+            <!-- Иконка / Картинка и свойства -->
+            <div style="display: flex; gap: 14px; margin-bottom: 14px;">
+                <img src="${order.img}" style="width: 75px; height: 75px; border-radius: 12px; object-fit: cover; flex-shrink: 0;" alt="Product">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-bottom: 6px;">${order.productName}</div>
+                    <div style="font-size: 0.82rem; color: #64748b; margin-bottom: 4px; display: flex; align-items: center; gap: 10px;">
+                        <span>🚣 ${order.quantity} шт.</span>
+                        <span>⏱️ ${order.duration}</span>
                     </div>
-                `).join('')}
+                    <div style="font-size: 0.82rem; color: #0f172a; font-weight: 600;">
+                        📅 ${order.scheduledAt}
+                    </div>
+                </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 10px; font-weight: 700;">
-                <span style="font-size: 0.85rem; color: #64748b;">Разом:</span>
-                <span style="font-size: 1.05rem; color: #10b981;">${order.totalPrice} грн</span>
+            <!-- Футер карточки -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">До сплати:</div>
+                    <div style="font-weight: 800; font-size: 1.1rem; color: #0f172a;">${order.totalPrice} грн</div>
+                </div>
+                <button type="button" style="background: #f1f5f9; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; color: #0f172a; cursor: pointer;">
+                    Маршрут / Локація
+                </button>
             </div>
+
         </div>
     `).join('');
 }
