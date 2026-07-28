@@ -776,6 +776,15 @@ body, html {
     gap: 16px;
 }
 
+.location-link-footer {
+    color: #64748b;
+    text-decoration: none;
+}
+
+.location-link-footer:hover {
+    color: #fff;
+}
+
 /* ================= ЛОГОТИП В ФУТЕРЕ ================= */
 
 
