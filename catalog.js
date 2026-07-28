@@ -678,7 +678,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Проверяем наличие чека
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-
             alert("⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!");
 
             if (uploadZone) {
@@ -689,7 +688,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     block: "center"
                 });
             }
-
             return;
         }
 
@@ -701,45 +699,24 @@ document.addEventListener("DOMContentLoaded", () => {
         // --------------------------------------------------
         // Получаем Telegram пользователя
         // --------------------------------------------------
-
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
-
-        console.log("Telegram WebApp:", window.Telegram?.WebApp);
-        console.log("Telegram User:", tgUser);
-        
-
-        const telegramId = tgUser?.id
-            ? String(tgUser.id)
-            : "Сайт (Браузер)";
-
-            console.log("Telegram ID:", telegramId);
+        const telegramId = tgUser?.id ? String(tgUser.id) : "Сайт (Браузер)";
 
         // --------------------------------------------------
         // Собираем данные
         // --------------------------------------------------
-
-        const name =
-            document.getElementById("user-name")?.value.trim() || "";
-
-        const phone =
-            document.getElementById("user-phone")?.value.trim() || "";
-
-        const scheduledAt =
-            document.getElementById("booking-datetime")?.value || "";
-
-        const totalCartPrice =
-            cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        const name = document.getElementById("user-name")?.value.trim() || "";
+        const phone = document.getElementById("user-phone")?.value.trim() || "";
+        const scheduledAt = document.getElementById("booking-datetime")?.value || "";
+        const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
 
         const payload = {
-
             customer: {
                 name,
                 phone,
                 telegramId
             },
-
             booking: {
-
                 items: cart.map(item => ({
                     productId: item.productId,
                     productName: item.productName,
@@ -747,28 +724,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     quantity: item.quantity,
                     totalPrice: item.totalPrice
                 })),
-
                 totalPrice: totalCartPrice,
                 scheduledAt
-
             },
-
             meta: {
                 source: "Website Catalog Verified Confirmation",
                 createdAt: new Date().toISOString()
             }
-
         };
-
-        if (typeof saveOrderToHistory === "function") {
-            saveOrderToHistory({
-                id: "ORD-" + Date.now().toString().slice(-6), // Генерируем ID заказа
-                customer: payload.customer,
-                booking: payload.booking,
-                createdAt: payload.meta.createdAt,
-                status: "В обробці"
-            });
-        }
 
         const formData = new FormData();
         formData.append("payload", JSON.stringify(payload));
@@ -777,7 +740,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("📦 Payload:", payload);
 
         try {
-
+            // ⚠️ Не забудь сменить /webhook-test/ на боевой /webhook/ в n8n когда включишь Workflow!
             const response = await fetch(
                 "https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52",
                 {
@@ -787,13 +750,27 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             if (!response.ok) {
-                throw new Error("Ошибка отправки");
+                throw new Error(`Помилка сервера: ${response.status}`);
             }
 
             console.log("✅ Успешно отправлено в n8n");
 
-            // Очищаем корзину ТОЛЬКО после успешной отправки
+            // 🎯 СОХРАНЯЕМ ПОЛНЫЙ ЗАКАЗ В ИСТОРИЮ (Только после успешной отправки!)
+            if (typeof saveOrderToHistory === "function") {
+                const orderToSave = {
+                    id: "ORD-" + Date.now().toString().slice(-5),
+                    customer: payload.customer,
+                    items: payload.booking.items,
+                    totalPrice: payload.booking.totalPrice,
+                    scheduledAt: payload.booking.scheduledAt,
+                    createdAt: payload.meta.createdAt,
+                    status: "В обробці"
+                };
+                
+                saveOrderToHistory(orderToSave);
+            }
 
+            // Очищаем корзину
             cart = [];
             selectedDate = null;
             selectedTime = null;
@@ -811,49 +788,30 @@ document.addEventListener("DOMContentLoaded", () => {
             window.closeBookingDrawer?.();
 
             const successModal = document.getElementById("success-modal");
-
             if (successModal) {
-
                 successModal.style.display = "flex";
-
                 setTimeout(() => {
-
                     successModal.firstElementChild?.style.setProperty(
                         "transform",
                         "scale(1)"
                     );
-
                 }, 50);
-
             }
 
             const closeSuccessBtn = document.getElementById("close-success-btn");
-
             if (closeSuccessBtn) {
-
                 closeSuccessBtn.addEventListener("click", () => {
-
                     const successModal = document.getElementById("success-modal");
-
-                    if (!successModal) return;
-
-                    successModal.style.display = "none";
-
+                    if (successModal) successModal.style.display = "none";
                 });
-
             }
 
         } catch (error) {
-
-            console.error(error);
-
+            console.error("Помилка відправки:", error);
             alert("❌ Не вдалося відправити бронювання. Спробуйте ще раз.");
-
         }
-
     });
 
-    
 });
 
 document.addEventListener('DOMContentLoaded', () => {
