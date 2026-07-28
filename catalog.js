@@ -718,12 +718,14 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             booking: {
                 items: cart.map(item => ({
-                    productId: item.productId,
-                    productName: item.productName,
-                    duration: item.durationText,
-                    quantity: item.quantity,
-                    totalPrice: item.totalPrice
-                })),
+                productId: item.productId,
+                productName: item.productName,
+                duration: item.durationText,
+                quantity: item.quantity,
+                totalPrice: item.totalPrice,
+                // 👇 Пробрасываем картинку байдарки из объекта корзины
+                img: item.img || item.image || item.imgSrc || item.photo || item.icon
+            })),
                 totalPrice: totalCartPrice,
                 scheduledAt
             },
@@ -959,9 +961,12 @@ function saveOrderToHistory(bookingData) {
     const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
 
+    // Ищем путь к картинке среди всех возможных ключей объекта
+    const detectedImg = mainItem.img || mainItem.image || mainItem.imgSrc || mainItem.photo || mainItem.icon;
+
     const newOrder = {
         id: Math.floor(100000 + Math.random() * 900000).toString(),
-        productId: mainItem.productId, // 👈 Сохраняем только ID! По нему подтянем фото
+        productId: mainItem.productId || 'kayak-1',
         productName: bookingData.items.length > 1 
             ? `${mainItem.productName} (+ ще ${bookingData.items.length - 1})` 
             : mainItem.productName,
@@ -971,7 +976,8 @@ function saveOrderToHistory(bookingData) {
             ? bookingData.scheduledAt.replace('T', ' o ') 
             : `${dateStr} o ${timeStr}`,
         totalPrice: bookingData.totalPrice,
-        status: 'Очікує підтвердження' // Желтая плашка
+        status: 'Очікує підтвердження',
+        img: detectedImg // Сохраняем реальный URL картинки
     };
 
     existingOrders.unshift(newOrder);
@@ -1004,27 +1010,47 @@ function renderOrdersHistory() {
     }
 
     container.innerHTML = orders.map(order => {
-        // 🎯 1. Автоматический поиск родной картинки товара из базы сайта:
-        let productImg = './img/LiteRowing_9.5.webp'; // Резервный фоллбек
-        
-        // Проверяем, есть ли у тебя глобальный массив товаров (выбери свой или скрипт сам найдет)
-        const allProducts = window.PRODUCTS || window.catalog || window.productsData || [];
-        const foundProduct = allProducts.find(p => p.id === order.productId || p.productId === order.productId);
+        // 🎯 1. Улучшенный автоматический поиск картинки товара из каталога
+        let productImg = order.img || order.image || ''; // В первую очередь берем из самого заказа
 
-        if (foundProduct && (foundProduct.img || foundProduct.image)) {
-            productImg = foundProduct.img || foundProduct.image;
+        // Проверяем все возможные глобальные массивы каталога на сайте
+        const allProducts = window.PRODUCTS || window.catalog || window.productsData || window.CATALOG || [];
+
+        if (allProducts.length > 0) {
+            // Ищем сначала по ID, а если не нашли — по названию товара (productName)
+            const foundProduct = allProducts.find(p => 
+                (p.id && String(p.id) === String(order.productId)) ||
+                (p.productId && String(p.productId) === String(order.productId)) ||
+                (p.title && p.title.trim().toLowerCase() === order.productName?.trim().toLowerCase()) ||
+                (p.name && p.name.trim().toLowerCase() === order.productName?.trim().toLowerCase())
+            );
+
+            if (foundProduct) {
+                // Извлекаем путь к картинке из любого возможного свойства
+                productImg = foundProduct.img || foundProduct.image || foundProduct.imgSrc || foundProduct.photo || foundProduct.icon || productImg;
+            }
         }
 
-        // 🎯 2. Цвета плашки под "Очікує підтвердження"
-        const currentStatus = order.status || 'Очікує підтвердження';
-        let statusBg = '#fef3c7';    // Светло-желтый
-        let statusColor = '#b45309'; // Тёмно-оранжевый
+        // Резервная заглушка, если вообще ничего не нашлось
+        if (!productImg) {
+            productImg = './img/LiteRowing_9.5.webp';
+        }
+
+        // 🎯 2. Цвета и стили плашки статуса
+        const rawStatus = (order.status || '').trim();
+        
+        // По умолчанию ставим "Очікує підтвердження" (оранжевый)
+        let currentStatus = 'Очікує підтвердження';
+        let statusBg = '#fef3c7';    // Светло-желтый/оранжевый
+        let statusColor = '#b45309'; // Темно-оранжевый
         let dotColor = '#f59e0b';    // Оранжевая точка
 
-        if (currentStatus === 'Підтверджено') {
-            statusBg = '#dcfce7';    // Зеленый
-            statusColor = '#166534';
-            dotColor = '#22c55e';
+        // Зеленый цвет даем ТОЛЬКО если статус явно подтвержден
+        if (rawStatus === 'Підтверджено' || rawStatus === 'Подтверждено' || rawStatus === 'Confirmed') {
+            currentStatus = 'Підтверджено';
+            statusBg = '#dcfce7';    // Светло-зеленый
+            statusColor = '#166534'; // Темно-зеленый
+            dotColor = '#22c55e';    // Зеленая точка
         }
 
         return `
