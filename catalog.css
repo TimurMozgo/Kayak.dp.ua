@@ -1541,6 +1541,36 @@ body, html {
     font-weight: 700;
 }
 
+/* КОРЗИНА С СЧЕТЧИКОМ */
+
+.cart_badge {
+    position: absolute;
+    
+    top: -3px;         
+    right: 6px;          
+    
+    background-color: #0038a8; 
+    color: #ffffff;
+    
+    font-size: 10px;      
+    font-weight: 700;
+    line-height: 1;
+    
+    min-width: 16px;      
+    height: 16px;
+    padding: 0 3px;
+    
+    border-radius: 99px;
+    border: 2px solid #ffffff; 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+}
+
 /* ==========================================
    2. ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК (ТАБОВ)
    ========================================== */

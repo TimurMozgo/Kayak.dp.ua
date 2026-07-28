@@ -903,9 +903,6 @@
 
             <div id="drawer-step-payment" class="drawer-step" style="display: none;">
                 
-                <button type="button" id="btn-back-to-confirm" style="background: none; border: none; color: #10b981; font-weight: 600; cursor: pointer; margin-bottom: 15px; padding: 0; display: flex; align-items: center; gap: 6px;">
-                    &larr; Назад до перевірки
-                </button>
 
                 <div class="payment-wrapper">
                     <!-- 1. Реквизиты ФОП (Вместо старого блока карты) -->
@@ -916,25 +913,36 @@
                             ФОП «Жук Б.Л.»
                         </div>
 
-                        <!-- IBAN с кнопкой копирования по клику -->
+                        <!-- IBAN -->
                         <div style="font-size: 0.8rem; color: #475569; margin-bottom: 4px;">IBAN (рахунок ФОП):</div>
-                        <div id="copy-iban-btn" title="Натисніть, щоб скопіювати" style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;">
+                        <div class="copy-card" data-copy-target="iban-text" title="Натисніть, щоб скопіювати" style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;">
                             <span id="iban-text" style="font-family: monospace; font-weight: 700; font-size: 0.82rem; color: #0f172a; word-break: break-all;">
                                 UA023220010000026009310108944
                             </span>
-                            <i id="copy-iban-icon" class="fa-regular fa-copy" style="color: #0284c7; font-size: 1.1rem; margin-left: 8px;"></i>
+                            <i class="copy-icon fa-regular fa-copy" style="color: #0284c7; font-size: 1.1rem; margin-left: 8px;"></i>
                         </div>
 
                         <!-- ЄДРПОУ и Призначение -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;">
-                                <div style="font-size: 0.75rem; color: #64748b;">ЄДРПОУ:</div>
-                                <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">3516012074</div>
+                            
+                            <!-- ЄДРПОУ -->
+                            <div class="copy-card" data-copy-target="edrpou-val" title="Натисніть, щоб скопіювати" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                                <div>
+                                    <div style="font-size: 0.75rem; color: #64748b;">ЄДРПОУ:</div>
+                                    <div id="edrpou-val" style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">3516012074</div>
+                                </div>
+                                <i class="copy-icon fa-regular fa-copy" style="color: #64748b; font-size: 0.95rem; margin-left: 4px;"></i>
                             </div>
-                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;">
-                                <div style="font-size: 0.75rem; color: #64748b;">Призначення:</div>
-                                <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">оплата послуги</div>
+
+                            <!-- Призначение -->
+                            <div class="copy-card" data-copy-target="purpose-val" title="Натисніть, щоб скопіювати" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                                <div>
+                                    <div style="font-size: 0.75rem; color: #64748b;">Призначення:</div>
+                                    <div id="purpose-val" style="font-weight: 700; font-size: 0.85rem; color: #0f172a;">оплата послуги</div>
+                                </div>
+                                <i class="copy-icon fa-regular fa-copy" style="color: #64748b; font-size: 0.95rem; margin-left: 4px;"></i>
                             </div>
+
                         </div>
                     </div>
 

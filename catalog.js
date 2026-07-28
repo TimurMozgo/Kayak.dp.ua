@@ -712,7 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? String(tgUser.id)
             : "Сайт (Браузер)";
 
-        console.log("Telegram ID:", telegramId);
+            console.log("Telegram ID:", telegramId);
 
         // --------------------------------------------------
         // Собираем данные
@@ -761,7 +761,13 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         if (typeof saveOrderToHistory === "function") {
-            saveOrderToHistory(payload.booking);
+            saveOrderToHistory({
+                id: "ORD-" + Date.now().toString().slice(-6), // Генерируем ID заказа
+                customer: payload.customer,
+                booking: payload.booking,
+                createdAt: payload.meta.createdAt,
+                status: "В обробці"
+            });
         }
 
         const formData = new FormData();
@@ -846,49 +852,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
+
+    
 });
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ----------------------------------------------------
-    // 1. Копирование карты / IBAN
-    // ----------------------------------------------------
-    const copyIbanBtn = document.getElementById('copy-iban-btn');
+    // ==========================================
+    // Универсальное копирование по клику на карточку
+    // ==========================================
+    document.querySelectorAll('.copy-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const targetId = card.getAttribute('data-copy-target');
+            const textElem = document.getElementById(targetId);
+            const iconElem = card.querySelector('.copy-icon');
 
-    if (copyIbanBtn) {
+            if (!textElem) return;
 
-        copyIbanBtn.addEventListener('click', () => {
+            // Для IBAN и ЄДРПОУ вычищаем пробелы, обычный текст оставляем как есть
+            let cleanText = textElem.innerText.trim();
+            if (targetId === 'iban-text' || targetId === 'edrpou-val') {
+                cleanText = cleanText.replace(/\s+/g, '');
+            }
 
-            const ibanTextElem = document.getElementById('iban-text');
-            const copyIcon = document.getElementById('copy-iban-icon');
+            navigator.clipboard.writeText(cleanText).then(() => {
+                if (!iconElem) return;
 
-            if (!ibanTextElem) return;
+                // Сохраняем исходное состояние иконки
+                const originalClass = iconElem.className;
+                const originalColor = iconElem.style.color;
 
-            const cleanIban = ibanTextElem.innerText.replace(/\s+/g, '');
+                // Включаем зелёную галочку
+                iconElem.className = 'copy-icon fa-solid fa-check';
+                iconElem.style.color = '#10b981';
 
-            navigator.clipboard.writeText(cleanIban).then(() => {
-
-                if (!copyIcon) return;
-
-                copyIcon.className = 'fa-solid fa-check';
-                copyIcon.style.color = '#10b981';
-
+                // Через 1.8 секунды возвращаем иконку назад
                 setTimeout(() => {
-
-                    copyIcon.className = 'fa-regular fa-copy';
-                    copyIcon.style.color = '#0284c7';
-
-                }, 2000);
+                    iconElem.className = originalClass;
+                    iconElem.style.color = originalColor;
+                }, 1800);
 
             }).catch(err => {
-
-                console.error('Ошибка копирования:', err);
-
+                console.error('Помилка копіювання:', err);
             });
-
         });
-
-    }
+    });
 
     // ----------------------------------------------------
     // 2. Работа со скриншотом оплаты
