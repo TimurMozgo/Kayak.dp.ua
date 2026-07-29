@@ -73,6 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Telegram НЕ найден ❌");
 
     }
+
+
+    // УПРАВЛЕНИЯ СТАТУСОМ 
+    if (typeof syncOrdersWithServer === 'function') {
+        syncOrdersWithServer();
+    }
+
     // ----------------- УПРАВЛЕНИЕ ШТОРКОЙ (DRAWER) И ШАГАМИ ----------------
     function showCartStep() {
         if (stepCart) stepCart.style.display = "block";
@@ -697,52 +704,61 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --------------------------------------------------
-        // Получаем Telegram пользователя
+        // Данные клиента и визита
         // --------------------------------------------------
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
         const telegramId = tgUser?.id ? String(tgUser.id) : "Сайт (Браузер)";
 
-        // --------------------------------------------------
-        // Собираем данные
-        // --------------------------------------------------
-        const name = document.getElementById("user-name")?.value.trim() || "";
-        const phone = document.getElementById("user-phone")?.value.trim() || "";
+        const name = document.getElementById("user-name")?.value.trim() || "Не вказано";
+        const phone = document.getElementById("user-phone")?.value.trim() || "Не вказано";
         const scheduledAt = document.getElementById("booking-datetime")?.value || "";
-        const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        const totalCartPrice = cart.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
+        // 🎯 1. Генерируем ЕДИНЫЙ 6-значный ID заказа для всего процесса
+        const generatedOrderId = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // 🎯 2. Формируем единый payload (исправлены переменные name и phone)
         const payload = {
+            id: generatedOrderId, // Прокидываем на верхний уровень
             customer: {
-                name,
-                phone,
-                telegramId
+                name: name,
+                phone: phone,
+                telegramId: telegramId
             },
             booking: {
+                id: generatedOrderId, // Дублируем в booking
                 items: cart.map(item => ({
-                productId: item.productId,
-                productName: item.productName,
-                duration: item.durationText,
-                quantity: item.quantity,
-                totalPrice: item.totalPrice,
-                // 👇 Пробрасываем картинку байдарки из объекта корзины
-                img: item.img || item.image || item.imgSrc || item.photo || item.icon
-            })),
+                    productId: item.productId || item.id,
+                    productName: item.productName || item.title || item.name,
+                    duration: item.durationText || item.duration || '1 година',
+                    quantity: item.quantity || 1,
+                    totalPrice: item.totalPrice,
+                    // Прокидываем картинку со всеми возможными ключами
+                    img: item.img || item.image || item.imgSrc || item.photo || ''
+                })),
                 totalPrice: totalCartPrice,
-                scheduledAt
+                scheduledAt: scheduledAt
             },
             meta: {
-                source: "Website Catalog Verified Confirmation",
+                source: "Website Catalog",
                 createdAt: new Date().toISOString()
             }
         };
 
+        // 🎯 3. Сохраняем в локальную историю ровно ОДИН раз (до очистки корзины)
+        if (typeof saveOrderToHistory === "function") {
+            saveOrderToHistory(payload.booking);
+        }
+
+        // 🎯 4. Упаковываем данные в FormData для отправки
         const formData = new FormData();
         formData.append("payload", JSON.stringify(payload));
         formData.append("receipt_file", fileInput.files[0]);
 
-        console.log("📦 Payload:", payload);
+        console.log("📦 Payload перед отправкой:", payload);
 
         try {
-            // ⚠️ Не забудь сменить /webhook-test/ на боевой /webhook/ в n8n когда включишь Workflow!
+            // Боевой/тестовый вебхук n8n
             const response = await fetch(
                 "https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52",
                 {
@@ -755,18 +771,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(`Помилка сервера: ${response.status}`);
             }
 
-            console.log("✅ Успешно отправлено в n8n");
+            console.log(`✅ Успешно отправлено в n8n (Заказ №${generatedOrderId})`);
 
-            // 🎯 СОХРАНЯЕМ ПОЛНЫЙ ЗАКАЗ В ИСТОРИЮ (Только после успешной отправки!)
-            if (typeof saveOrderToHistory === "function") {
-                saveOrderToHistory({
-                    items: payload.booking.items,
-                    totalPrice: payload.booking.totalPrice,
-                    scheduledAt: payload.booking.scheduledAt
-                });
-            }
-
-            // Очищаем корзину
+            // 🎯 5. Очищаем корзину и сбрасываем форму ПОСЛЕ успешной отправки
             cart = [];
             selectedDate = null;
             selectedTime = null;
@@ -783,6 +790,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             window.closeBookingDrawer?.();
 
+            // Показываем модалку успеха
             const successModal = document.getElementById("success-modal");
             if (successModal) {
                 successModal.style.display = "flex";
@@ -944,47 +952,110 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+// 1. Улучшенная функция сохранения заказа
 function saveOrderToHistory(bookingData) {
-    if (!bookingData || !bookingData.items || bookingData.items.length === 0) return;
-
-    let existingOrders = [];
+    let orders = [];
     try {
-        existingOrders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
+        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
     } catch (e) {
-        existingOrders = [];
+        orders = [];
     }
 
-    const mainItem = bookingData.items[0];
-    const totalQuantity = bookingData.items.reduce((sum, item) => sum + item.quantity, 0);
+    // 🎯 Берем ВСЕ товары из корзины (cart) или из bookingData.items
+    const rawItems = (bookingData.items && bookingData.items.length > 0) 
+        ? bookingData.items 
+        : (typeof cart !== 'undefined' ? cart : []);
 
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
-
-    // Ищем путь к картинке среди всех возможных ключей объекта
-    const detectedImg = mainItem.img || mainItem.image || mainItem.imgSrc || mainItem.photo || mainItem.icon;
+    const items = rawItems.map(item => ({
+        productId: item.productId || item.id,
+        productName: item.productName || item.title || item.name || 'Товар',
+        duration: item.durationText || item.duration || '1 година',
+        quantity: item.quantity || 1,
+        totalPrice: item.totalPrice || 0,
+        img: item.img || item.image || item.imgSrc || item.photo || ''
+    }));
 
     const newOrder = {
-        id: Math.floor(100000 + Math.random() * 900000).toString(),
-        productId: mainItem.productId || 'kayak-1',
-        productName: bookingData.items.length > 1 
-            ? `${mainItem.productName} (+ ще ${bookingData.items.length - 1})` 
-            : mainItem.productName,
-        quantity: totalQuantity,
-        duration: mainItem.duration || '1 година',
-        scheduledAt: bookingData.scheduledAt 
-            ? bookingData.scheduledAt.replace('T', ' o ') 
-            : `${dateStr} o ${timeStr}`,
+        id: bookingData.id,
+        items: items, // 👈 Сохраняем полный массив со всеми 3 товарами!
         totalPrice: bookingData.totalPrice,
+        scheduledAt: bookingData.scheduledAt,
         status: 'Очікує підтвердження',
-        img: detectedImg // Сохраняем реальный URL картинки
+        createdAt: new Date().toISOString()
     };
 
-    existingOrders.unshift(newOrder);
-    localStorage.setItem('kayakdpua_orders', JSON.stringify(existingOrders));
+    // Удаляем дубликаты с таким же ID (если случайно вызвалось дважды)
+    orders = orders.filter(o => String(o.id) !== String(newOrder.id));
+
+    // Добавляем новый заказ в начало списка
+    orders.unshift(newOrder);
+
+    localStorage.setItem('kayakdpua_orders', JSON.stringify(orders));
 
     if (typeof renderOrdersHistory === 'function') {
         renderOrdersHistory();
+    }
+}
+
+// 🎯 1. Локальное обновление статуса (твоя функция, немного оптимизированная)
+function updateOrderStatus(orderId, newStatus = 'Підтверджено') {
+    try {
+        let orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
+        let updated = false;
+
+        orders = orders.map(order => {
+            if (String(order.id) === String(orderId)) {
+                order.status = newStatus;
+                updated = true;
+            }
+            return order;
+        });
+
+        if (updated) {
+            localStorage.setItem('kayakdpua_orders', JSON.stringify(orders));
+            if (typeof renderOrdersHistory === 'function') {
+                renderOrdersHistory();
+            }
+            console.log(`🚀 Статус заказа №${orderId} изменен на: ${newStatus}`);
+        }
+    } catch (e) {
+        console.error("Ошибка при локальном обновлении статуса:", e);
+    }
+}
+
+// 🎯 2. Автоматическая синхронизация статусов с n8n / Google Таблицей
+async function syncOrdersWithServer() {
+    let orders = [];
+    try {
+        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
+    } catch (e) {
+        orders = [];
+    }
+
+    if (orders.length === 0) return;
+
+    // Собираем все ID локальных заказов
+    const orderIds = orders.map(o => String(o.id));
+
+    try {
+        const response = await fetch('https://tiktiok.xyz/webhook/check-orders-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderIds: orderIds })
+        });
+
+        if (response.ok) {
+            const serverStatuses = await response.json(); 
+            // n8n возвращает: [{ id: "612929", status: "Підтверджено" }, { id: "774094", status: "Скасовано" }]
+
+            serverStatuses.forEach(item => {
+                if (item.id && item.status) {
+                    updateOrderStatus(item.id, item.status);
+                }
+            });
+        }
+    } catch (e) {
+        console.warn("⚠️ Не удалось обновить статусы с сервера:", e);
     }
 }
 
@@ -1009,88 +1080,109 @@ function renderOrdersHistory() {
         return;
     }
 
-    container.innerHTML = orders.map(order => {
-        // 🎯 1. Улучшенный автоматический поиск картинки товара из каталога
-        let productImg = order.img || order.image || ''; // В первую очередь берем из самого заказа
+    // Хелпер авто-подбора фото по названию
+    const resolveProductImg = (item) => {
+        let img = item.img || item.image || item.imgSrc || item.photo || '';
+        const name = (item.productName || item.title || item.name || '').toLowerCase();
 
-        // Проверяем все возможные глобальные массивы каталога на сайте
-        const allProducts = window.PRODUCTS || window.catalog || window.productsData || window.CATALOG || [];
+        if (name.includes('lite') || name.includes('literowing')) return './img/LiteRowing_9.5.webp';
+        if (name.includes('carolina')) return './img/Perception Carolina_12_Perception Carolina_14.webp';
+        if (name.includes('speed') || name.includes('speedrowing')) return './img/SpeedRowing_16.0.webp';
+        if (name.includes('чотиримісн')) return './img/Чотиримісна_байдарка.webp';
+        if (name.includes('тримісн')) return './img/Тримісна_байдарка.webp';
+        if (name.includes('двомісн')) return './img/Двомісна_байдарка.webp';
+        if (name.includes('vista') || name.includes('perception vista')) return './img/Perception_Vista.webp';
+        if (name.includes('family') || name.includes('familyrowing')) return './img/FamilyRowing_15.0.webp';
+        if (name.includes('sup') || name.includes('сап') || name.includes('дошк')) return './img/Sup_дошки.webp';
+        if (name.includes('дитяч') || name.includes('детск') || name.includes('сидіння')) return './img/Дитяче_сидіння_для_Perception_Vista.webp';
+        if (name.includes('одномісн') || name.includes('одноместн') || name.includes('керуванн')) return './img/Одномісний_каяк_з_системою_керування_2.webp';
 
-        if (allProducts.length > 0) {
-            // Ищем сначала по ID, а если не нашли — по названию товара (productName)
-            const foundProduct = allProducts.find(p => 
-                (p.id && String(p.id) === String(order.productId)) ||
-                (p.productId && String(p.productId) === String(order.productId)) ||
-                (p.title && p.title.trim().toLowerCase() === order.productName?.trim().toLowerCase()) ||
-                (p.name && p.name.trim().toLowerCase() === order.productName?.trim().toLowerCase())
-            );
+        return img || './img/LiteRowing_9.5.webp';
+    };
 
-            if (foundProduct) {
-                // Извлекаем путь к картинке из любого возможного свойства
-                productImg = foundProduct.img || foundProduct.image || foundProduct.imgSrc || foundProduct.photo || foundProduct.icon || productImg;
-            }
-        }
-
-        // Резервная заглушка, если вообще ничего не нашлось
-        if (!productImg) {
-            productImg = './img/LiteRowing_9.5.webp';
-        }
-
-        // 🎯 2. Цвета и стили плашки статуса
-        const rawStatus = (order.status || '').trim();
+    container.innerHTML = orders.map((order, orderIdx) => {
+        // 1. Статусы и цвета
+        const rawStatus = (order.status || '').toString().trim().toLowerCase();
         
-        // По умолчанию ставим "Очікує підтвердження" (оранжевый)
-        let currentStatus = 'Очікує підтвердження';
-        let statusBg = '#fef3c7';    // Светло-желтый/оранжевый
-        let statusColor = '#b45309'; // Темно-оранжевый
-        let dotColor = '#f59e0b';    // Оранжевая точка
+        let currentStatus = order.status || 'Очікує підтвердження';
+        let statusBg = '#fef3c7';
+        let statusColor = '#b45309';
+        let dotColor = '#f59e0b';
 
-        // Зеленый цвет даем ТОЛЬКО если статус явно подтвержден
-        if (rawStatus === 'Підтверджено' || rawStatus === 'Подтверждено' || rawStatus === 'Confirmed') {
+        if (['підтверджено', 'подтверждено', 'confirmed', 'approved'].includes(rawStatus)) {
             currentStatus = 'Підтверджено';
-            statusBg = '#dcfce7';    // Светло-зеленый
-            statusColor = '#166534'; // Темно-зеленый
-            dotColor = '#22c55e';    // Зеленая точка
+            statusBg = '#dcfce7';
+            statusColor = '#166534';
+            dotColor = '#22c55e';
+        } else if (['скасовано', 'отменено', 'cancelled', 'rejected'].includes(rawStatus)) {
+            currentStatus = 'Скасовано';
+            statusBg = '#fee2e2';
+            statusColor = '#991b1b';
+            dotColor = '#ef4444';
+        } else if (['завершено', 'completed', 'done'].includes(rawStatus)) {
+            currentStatus = 'Завершено';
+            statusBg = '#e2e8f0';
+            statusColor = '#334155';
+            dotColor = '#64748b';
         }
+
+        // 2. Достаем список товаров (если старая запись — очищаем строку от "+ ще 2")
+        let itemsList = [];
+        if (Array.isArray(order.items) && order.items.length > 0) {
+            itemsList = order.items;
+        } else {
+            // Очищаем заголовок от старого аппенда "(+ ще X)"
+            const cleanName = (order.productName || 'Байдарка').replace(/\(\+\s*ще\s*\d+\)/gi, '').trim();
+            itemsList = [{
+                productName: cleanName,
+                quantity: order.quantity || 1,
+                duration: order.duration || '1 година',
+                img: order.img || ''
+            }];
+        }
+
+        // 3. Генерация элементов списка
+        const itemsHtml = itemsList.map((item, i) => {
+            const productImg = resolveProductImg(item);
+            const title = item.productName || item.title || item.name || 'Товар';
+            const qty = item.quantity || 1;
+            const duration = item.duration || item.durationText || '1 година';
+
+            return `
+                <div style="display: flex; gap: 12px; align-items: center; ${i > 0 ? 'margin-top: 10px; padding-top: 10px; border-top: 1px dashed #f1f5f9;' : ''}">
+                    <img src="${productImg}" style="width: 55px; height: 55px; border-radius: 10px; object-fit: cover; flex-shrink: 0;" alt="${title}">
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 700; font-size: 0.9rem; color: #0f172a; margin-bottom: 3px;">${title}</div>
+                        <div style="font-size: 0.8rem; color: #64748b; display: flex; gap: 12px; align-items: center;">
+                            <span>🚣 ${qty} шт.</span>
+                            <span>⏱️ ${duration}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
         return `
             <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                 
                 <!-- Шапка карточки -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
-                    <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">№ ${order.id}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                    <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">№ ${order.id || '—'}</span>
                     <span style="background: ${statusBg}; color: ${statusColor}; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 99px; display: inline-flex; align-items: center; gap: 6px;">
                         <span style="width: 7px; height: 7px; background: ${dotColor}; border-radius: 50%;"></span>
                         ${currentStatus}
                     </span>
                 </div>
 
-                <!-- Тело карточки (Картинка подтягивается сама из базы) -->
-                <div style="display: flex; gap: 14px; margin-bottom: 14px;">
-                    <img src="${productImg}" style="width: 75px; height: 75px; border-radius: 12px; object-fit: cover; flex-shrink: 0;" alt="${order.productName}">
-                    <div>
-                        <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a; margin-bottom: 6px;">${order.productName}</div>
-                        <div style="font-size: 0.82rem; color: #64748b; margin-bottom: 4px; display: flex; align-items: center; gap: 10px;">
-                            <span>🚣 ${order.quantity} шт.</span>
-                            <span>⏱️ ${order.duration}</span>
-                        </div>
-                        <div style="font-size: 0.82rem; color: #0f172a; font-weight: 600;">
-                            📅 ${order.scheduledAt}
-                        </div>
-                    </div>
+                <!-- Список товаров (Выводятся прямо в карточке) -->
+                <div style="margin-bottom: 12px; background: #fafafa; padding: 10px 12px; border-radius: 12px; border: 1px solid #f1f5f9;">
+                    ${itemsHtml}
                 </div>
 
-                <!-- Футер карточки -->
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
-                    <div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">До сплати:</div>
-                        <div style="font-weight: 800; font-size: 1.1rem; color: #0f172a;">${order.totalPrice} грн</div>
-                    </div>
-                    <button type="button" style="background: #f1f5f9; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; color: #0f172a; cursor: pointer;">
-                        Маршрут / Локація
-                    </button>
+                <!-- Дата и время визита -->
+                <div style="font-size: 0.82rem; color: #0f172a; font-weight: 600; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span>📅</span> <span>Дата та час визиту: <strong>${order.scheduledAt || 'Не вказано'}</strong></span>
                 </div>
-
             </div>
         `;
     }).join('');
