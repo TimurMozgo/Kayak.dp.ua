@@ -1341,6 +1341,41 @@ body, html {
     color: #64748b;
 }
 
+/* Кнопки соцсетей */
+.footer-socials {
+    display: flex;
+    gap: 12px;
+}
+
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1e293b;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-btn.instagram:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+    transform: translateY(-3px);
+}
+
+.social-btn.telegram:hover {
+    background: #229ED9;
+    transform: translateY(-3px);
+}
+
+.social-btn.viber:hover {
+    background: #7360f2;
+    transform: translateY(-3px);
+}
+
 /* ================= СТИЛЬНЫЙ СКРОЛЛБАР ДЛЯ ПЛАШКИ ПРОВЕРКИ ================= */
 #check-order-details::-webkit-scrollbar {
     width: 6px;
@@ -2904,6 +2939,36 @@ body, html {
         display: flex;
         flex-direction: column;
         gap: 12px;
+    }
+
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* 2. Настраиваем контейнер соцсетей */
+    .footer-socials {
+        justify-content: center;
+        width: 100%;
+        gap: 16px; /* Увеличенный зазор между кнопками */
+        margin-top: 8px;
+    }
+
+    /* 3. Увеличиваем кнопки под пальцы */
+    .social-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.3rem; /* Крупнее сама иконка */
+        border-radius: 14px; /* Современные скругленные квадраты (а-ля iOS) */
+        background: #1e293b;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 4. Отклик при нажатии пальцем (вместо hover) */
+    .social-btn:active {
+        transform: scale(0.92); /* Эффект проседания при клике */
     }
 
 }

@@ -74,12 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    // УПРАВЛЕНИЯ СТАТУСОМ 
-    if (typeof syncOrdersWithServer === 'function') {
-        syncOrdersWithServer();
-    }
-
     // ----------------- УПРАВЛЕНИЕ ШТОРКОЙ (DRAWER) И ШАГАМИ ----------------
     function showCartStep() {
         if (stepCart) stepCart.style.display = "block";
@@ -717,23 +711,22 @@ document.addEventListener("DOMContentLoaded", () => {
         // 🎯 1. Генерируем ЕДИНЫЙ 6-значный ID заказа для всего процесса
         const generatedOrderId = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // 🎯 2. Формируем единый payload (исправлены переменные name и phone)
+        // 🎯 2. Формируем единый payload
         const payload = {
-            id: generatedOrderId, // Прокидываем на верхний уровень
+            id: generatedOrderId,
             customer: {
                 name: name,
                 phone: phone,
                 telegramId: telegramId
             },
             booking: {
-                id: generatedOrderId, // Дублируем в booking
+                id: generatedOrderId,
                 items: cart.map(item => ({
                     productId: item.productId || item.id,
                     productName: item.productName || item.title || item.name,
                     duration: item.durationText || item.duration || '1 година',
                     quantity: item.quantity || 1,
                     totalPrice: item.totalPrice,
-                    // Прокидываем картинку со всеми возможными ключами
                     img: item.img || item.image || item.imgSrc || item.photo || ''
                 })),
                 totalPrice: totalCartPrice,
@@ -745,7 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        // 🎯 3. Сохраняем в локальную историю ровно ОДИН раз (до очистки корзины)
+        // 🎯 3. Сохраняем в локальную историю
         if (typeof saveOrderToHistory === "function") {
             saveOrderToHistory(payload.booking);
         }
@@ -758,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("📦 Payload перед отправкой:", payload);
 
         try {
-            // Боевой/тестовый вебхук n8n
+            // Отправляем в n8n на сохранение в Google Таблицу
             const response = await fetch(
                 "https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52",
                 {
@@ -773,7 +766,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             console.log(`✅ Успешно отправлено в n8n (Заказ №${generatedOrderId})`);
 
-            // 🎯 5. Очищаем корзину и сбрасываем форму ПОСЛЕ успешной отправки
+            // 🎯 5. Очищаем корзину и сбрасываем форму
             cart = [];
             selectedDate = null;
             selectedTime = null;
@@ -1023,42 +1016,6 @@ function updateOrderStatus(orderId, newStatus = 'Підтверджено') {
     }
 }
 
-// 🎯 2. Автоматическая синхронизация статусов с n8n / Google Таблицей
-async function syncOrdersWithServer() {
-    let orders = [];
-    try {
-        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
-    } catch (e) {
-        orders = [];
-    }
-
-    if (orders.length === 0) return;
-
-    // Собираем все ID локальных заказов
-    const orderIds = orders.map(o => String(o.id));
-
-    try {
-        const response = await fetch('https://tiktiok.xyz/webhook/check-orders-status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderIds: orderIds })
-        });
-
-        if (response.ok) {
-            const serverStatuses = await response.json(); 
-            // n8n возвращает: [{ id: "612929", status: "Підтверджено" }, { id: "774094", status: "Скасовано" }]
-
-            serverStatuses.forEach(item => {
-                if (item.id && item.status) {
-                    updateOrderStatus(item.id, item.status);
-                }
-            });
-        }
-    } catch (e) {
-        console.warn("⚠️ Не удалось обновить статусы с сервера:", e);
-    }
-}
-
 function renderOrdersHistory() {
     const container = document.getElementById('orders-container');
     if (!container) return;
@@ -1080,7 +1037,6 @@ function renderOrdersHistory() {
         return;
     }
 
-    // Хелпер авто-подбора фото по названию
     const resolveProductImg = (item) => {
         let img = item.img || item.image || item.imgSrc || item.photo || '';
         const name = (item.productName || item.title || item.name || '').toLowerCase();
@@ -1100,48 +1056,16 @@ function renderOrdersHistory() {
         return img || './img/LiteRowing_9.5.webp';
     };
 
-    container.innerHTML = orders.map((order, orderIdx) => {
-        // 1. Статусы и цвета
-        const rawStatus = (order.status || '').toString().trim().toLowerCase();
-        
-        let currentStatus = order.status || 'Очікує підтвердження';
-        let statusBg = '#fef3c7';
-        let statusColor = '#b45309';
-        let dotColor = '#f59e0b';
-
-        if (['підтверджено', 'подтверждено', 'confirmed', 'approved'].includes(rawStatus)) {
-            currentStatus = 'Підтверджено';
-            statusBg = '#dcfce7';
-            statusColor = '#166534';
-            dotColor = '#22c55e';
-        } else if (['скасовано', 'отменено', 'cancelled', 'rejected'].includes(rawStatus)) {
-            currentStatus = 'Скасовано';
-            statusBg = '#fee2e2';
-            statusColor = '#991b1b';
-            dotColor = '#ef4444';
-        } else if (['завершено', 'completed', 'done'].includes(rawStatus)) {
-            currentStatus = 'Завершено';
-            statusBg = '#e2e8f0';
-            statusColor = '#334155';
-            dotColor = '#64748b';
-        }
-
-        // 2. Достаем список товаров (если старая запись — очищаем строку от "+ ще 2")
-        let itemsList = [];
-        if (Array.isArray(order.items) && order.items.length > 0) {
-            itemsList = order.items;
-        } else {
-            // Очищаем заголовок от старого аппенда "(+ ще X)"
-            const cleanName = (order.productName || 'Байдарка').replace(/\(\+\s*ще\s*\d+\)/gi, '').trim();
-            itemsList = [{
-                productName: cleanName,
+    container.innerHTML = orders.map((order) => {
+        let itemsList = Array.isArray(order.items) && order.items.length > 0 
+            ? order.items 
+            : [{
+                productName: (order.productName || 'Байдарка').replace(/\(\+\s*ще\s*\d+\)/gi, '').trim(),
                 quantity: order.quantity || 1,
                 duration: order.duration || '1 година',
                 img: order.img || ''
             }];
-        }
 
-        // 3. Генерация элементов списка
         const itemsHtml = itemsList.map((item, i) => {
             const productImg = resolveProductImg(item);
             const title = item.productName || item.title || item.name || 'Товар';
@@ -1167,21 +1091,17 @@ function renderOrdersHistory() {
                 
                 <!-- Шапка карточки -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
-                    <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">№ ${order.id || '—'}</span>
-                    <span style="background: ${statusBg}; color: ${statusColor}; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 99px; display: inline-flex; align-items: center; gap: 6px;">
-                        <span style="width: 7px; height: 7px; background: ${dotColor}; border-radius: 50%;"></span>
-                        ${currentStatus}
-                    </span>
+                    <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">Замовлення № ${order.id || '—'}</span>
                 </div>
 
-                <!-- Список товаров (Выводятся прямо в карточке) -->
+                <!-- Список товаров -->
                 <div style="margin-bottom: 12px; background: #fafafa; padding: 10px 12px; border-radius: 12px; border: 1px solid #f1f5f9;">
                     ${itemsHtml}
                 </div>
 
                 <!-- Дата и время визита -->
                 <div style="font-size: 0.82rem; color: #0f172a; font-weight: 600; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
-                    <span>📅</span> <span>Дата та час визиту: <strong>${order.scheduledAt || 'Не вказано'}</strong></span>
+                    <span>📅</span> <span>Дата та час візиту: <strong>${order.scheduledAt || 'Не вказано'}</strong></span>
                 </div>
             </div>
         `;
