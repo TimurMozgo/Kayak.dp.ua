@@ -790,12 +790,17 @@ body, html {
 }
 
 .drawer-step {
-    display: flex;
+    display: none; /* По умолчанию ВСЕ шаги скрыты */
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
     min-height: 0; 
     padding-right: 4px;
+}
+
+/* Активный шаг становится флексом и идеально держит верстку */
+.drawer-step.active {
+    display: flex; 
 }
 
 .drawer-step::-webkit-scrollbar {
@@ -1079,8 +1084,8 @@ body, html {
 
 /* Активное состояние кнопки времени */
 .time-slot-btn.active {
-    background: #10b981;
-    border-color: #10b981;
+    background: #0088cc;
+    border-color: #0088cc;
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
     transform: translateY(-1px);
@@ -2529,7 +2534,7 @@ body, html {
     }
 
     #cart-items-container p::before{
-        content:"🕒";
+        content:"";
         font-size:1rem;
     }
 

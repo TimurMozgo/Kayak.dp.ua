@@ -852,7 +852,7 @@
                             <span style="font-weight: 800; font-size: 1.2rem; color: #0f172a;"><span id="cart-grand-total">0</span> грн</span>
                         </div>
                         
-                        <button type="button" id="btn-go-to-checkout" class="btn-primary" style="width: 100%; padding: 14px; background: #10b981; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
+                        <button type="button" id="btn-go-to-checkout" class="btn-primary" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
                             Перейти до оформлення &rarr;
                         </button>
                     </div>
@@ -862,7 +862,7 @@
 
                 <!-- ================= ШАГ 2: ФОРМА ДАННЫХ (СКРЫТ) ================= -->
                 <div id="drawer-step-checkout" class="drawer-step" style="display: none;">
-                    <button type="button" id="btn-back-to-cart" style="background: none; border: none; color: #10b981; font-weight: 600; cursor: pointer; margin-bottom: 15px; padding: 0; display: flex; align-items: center; gap: 6px;">
+                    <button type="button" id="btn-back-to-cart" style="background: none; border: none; color: #0088cc; font-weight: 600; cursor: pointer; margin-bottom: 15px; padding: 0; display: flex; align-items: center; gap: 6px;">
                         &larr; Назад до кошика
                     </button>
 
@@ -891,15 +891,70 @@
                             <input type="hidden" id="booking-datetime">
                         </div>
 
-                        <button type="submit" style="width: 100%; padding: 14px; background: #10b981; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
+                        <button type="submit" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
                             Перейти до оплати &rarr;
                         </button>
                     </form>
                 </div> 
+
+                <!-- МОДАЛЬНЕ ВІКНО ПОВНОЦІННОГО КАЛЕНДАРЯ (ЦЕНТР ЕКРАНУ) -->
+                <div id="calendar-modal" class="calendar-modal">
+                    <div id="calendar-modal-overlay" class="calendar-overlay"></div>
+
+                    <div class="calendar-window">
+
+                        <!-- Шапка: навигация по месяцам -->
+                        <div class="calendar-header">
+                            <button type="button" id="cal-prev-month" class="calendar-nav-btn">&larr;</button>
+                            <h3 id="cal-month-year-title" class="calendar-title">Липень 2026</h3>
+                            <button type="button" id="cal-next-month" class="calendar-nav-btn">&rarr;</button>
+                        </div>
+
+                        <!-- Дни недели (Сетка) -->
+                        <div class="calendar-weekdays">
+                            <span>Пн</span>
+                            <span>Вт</span>
+                            <span>Ср</span>
+                            <span>Чт</span>
+                            <span>Пт</span
+                            <span class="weekend">Сб</span>
+                            <span class="weekend">Нд</span>
+                        </div>
+
+                        <!-- Матрица дней месяца -->
+                        <div id="cal-days-grid" class="calendar-days-grid">
+                            <!-- Генерируется динамически через JS -->
+                        </div>
+
+                    </div>
+                </div>
                 <!-- / КОНЕЦ ШАГА 2 -->
 
+                <!-- ================= ШАГ 4: ПРОВЕРКА ДАННЫХ ================= -->
 
-                <!-- ================= ШАГ 3: ОПЛАТА И СКРИНШОТ (СКРЫТ) ================= -->
+                <div id="check-order-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 19999; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
+                    <div style="background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 28px; border: 1px solid #e2e8f0; transform: scale(0.9); transition: all 0.2s ease;">
+                        
+                        <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; text-align: center;">Перевірте ваші дані</h3>
+                        <p style="font-size: 0.9rem; color: #64748b; line-height: 1.4; margin: 0 0 20px 0; text-align: center;">Будь ласка, переконайтеся, що все вказано правильно, щоб уникнути помилок при оренді.</p>
+                        
+                        <!-- Сюда JS вставит данные -->
+                        <div id="check-order-details" style="background:#f8fafc; border-radius:16px; padding:16px; border:1px solid #e2e8f0; margin-bottom:24px; display:flex; flex-direction:column; gap:12px; font-size:0.95rem; max-height:50vh; overflow-y:auto; scrollbar-width:thin;">
+                        </div>
+
+                        <!-- ДВЕ КНОПКИ: НАЗАД И ПОДТВЕРДИТЬ -->
+                        <div style="display: flex; gap: 12px;">
+                            <button type="button" id="check-back-btn" style="flex: 1; background: #000; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s;">
+                                Назад
+                            </button>
+                            <button type="button" id="check-confirm-btn" style="flex: 1; background: #0088cc; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">
+                                Внести передплату
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- ================= ШАГ 5: ОПЛАТА И СКРИНШОТ (СКРЫТ) ================= -->
 
             <div id="drawer-step-payment" class="drawer-step" style="display: none;">
                 
@@ -953,13 +1008,13 @@
                         <!-- Состояние 1: До выбора файла -->
                         <div class="upload-content" id="upload-idle-state" style="display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;">
                             <i class="fa-solid fa-paperclip upload-icon" style="font-size: 1.5rem; color: #64748b;"></i>
-                            <span id="upload-status-text" style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Прикрепить скриншот оплаты</span>
+                            <span id="upload-status-text" style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Прикріпити чек про оплату</span>
                         </div>
 
                         <!-- Состояние 2: Выбран скриншот (Превью + ПЛАШКА) -->
                         <div id="upload-preview-state" style="display: none; position: relative; width: 100%;">
                             <div style="position: relative; display: inline-block; max-width: 100%;">
-                                <span class="upload-badge" style="position: absolute; top: -10px; right: -10px; background: #10b981; color: #ffffff; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 5px; z-index: 99;">
+                                <span class="upload-badge" style="position: absolute; top: -10px; right: -10px; background: #0088cc; color: #ffffff; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 5px; z-index: 99;">
                                     <i class="fa-solid fa-circle-check"></i> Чек прикреплено
                                 </span>
                                 <img id="receipt-preview-img" src="" alt="Скриншот чека" style="max-width: 100%; max-height: 160px; border-radius: 8px; object-fit: contain; border: 1px solid #cbd5e1; display: block;">
@@ -969,47 +1024,17 @@
                     </div>
 
                     <!-- 3. Финальная кнопка (ОСТАЛАСЬ БЕЗ ИЗМЕНЕНИЙ) -->
-                    <button type="button" id="btn-submit-final-booking" class="btn-primary" style="width: 100%; padding: 14px; background: #10b981; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 15px;">
+                    <button type="button" id="btn-submit-final-booking" class="btn-primary" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 15px;">
                         Підтвердити та надіслати
                     </button>
                 </div>
             </div> 
-                <!-- / КОНЕЦ ШАГА 3 -->
+                <!-- / КОНЕЦ ШАГА 5 -->
 
             </div>
         </div>
 
-        <!-- МОДАЛЬНЕ ВІКНО ПОВНОЦІННОГО КАЛЕНДАРЯ (ЦЕНТР ЕКРАНУ) -->
-        <div id="calendar-modal" class="calendar-modal">
-            <div id="calendar-modal-overlay" class="calendar-overlay"></div>
-
-            <div class="calendar-window">
-
-                <!-- Шапка: навигация по месяцам -->
-                <div class="calendar-header">
-                    <button type="button" id="cal-prev-month" class="calendar-nav-btn">&larr;</button>
-                    <h3 id="cal-month-year-title" class="calendar-title">Липень 2026</h3>
-                    <button type="button" id="cal-next-month" class="calendar-nav-btn">&rarr;</button>
-                </div>
-
-                <!-- Дни недели (Сетка) -->
-                <div class="calendar-weekdays">
-                    <span>Пн</span>
-                    <span>Вт</span>
-                    <span>Ср</span>
-                    <span>Чт</span>
-                    <span>Пт</span
-                    <span class="weekend">Сб</span>
-                    <span class="weekend">Нд</span>
-                </div>
-
-                <!-- Матрица дней месяца -->
-                <div id="cal-days-grid" class="calendar-days-grid">
-                    <!-- Генерируется динамически через JS -->
-                </div>
-
-            </div>
-        </div>
+        
 
         <!-- МОДАЛЬНОЕ ОКНО УСПЕШНОГО БРОНИРОВАНИЯ -->
         <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 20000; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
@@ -1026,32 +1051,9 @@
                 <p style="font-size: 0.95rem; color: #64748b; line-height: 1.5; margin: 0 0 24px 0;">Ваше замовлення успішно оформлене. Очікуйте на дзвінок менеджера для підтвердження броні!</p>
                 
                 <!-- Кнопка закрытия, возвращающая на сайт -->
-                <button type="button" id="close-success-btn" style="width: 100%; background: #10b981; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
+                <button type="button" id="close-success-btn" style="width: 100%; background: #0088cc; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
                     Чудово
                 </button>
-            </div>
-        </div>
-
-        <!-- МОДАЛЬНОЕ ОКНО ПРОВЕРКИ ДАННЫХ ПЕРЕД ОТПРАВКОЙ -->
-        <div id="check-order-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 19999; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
-            <div style="background: #ffffff; width: 100%; max-width: 420px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 28px; border: 1px solid #e2e8f0; transform: scale(0.9); transition: all 0.2s ease;">
-                
-                <h3 style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; text-align: center;">Перевірте ваші дані</h3>
-                <p style="font-size: 0.9rem; color: #64748b; line-height: 1.4; margin: 0 0 20px 0; text-align: center;">Будь ласка, переконайтеся, що все вказано правильно, щоб уникнути помилок при оренді.</p>
-                
-                <!-- Сюда JS вставит данные -->
-                <div id="check-order-details" style="background:#f8fafc; border-radius:16px; padding:16px; border:1px solid #e2e8f0; margin-bottom:24px; display:flex; flex-direction:column; gap:12px; font-size:0.95rem; max-height:50vh; overflow-y:auto; scrollbar-width:thin;">
-                </div>
-
-                <!-- ДВЕ КНОПКИ: НАЗАД И ПОДТВЕРДИТЬ -->
-                <div style="display: flex; gap: 12px;">
-                    <button type="button" id="check-back-btn" style="flex: 1; background: #000; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s;">
-                        Назад
-                    </button>
-                    <button type="button" id="check-confirm-btn" style="flex: 1; background: #10b981; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">
-                        Внести передплату
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -1080,18 +1082,6 @@
                     </div>
                 </div>
 
-                <!-- Колонка 2: Наш флот -->
-                <div class="footer-col">
-                    <h4 class="footer-title">Наш Флот</h4>
-                    <ul class="footer-links">
-                        <li><a href="./catalog.html">LiteRowing 9.5</a></li>
-                        <li><a href="./catalog.html">SpeedRowing 16.0</a></li>
-                        <li><a href="./catalog.html">Perception Carolina 12/14</a></li>
-                        <li><a href="./catalog.html">Perception Vista</a></li>
-                        <li><a href="./catalog.html">SUP дошки</a></li>
-                    </ul>
-                </div>
-
                 <!-- Колонка 3: Контакты и время работы -->
                 <div class="footer-col">
                     <h4 class="footer-title">Контакти</h4>
@@ -1108,11 +1098,15 @@
                             <i class="fa-solid fa-phone contact-icon phone-icon"></i>
                             <a href="tel:+380637100636">+380 63 710 06 36</a>
                         </li>
-                        <li>
-                            <i class="fa-solid fa-clock contact-icon clock-icon"></i>
-                            <span>Пн — Нд: 08:00 - 21:00</span>
-                        </li>
                     </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-title">Графік роботи</h4>
+                    <li>
+                        <i class="fa-solid fa-clock contact-icon clock-icon"></i>
+                        <span>Пн — Нд: 08:00 - 21:00</span>
+                    </li>
                 </div>
 
             </div>

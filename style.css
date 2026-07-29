@@ -76,7 +76,6 @@ body, html {
     transform: translateY(-2px);
 }
 
-
 /* ================= СТИЛИЗАЦИЯ ЛОГОТИПА (DESKTOP) ================= */
 .logo-block {
     display: flex;
@@ -164,592 +163,91 @@ body, html {
     color: var(--border-light);
 }
 
-/* ================= ГЛАВНЫЙ ЭКРАН (HERO) ================= */
-.hero-section {
-    position: relative;
-    min-height: calc(100vh - 100px); /* Высота за вычетом шапки */
-    display: flex;
-    align-items: center;
-    padding: 60px 0;
-}
-
-/* Стилизация и позиционирование фонового каякера */
-.hero-bg-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-.hero-bg-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Заполняет весь экран без растягивания */
-    object-position: center 30%; /* Центрируем, чтобы каякера было отлично видно */
-}
-
-/* Умный светлый оверлей: текст слева читается идеально, картинка справа сочная */
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.95) 35%, rgba(255, 255, 255, 0.4) 100%);
-}
-
-/* Контейнер контента */
-.hero-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-    width: 100%;
-    position: relative;
-    z-index: 2; /* Поверх фона */
-}
-
-.hero-content {
-    max-width: 650px; /* Ограничиваем ширину текста слева */
-}
-
-.hero-title {
-    font-size: 56px;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -2px;
-    color: var(--text-main);
-    margin-bottom: 20px;
-}
-
-.brand-highlight {
-    color: var(--primary-blue);
-    position: relative;
-    display: inline-block;
-}
-
-/* Подчеркивание под брендом в стиле воды */
-.brand-highlight::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    left: 0;
-    width: 100%;
-    height: 8px;
-    background: rgba(0, 168, 255, 0.15);
-    z-index: -1;
-    border-radius: 4px;
-}
-
-.hero-subtitle {
-    font-size: 20px;
-    line-height: 1.5;
-    color: var(--text-muted);
-    font-weight: 400;
-    margin-bottom: 32px;
-}
-
-/* Блок локаций */
-.locations-box {
-    margin-bottom: 16px;
-}
-
-.locations-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-main);
-}
-
-.location-link {
-    color: var(--primary-blue);
-    text-decoration: none;
-    border-bottom: 2px solid rgba(0, 136, 204, 0.2);
-}
-
-.location-link:hover {
-    color: var(--accent-blue-vibrant);
-    border-bottom-color: var(--accent-blue-vibrant);
-}
-
-/* ================= БЛОК: КОМУ ПОДХОДИТ (НОВЫЙ СТИЛЬ) ================= */
-.for-whom-section {
-    background-color: var(--bg-section); /* Используем наш мягкий водяной фон */
-    padding: 100px 0;
-    position: relative;
-}
-
-.section-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-/* Красивый центрированный заголовок */
-.section-header {
-    text-align: center;
-    margin-bottom: 60px;
+/* ==========================================
+   СКАЙ-КАРТОЧКИ В СТИЛЕ SUPSTATION
+   ========================================== */
+.main-categories-grid {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 18px;
+    padding: 16px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-.section-badge {
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: var(--primary-blue);
-    background: rgba(0, 136, 204, 0.08);
-    padding: 6px 16px;
-    border-radius: 30px;
-    margin-bottom: 16px;
-    text-transform: uppercase;
-}
-
-.section-title {
-    font-size: 38px;
-    font-weight: 800;
-    line-height: 1.25;
-    color: var(--text-main);
-    max-width: 700px;
-    letter-spacing: -1px;
-}
-
-.section-line {
-    width: 60px;
-    height: 4px;
-    background: var(--accent-blue-vibrant);
-    margin-top: 20px;
-    border-radius: 2px;
-}
-
-/* Сетка карточек: 2 в ряд на десктопе, 1 на мобилках */
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-}
-
-/* Карточка */
-.target-card {
+.category-card {
+    display: block;             /* Делаем ссылку блочной */
+    text-decoration: none;      /* Убираем синее подчеркивание */
+    color: inherit;             /* Сохраняем исходные цвета текста */
+    
     background: #ffffff;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
-    border: 1px solid var(--border-light);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
-    display: flex;
-    flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Эффект наведения на всю карточку */
-.target-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 136, 204, 0.08);
-    border-color: rgba(0, 136, 204, 0.15);
+.category-card:active {
+    transform: scale(0.97); /* Эффект нажатия в приложении */
 }
 
-/* Контейнер картинки в карточке */
-.card-image-box {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-}
-
-.card-bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* При наведении картинка плавно увеличивается */
-.target-card:hover .card-bg-img {
-    transform: scale(1.05);
-}
-
-/* Аккуратный номер карточки на картинке */
-.card-number {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    color: var(--text-main);
-    font-size: 14px;
-    font-weight: 800;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+/* 🖼️ Верхний баннер */
+.card-banner {
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* Контентная часть карточки */
-.card-content {
-    padding: 30px;
-    position: relative;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    flex-grow: 1;
-}
-
-/* Иконка */
-.card-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-/* Кастомные сочные цвета для бэкграундов иконок */
-.card-icon-wrapper.drive {
-    background: rgba(255, 183, 3, 0.15);
-    color: #d48c00;
-}
-
-.card-icon-wrapper.relax {
-    background: rgba(0, 168, 255, 0.12);
-    color: #0088cc;
-}
-
-.card-icon-wrapper.nature {
-    background: rgba(46, 213, 115, 0.12);
-    color: #2ed573;
-}
-
-.card-icon-wrapper.reboot {
-    background: rgba(155, 89, 182, 0.12);
-    color: #9b59b6;
-}
-
-/* Описание */
-.card-description {
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin: 0;
-}
-
-/* ==========================================
-   Grid-контейнер для блока .more_often
-   ========================================== */
-.more_often_grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-/* ==========================================
-   Секция и заголовок блока .more_often
-   ========================================== */
-.more_often_section {
-  max-width: 1200px;
-  margin: 60px auto;
-  padding: 0 20px;
-}
-
-.more_often_title {
-  text-align: center;
-  margin-bottom: 35px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Бейдж-плашка над заголовком */
-.more_often_badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 18px;
-  background: rgba(255, 78, 80, 0.1);
-  color: #ff4e50;
-  border: 1px solid rgba(255, 78, 80, 0.25);
-  border-radius: 30px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(255, 78, 80, 0.15);
-}
-
-/* Главный H2 заголовок */
-.more_often_title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0;
-  line-height: 1.25;
-  background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Название внутри карточки (чтобы не путалось с главным заголовком) */
-.more_often_card .card_title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #0f172a;
-}
-
-/* ==========================================
-   Карточка товара
-   ========================================== */
-.more_often_card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 10px 30px rgba(0, 114, 255, 0.08);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              box-shadow 0.4s ease, 
-              border-color 0.4s ease;
-}
-
-/* Верхняя полоска-акцент при наведении */
-.more_often_card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(90deg, #00c6ff, #0072ff, #ff4e50);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Hover-эффект карточки */
-.more_often_card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 22px 45px rgba(0, 114, 255, 0.18);
-  border-color: rgba(0, 198, 255, 0.4);
-}
-
-.more_often_card:hover::before {
-  opacity: 1;
-}
-
-/* ==========================================
-   Блок картинки + Zoom эффект
-   ========================================== */
-.more_often_img {
-  width: 100%;
-  height: 220px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #f1f5f9;
-  margin-bottom: 20px;
-}
-
-.more_often_img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.more_often_card:hover .more_often_img img {
-  transform: scale(1.08);
-}
-
-/* ==========================================
-   Заголовок (Стильный градиент)
-   ========================================== */
-.more_often_title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  line-height: 1.3;
-  background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* ==========================================
-   Описание
-   ========================================== */
-
-.more_often_desc {
-  font-size: 0.95rem;
-  color: #475569;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  flex-grow: 1;
-  text-align: center; 
-}
-
-/* ==========================================
-   Яркая градиентная кнопка
-   ========================================== */
-.more_often_btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 28px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  color: #ffffff;
-  text-decoration: none;
-  border-radius: 50px;
-  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-  box-shadow: 0 8px 20px rgba(0, 114, 255, 0.35);
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-/* Hover-эффект кнопки (взрывной огонь) */
-.more_often_btn:hover {
-  background: linear-gradient(135deg, #ff4e50 0%, #f9d423 100%);
-  box-shadow: 0 10px 25px rgba(255, 78, 80, 0.45);
-  transform: translateY(-2px) scale(1.02);
-  color: #ffffff;
-}
-
-.more_often_btn:active {
-  transform: translateY(0) scale(0.98);
-}
-
-/* ================= КЛАССИЧЕСКИЙ БЛОК С ФОНОМ ================= */
-.benefits-classic-section {
-    position: relative;
-    padding: 100px 0;
-    overflow: hidden;
-    background-color: #f4f8fb; /* Резервный фон */
-}
-
-/* Настройка фоновой картинки блока */
-.benefits-section-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-.benefits-section-bg .bg-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-/* Мягкий светлый оверлей, чтобы фон не спорил с текстом */
-.benefits-section-bg .bg-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.82); /* Регулируй прозрачность тут, если нужно сделать фон светлее/темнее */
-}
-
-.classic-container {
-    position: relative;
-    z-index: 2; /* Контент строго поверх фона */
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-/* Главный заголовок по центру */
-.classic-section-title {
+    padding: 20px;
     text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 60px;
-    font-family: inherit;
+    position: relative;
 }
 
-/* Сетка: ровно 3 колонки */
-.classic-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px 30px;
-    margin-bottom: 50px;
+/* Крупный жирный шрифт на баннере */
+.banner-title {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    z-index: 2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Карточки со стильным "стеклянным" эффектом */
-.classic-card {
-    background: rgba(255, 255, 255, 0.65); /* Полупрозрачный белый */
-    backdrop-filter: blur(12px); /* Размытие заднего фона (стекло) */
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 16px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
-    transition: all 0.3s ease;
+.banner-title .accent-text {
+    color: #facc15; /* Жёлтый акцент в слове, как на картинке */
 }
 
-/* Легкий интерактив при наведении */
-.classic-card:hover {
-    transform: translateY(-3px);
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 12px 40px rgba(0, 136, 204, 0.08);
-    border-color: rgba(0, 136, 204, 0.2);
+.rental-bg {
+    /* Затемнение поверх фото, чтобы читался белый текст + сама фотка */
+    background: linear-gradient(180deg, rgba(2, 132, 199, 0.5) 0%, rgba(15, 23, 42, 0.75) 100%),
+    url('./img/LiteRowing_9.5.webp') center/cover no-repeat;
 }
 
-/* Иконка как у Боди (тонкие, аккуратные контуры) */
-.classic-icon {
-    font-size: 32px;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
+.tours-bg {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.5) 0%, rgba(15, 23, 42, 0.75) 100%),
+    url('./img/tours.webp') center/cover no-repeat;
 }
 
-.classic-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-main);
-    line-height: 1.3;
+/* 📄 Нижняя белая плашка */
+.card-body {
+    padding: 16px 20px 20px 20px;
+    background: #ffffff;
 }
 
-.classic-card-text {
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--text-muted);
+.card-title {
+    margin: 0 0 6px 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0f172a;
 }
 
-/* Список для бонусов */
-.classic-list {
-    padding-left: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.classic-list li {
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--text-muted);
+.card-desc {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.4;
 }
 
 /* ================= ТРЕНДОВЫЙ ТЕМНЫЙ ФУТЕР  ================= */
@@ -1199,145 +697,140 @@ body, html {
 }
 
 @media (max-width: 768px) {
-    .main-header{
-        position:fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:72px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:0 18px;
-        background:rgba(255,255,255,.88);
-        backdrop-filter:blur(20px);
-        -webkit-backdrop-filter:blur(20px);
-        border-bottom:1px solid rgba(15,23,42,.08);
-        z-index:1000;
+    
+    .main-header {
+        position: relative; /* Убирает прилипание к экрану */
+        width: 100%;
+        min-height: 72px;   /* Безопасная высота */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.98);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        z-index: 10;
     }
 
-    .header-container{
-        width:100%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
+    .header-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .social-block,
-    .meta-block{
-        display:none;
+    .meta-block {
+        display: none;
     }
 
-    .logo-block{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        width:100%;
-    }
-
-    .logo{
-        width:170px;
-        max-width:75%;
-        height:auto;
-        object-fit:contain;
-    }
-
-    /* --- 2. ГЛАВНЫЙ ЭКРАН (HERO) --- */
-    .hero-section {
-        min-height: 100vh;
+    .logo-block {
         display: flex;
         align-items: center;
-        text-align: center;
-        padding: 80px 20px 40px;
+        justify-content: center;
+        width: 100%;
     }
 
-    .hero-title {
-        font-size: 2.2rem;
-        line-height: 1.2;
-        margin-bottom: 15px;
+    .logo {
+        width: auto;
+        max-width: 160px;
+        height: 72px;         /* Фиксируем высоту логотипа, чтобы он аккуратно сидел в 72px */
+        object-fit: contain;
     }
 
-    .hero-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 25px;
+    /* ==========================================
+    МОБИЛЬНАЯ ВЕРСТКА ДЛЯ КАРТОЧЕК (Mini App UI)
+    ========================================== */
+
+    /* 1. Основной контейнер под экраны смартфонов */
+    .main-categories-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+        max-width: 440px; /* Идеальная ширина под экрна телефона */
+        margin: 0 auto;
+        padding: 12px 16px;
+        box-sizing: border-box;
     }
 
-    .locations-box {
-        font-size: 1rem;
-        margin-bottom: 30px;
-    }
-
-    /* --- 3. БЛОК "ДЛЯ КОГО ЦЕ?" --- */
-    .for-whom-section {
-        padding: 60px 20px;
-    }
-
-    .section-title {
-        font-size: 1.6rem; 
-        line-height: 1.35;
-        text-align: center;
-        text-wrap: balance; 
-        letter-spacing: -0.02em; 
-    }
-
-    .cards-grid {
-        grid-template-columns: 1fr; 
-        gap: 30px;
-    }
-
-    .target-card {
-        border-radius: 16px;
+    /* 2. Карточка-ссылка */
+    .category-card {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        background: #ffffff;
+        border-radius: 20px;
         overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        
+        /* Убираем синюю стандартную рамку при тапе на iOS и Android */
+        -webkit-tap-highlight-color: transparent; 
     }
 
-    .card-image-box {
-        height: 220px; /* Ограничиваем высоту картинки */
+    /* 3. Эффект нажатия пальцем (Пружина) */
+    .category-card:active {
+        transform: scale(0.97);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     }
 
-    .card-content {
-        display: flex !important;
-        flex-direction: column !important; 
-        align-items: center !important;    
-        text-align: center !important;    
-        padding: 24px 20px !important;     
-    }
-
-    .card-icon-wrapper {
-        margin: 0 0 16px 0 !important;     
-        flex-shrink: 0 !important;
-    }
-
-    .card-description {
-        width: 100% !important;
-        margin: 0 !important;
-        font-size: 0.95rem !important;     
-        line-height: 1.6 !important;       
-        color: #4a5568 !important;         
-    }
-
-    /* --- 4. БЛОК "ЧОМУ ОБИРАЮТЬ НАС" --- */
-    .benefits-classic-section {
-        padding: 60px 20px;
-    }
-
-    .classic-section-title {
-        font-size: 1.8rem;
+    /* 4. Верхняя часть с фото и крупным текстом */
+    .card-banner {
+        height: 135px; /* Оптимальная высота, чтобы не занимать весь экран */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
         text-align: center;
-        margin-bottom: 35px;
+        position: relative;
     }
 
-    .classic-grid {
-        grid-template-columns: 1fr; /* В один столбец */
-        gap: 24px;
+    /* Текст на баннере */
+    .banner-title {
+        color: #ffffff;
+        font-size: 1.45rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1.15;
+        z-index: 2;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
 
-    .classic-card {
-        padding: 25px 20px;
-        text-align: center;
+    .banner-title .accent-text {
+        color: #facc15; /* Ярко-желтый акцент */
     }
 
-    .classic-icon {
-        margin: 0 auto 16px;
+    /* Фоны с затемнением для читаемости текста */
+    .rental-bg {
+        background: linear-gradient(180deg, rgba(2, 132, 199, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%),
+        url('./img/LiteRowing_9.5.webp') center/cover no-repeat;
+    }
+
+    .tours-bg {
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%),
+        url('./img/tours.webp') center/cover no-repeat;
+    }
+
+    /* 5. Нижняя плашка с описанием */
+    .card-body {
+        padding: 14px 18px;
+        background: #ffffff;
+    }
+
+    .card-title {
+        margin: 0 0 4px 0;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .card-desc {
+        margin: 0;
+        font-size: 0.84rem;
+        color: #64748b;
+        line-height: 1.35;
     }
 
     /* --- 5. ФУТЕР (FOOTER) --- */
@@ -1378,5 +871,28 @@ body, html {
         display: flex;
         flex-direction: column;
         gap: 12px;
+    }
+
+    /* 2. Настраиваем контейнер соцсетей */
+    .footer-socials {
+        justify-content: center;
+        width: 100%;
+        gap: 16px; /* Увеличенный зазор между кнопками */
+        margin-top: 8px;
+    }
+
+    /* 3. Увеличиваем кнопки под пальцы */
+    .social-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.3rem; /* Крупнее сама иконка */
+        border-radius: 14px; /* Современные скругленные квадраты (а-ля iOS) */
+        background: #1e293b;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 4. Отклик при нажатии пальцем (вместо hover) */
+    .social-btn:active {
+        transform: scale(0.92); /* Эффект проседания при клике */
     }
 }

@@ -358,9 +358,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!cart || cart.length === 0) {
             container.innerHTML = `
-                <div style="text-align: center; padding: 30px 10px; color: #64748b;">
-                    <p style="font-size: 1.1rem; font-weight: 600;">Ваш кошик порожній 🛶</p>
-                    <span style="font-size: 0.85rem;">Оберіть байдарку або сапборд у каталозі</span>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 35px 10px; color: #64748b;">
+                    <p style="font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #0f172a;">Ваш кошик порожній</p>
+                    <span style="font-size: 0.88rem; color: #64748b;">Оберіть щось у каталозі</span>
                 </div>
             `;
             if (grandTotalDisplay) grandTotalDisplay.textContent = "0";
@@ -480,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.addEventListener("click", () => {
                     selectedDate = dateStr;
                     if (selectedDateText) {
-                        selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-check" style="color: #10b981; font-size: 1.1rem;"></i> ${day} ${ukMonthsGenitive[month]} ${year}`;
+                        selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-check" style="color: #0088cc; font-size: 1.1rem;"></i> ${day} ${ukMonthsGenitive[month]} ${year}`;
                         selectedDateText.style.color = "#0f172a";
                     }
                     updateHiddenInput();
@@ -839,7 +839,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Включаем зелёную галочку
                 iconElem.className = 'copy-icon fa-solid fa-check';
-                iconElem.style.color = '#10b981';
+                iconElem.style.color = '#0088cc';
 
                 // Через 1.8 секунды возвращаем иконку назад
                 setTimeout(() => {
