@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Групові походи та сплави | kayak.dp.ua</title>
+    <!-- Подключение стилей -->
+    <link rel="stylesheet" href="tours.css">
+    <!-- Иконки FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Навигация -->
+    <header class="main-header">
+        <div class="header-container">
+            
+            <!-- Левая часть: Соцсети -->
+            <div class="social-block">
+                <a href="https://instagram.com" target="_blank" class="social-btn" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://telegram.org" target="_blank" class="social-btn" aria-label="Telegram">
+                    <i class="fa-brands fa-telegram"></i>
+                </a>
+            </div>
+
+            <!-- Центр: Твой логотип -->
+            <div class="logo-block">
+                <img src="./img/kayakdnepr.png" class="logo" alt="logo kayakdpua">
+            </div>
+
+            <!-- Правая часть: Телефон и Языки -->
+            <div class="meta-block">
+                <a href="tel:+380637100636" class="phone-btn">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>+380637100636</span>
+                </a>
+                <div class="lang-switcher">
+                    <a href="#" class="lang-item active">ua</a>
+                    <span class="lang-divider">|</span>
+                    <a href="#" class="lang-item">ru</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+    
+    <main class="tours-container">
+        
+        <div class="page-intro">
+            <h1>Відкрий Дніпро з нового боку</h1>
+            <p>Авторські маршрути, супровід інструкторів та незабутні емоції. Обирай свій ідеальний заход!</p>
+        </div>
+
+        <!-- КАРТОЧКА-ТИЗЕР: ОЛЕНЯЧА ПОВНЯ -->
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
+                <img src="./img_tour/Оленяча_повня_на_Дніпрі.jpg" alt="Оленяча повня на Дніпрі" class="tour-img">
+                <div class="tour-price-badge">1200 грн</div>
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title"> 🌕 Оленяча повня на воді</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Магія повні на Дніпрі. Тиша плавнів, зоряне небо і величезний золотий Місяць. Той самий момент, який потрібно прожити...
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('moon-tour')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('moon-tour')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
+                <img src="./img_tour/Кіно_на_острові.jpg" alt="Кіно_на_острові" class="tour-img">
+                <div class="tour-price-badge">3000 грн</div>
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title">🎬 Кіно на острові</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Коли місто засинає — природа оживає магією. Влаштуй собі вечір, який ти запам’ятаєш надовго: тепле багаття, казкові гірлянди, кіно просто неба, смачний плов, сміх, музика та душевна компанія.
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('kino-na-ostrovi')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('kino-na-ostrovi')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
+                <img src="./img_tour/МАГІЯ_ЗОЛОТОЇ_ГОДИНИ.jpg" alt="МАГІЯ_ЗОЛОТОЇ_ГОДИНИ" class="tour-img">
+                <div class="tour-price-badge">950 грн</div>
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title">🌅 МАГІЯ ЗОЛОТОЇ ГОДИНИ В ЯХТ-КЛУБІ «СІЧ»</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Вечір, коли місто залишається позаду, а перед вами — лише вода, золоте сонце та неймовірні краєвиди яхт-клубу «Січ».
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('sich-golden-hour')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('sich-golden-hour')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            
+            <!-- Колонка 1: Бренд и соцсети -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="./img/kayakdnepr.png" class="footer-logo-img" alt="logo kayakdpua">
+                </div>
+                <p class="footer-brand-text">
+                    Найкращий прокат професійних та аматорських каяків, сапів та байдарок у Дніпрі.
+                </p>
+                <!-- Блок соцсетей -->
+                <div class="footer-socials">
+                    <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://t.me/" target="_blank" rel="noopener" class="social-btn telegram" title="Telegram">
+                        <i class="fa-brands fa-telegram"></i>
+                    </a>
+                    <a href="viber://chat?number=%2B380637100636" class="social-btn viber" title="Viber">
+                        <i class="fa-brands fa-viber"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Колонка 2: Контакты -->
+            <div class="footer-col">
+                <h4 class="footer-title">Контакти</h4>
+                <ul class="footer-contacts">
+                    <li>
+                        <i class="fa-solid fa-location-dot contact-icon loc-icon"></i>
+                        <div>
+                            <a href="https://maps.app.goo.gl/5CiXtm8qcR5ueXmt5" target="_blank" class="location-link-footer">«Ж/м Парус»</a> 
+                            та 
+                            <a href="https://maps.app.goo.gl/ikYiSu2wFLjaRntRA" target="_blank" class="location-link-footer">«Яхт-клуб Січ»</a>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone contact-icon phone-icon"></i>
+                        <a href="tel:+380637100636">+380 63 710 06 36</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Колонка 3: Время работы -->
+            <div class="footer-col">
+                <h4 class="footer-title">Графік роботи</h4>
+                <ul class="footer-contacts">
+                    <li>
+                        <i class="fa-solid fa-clock contact-icon clock-icon"></i>
+                        <span>Пн — Нд: 08:00 - 21:00</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Подвал футера -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <div>&copy; 2026 kayak.dp.ua. Всі права захищені.</div>
+                <div class="footer-bottom-links">
+                    <a href="#">Політика конфіденційності</a>
+                    <a href="#">Правила прокату</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- МОДАЛКА ПОДРОБНЕЕ О ТУРЕ -->
+    <div id="tourModal" class="tour-modal">
+        <div class="modal-overlay" onclick="closeTourDetails()"></div>
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeTourDetails()">&times;</button>
+            <div class="modal-body" id="modalBody">
+                <!-- JS динамически подставит контент -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ШТОРКА КОРЗИНЫ -->
+
+    <div id="cart-drawer" class="cart-drawer">
+        <div class="drawer-overlay" id="cart-overlay"></div>
+        <div class="drawer-content">
+            
+            <!-- Шапка шторки -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a;">Кошик</h3>
+                <button type="button" id="close-cart-btn" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+
+            <!-- Твоя точная начинка корзины -->
+            <div id="drawer-step-cart" class="drawer-step">
+                <!-- Сюда JS рендерит товары -->
+                <div id="cart-items-container"></div>
+
+                <!-- Итог и кнопка перехода на Шаг 2 -->
+                <div id="cart-footer-box" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span style="font-weight: 600; color: #64748b;">Загальна сума:</span>
+                        <span style="font-weight: 800; font-size: 1.2rem; color: #0f172a;"><span id="cart-grand-total">0</span> грн</span>
+                    </div>
+                    
+                    <button type="button" id="btn-go-to-checkout" class="btn-primary" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
+                        Перейти до оформлення &rarr;
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- НИЖНЕЕ НАВИГАЦИОННОЕ МЕНЮ -->
+    <nav class="bottom_nav">
+        <!-- Кнопка 1: Старт -->
+        <a href="./index.html" class="nav_item" data-tab="tab-start">
+            <div class="nav_icon_box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            <span class="nav_label">Старт</span>
+        </a>
+
+        <!-- Кнопка 2: Замовлення -->
+        <a href="./index.html#orders" class="nav_item" data-tab="tab-orders">
+            <div class="nav_icon_box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+            </div>
+            <span class="nav_label">Замовлення</span>
+        </a>
+
+        <!-- Кнопка 3: Каталог -->
+        <a href="./catalog.html" class="nav_item" data-tab="tab-catalog">
+            <div class="nav_icon_box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </div>
+            <span class="nav_label">Каталог</span>
+        </a>
+
+        <!-- Кнопка 4: Корзина -->
+        <a href="#cart" class="nav_item" data-tab="tab-cart" id="nav-cart-btn">
+            <div class="nav_icon_box" style="position: relative;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <!-- Красный кружок с количеством товаров -->
+                <span id="cart-badge" class="cart_badge" style="display: none;">0</span>
+            </div>
+            <span class="nav_label">Кошик</span>
+        </a>
+
+        <!-- Кнопка 5: Походи -->
+        <a href="./tours.html" class="nav_item active" data-tab="tab-tours">
+            <div class="nav_icon_box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3l4 8 5-5 5 15H2L8 3z"></path>
+                </svg>
+            </div>
+            <span class="nav_label">Походи</span>
+        </a>
+    </nav>
+
+    <script src="script.js"></script>
+    <script src="tours.js"></script>
+</body>
+</html>

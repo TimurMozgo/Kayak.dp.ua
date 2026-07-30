@@ -402,17 +402,16 @@ body, html {
 
 /* САМ ВЫПАДАЮЩИЙ СПИСОК (ТЕПЕРЬ ОН СПРЯТАН!) */
 .dropdown-options-list {
-    position: absolute; /* Отрываем от документа, чтобы не растягивал карточку */
+    position: absolute; 
     top: calc(100% + 6px);
     left: 0;
     width: 100%;
     background: #ffffff;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Солидная тень */
-    z-index: 1000; /* Поверх всех элементов */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+    z-index: 1000; 
     
-    /* Скрываем по умолчанию */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
@@ -449,6 +448,12 @@ body, html {
     background: #f0f8ff;
     color: var(--primary-blue);
     font-weight: 600;
+}
+
+.dropdown-options-list {
+    max-height: 200px; /* Ограничиваем высоту (выбери от 180px до 250px под свой дизайн) */
+    overflow-y: auto;  /* Включаем вертикальную прокрутку */
+    -webkit-overflow-scrolling: touch; /* Плавный скролл для мобилок и iOS */
 }
 
 /* ================= СЧЕТЧИК ЛОДОК ================= */
@@ -1245,8 +1250,16 @@ body, html {
     gap: 16px;
 }
 
-/* ================= ЛОГОТИП В ФУТЕРЕ ================= */
+.location-link-footer {
+    color: #64748b;
+    text-decoration: none;
+}
 
+.location-link-footer:hover {
+    color: #fff;
+}
+
+/* ================= ЛОГОТИП В ФУТЕРЕ ================= */
 
 .footer-logo-img {
     height: 80px; 
@@ -1292,15 +1305,40 @@ body, html {
     color: #ffffff;
 }
 
-.location-link-footer {
-    color: #64748b;
+/* Кнопки соцсетей */
+.footer-socials {
+    display: flex;
+    gap: 12px;
+}
+
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1e293b;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
     text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.location-link-footer:hover {
-    color: #fff;
+.social-btn.instagram:hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+    transform: translateY(-3px);
 }
 
+.social-btn.telegram:hover {
+    background: #229ED9;
+    transform: translateY(-3px);
+}
+
+.social-btn.viber:hover {
+    background: #7360f2;
+    transform: translateY(-3px);
+}
 
 .footer-contacts {
     list-style: none;
@@ -1344,41 +1382,6 @@ body, html {
 
 .footer-bottom-links a {
     color: #64748b;
-}
-
-/* Кнопки соцсетей */
-.footer-socials {
-    display: flex;
-    gap: 12px;
-}
-
-.social-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #1e293b;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.social-btn.instagram:hover {
-    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
-    transform: translateY(-3px);
-}
-
-.social-btn.telegram:hover {
-    background: #229ED9;
-    transform: translateY(-3px);
-}
-
-.social-btn.viber:hover {
-    background: #7360f2;
-    transform: translateY(-3px);
 }
 
 /* ================= СТИЛЬНЫЙ СКРОЛЛБАР ДЛЯ ПЛАШКИ ПРОВЕРКИ ================= */
@@ -2171,22 +2174,30 @@ body, html {
         box-shadow:0 15px 40px rgba(15,23,42,.12);
     }
 
-    .dropdown-item{
-        padding:15px 18px;
-        font-size:.95rem;
-        border-bottom:1px solid #f1f5f9;
-        cursor:pointer;
-        transition:.2s;
+    /* Обертка для всех вариантов — именно она ограничивает высоту и крутит список */
+    .dropdown-options-list {
+        max-height: 220px;       /* Ограничение по высоте */
+        overflow-y: auto;        /* Включаем прокрутку, если элементов много */
+        -webkit-overflow-scrolling: touch; /* Плавный скролл на смартфонах */
     }
 
-    .dropdown-item:last-child{
-        border-bottom:none;
+    /* Твои стили элементов останутся без изменений */
+    .dropdown-item {
+        padding: 15px 18px;
+        font-size: .95rem;
+        border-bottom: 1px solid #f1f5f9;
+        cursor: pointer;
+        transition: .2s;
     }
 
-    .dropdown-item.active{
-        background:#0284c7;
-        color:#ffffff;
-        font-weight:700;
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item.active {
+        background: #0284c7;
+        color: #ffffff;
+        font-weight: 700;
     }
 
     .card-qty-control{
@@ -2283,7 +2294,6 @@ body, html {
     .book-btn{
         background:linear-gradient(135deg,#0284c7,#0369a1);
         color:#ffffff;
-        box-shadow:0 12px 30px rgba(2,132,199,.3);
     }
 
     .book-btn:active{
@@ -2906,7 +2916,7 @@ body, html {
         transform:scale(.98);
     }
 
-    /* --- 5. ФУТЕР (FOOTER) --- */
+    /* FOOTER РАЗДЕЛ */
 
     .footer-logo {
         display: flex;
@@ -2944,13 +2954,6 @@ body, html {
         display: flex;
         flex-direction: column;
         gap: 12px;
-    }
-
-    .footer-brand {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
     }
 
     /* 2. Настраиваем контейнер соцсетей */

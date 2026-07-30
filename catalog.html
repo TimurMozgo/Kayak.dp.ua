@@ -1034,8 +1034,6 @@
             </div>
         </div>
 
-        
-
         <!-- МОДАЛЬНОЕ ОКНО УСПЕШНОГО БРОНИРОВАНИЯ -->
         <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 20000; align-items: center; justify-content: center; font-family: sans-serif; padding: 16px;">
             <div style="background: #ffffff; width: 100%; max-width: 400px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); padding: 32px; text-align: center; border: 1px solid #e2e8f0; transform: scale(0.9); transition: all 0.3s ease;">
@@ -1082,7 +1080,7 @@
                     </div>
                 </div>
 
-                <!-- Колонка 3: Контакты и время работы -->
+                <!-- Колонка 2: Контакты -->
                 <div class="footer-col">
                     <h4 class="footer-title">Контакти</h4>
                     <ul class="footer-contacts">
@@ -1101,12 +1099,15 @@
                     </ul>
                 </div>
 
+                <!-- Колонка 3: Время работы -->
                 <div class="footer-col">
                     <h4 class="footer-title">Графік роботи</h4>
-                    <li>
-                        <i class="fa-solid fa-clock contact-icon clock-icon"></i>
-                        <span>Пн — Нд: 08:00 - 21:00</span>
-                    </li>
+                    <ul class="footer-contacts">
+                        <li>
+                            <i class="fa-solid fa-clock contact-icon clock-icon"></i>
+                            <span>Пн — Нд: 08:00 - 21:00</span>
+                        </li>
+                    </ul>
                 </div>
 
             </div>
@@ -1175,6 +1176,19 @@
             <span class="nav_label">Замовлення</span>
         </a>
 
+        <!-- Кнопка: Каталог -->
+        <a href="./catalog.html" class="nav_item active" data-tab="tab-catalog">
+            <div class="nav_icon_box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+            </div>
+            <span class="nav_label">Каталог</span>
+        </a>
+
         <!-- Кнопка: Кошик -->
         <a href="#cart" class="nav_item" data-tab="tab-cart" id="nav-cart-btn">
             <div class="nav_icon_box" style="position: relative;">
@@ -1189,16 +1203,13 @@
             <span class="nav_label">Кошик</span>
         </a>
 
-        <a href="./catalog.html" class="nav_item active" data-tab="tab-catalog">
+        <a href="./tours.html" class="nav_item" data-tab="tab-tours">
             <div class="nav_icon_box">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M8 3l4 8 5-5 5 15H2L8 3z"></path>
                 </svg>
             </div>
-            <span class="nav_label">Каталог</span>
+            <span class="nav_label">Походи</span>
         </a>
     </nav>
 

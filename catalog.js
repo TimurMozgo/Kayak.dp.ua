@@ -185,9 +185,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function saveAndUpdateCart() {
         localStorage.setItem('timurtour_cart', JSON.stringify(cart));
         
-        const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const totalSum = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        // Считаем сумму и количество с защитой от разницы в названиях (qty / quantity)
+        const totalQty = cart.reduce((sum, item) => sum + (Number(item.qty || item.quantity) || 0), 0);
+        const totalSum = cart.reduce((sum, item) => {
+            const itemQty = Number(item.qty || item.quantity) || 1;
+            const itemPrice = Number(item.price || item.totalPrice) || 0;
+            return sum + (itemPrice * itemQty);
+        }, 0);
 
+        // Обновляем плавающую плашку (если она есть)
         if (floatingCart) {
             if (totalQty > 0) {
                 floatingCart.style.display = "flex";
@@ -200,10 +206,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // Обновляем красную плашку на иконке корзины
         const badge = document.getElementById('cart-badge');
         if (badge) {
             badge.textContent = totalQty;
             badge.style.display = totalQty > 0 ? 'flex' : 'none';
+        }
+
+        // Если на странице есть общая корзина — обновляем и её
+        if (typeof updateCartUI === 'function') {
+            updateCartUI();
         }
     }
 
@@ -289,21 +301,52 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bookBtn) {
             bookBtn.addEventListener("click", () => {
                 const cleanDurationText = currentDurationText.split(" (")[0];
-                const totalPrice = currentPricePerUnit * currentQty;
+                const computedTotal = Number(currentPricePerUnit) * Number(currentQty);
 
-                const existingItem = cart.find(item => item.productId === productId && item.durationText === cleanDurationText);
+                // Ищем существующий элемент
+                const existingItem = cart.find(item => 
+                    (item.id === productId || item.productId === productId) && 
+                    (item.durationText === cleanDurationText || item.duration === cleanDurationText)
+                );
 
                 if (existingItem) {
-                    existingItem.quantity += currentQty;
-                    existingItem.totalPrice = existingItem.quantity * existingItem.pricePerUnit;
+                    const newQty = Number(existingItem.qty || existingItem.quantity || 0) + Number(currentQty);
+                    const unitPrice = Number(existingItem.pricePerUnit || existingItem.price || currentPricePerUnit);
+
+                    // Обновляем все вариации количества и цены
+                    existingItem.qty = newQty;
+                    existingItem.quantity = newQty;
+                    existingItem.count = newQty;
+                    existingItem.totalPrice = newQty * unitPrice;
+                    existingItem.price = unitPrice;
                 } else {
+                    // Записываем объект со ВСЕМИ возможными наименованиями ключей
                     cart.push({
-                        productId,
-                        productName,
+                        // Идентификаторы
+                        id: productId,
+                        productId: productId,
+
+                        // Названия (для заголовка и подзаголовка)
+                        title: productName,
+                        productName: productName,
+                        name: productName,
+                        duration: cleanDurationText,
                         durationText: cleanDurationText,
-                        pricePerUnit: currentPricePerUnit,
-                        quantity: currentQty,
-                        totalPrice
+                        subtitle: cleanDurationText,
+
+                        // Количество
+                        qty: Number(currentQty),
+                        quantity: Number(currentQty),
+                        count: Number(currentQty),
+
+                        // Цены
+                        price: Number(currentPricePerUnit),
+                        pricePerUnit: Number(currentPricePerUnit),
+                        totalPrice: computedTotal,
+                        cost: Number(currentPricePerUnit),
+
+                        // Категория
+                        type: 'ОРЕНДА'
                     });
                 }
 
@@ -347,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ----------------- РЕНДЕР КОРЗИНЫ В DRAWER -----------------
+    // ----------------- РЕНДЕР КОРЗИНЫ В DRAWER (УНИВЕРСАЛЬНЫЙ) -----------------
     function renderCart() {
         const container = document.getElementById("cart-items-container");
         const grandTotalDisplay = document.getElementById("cart-grand-total");
@@ -369,20 +412,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         cart.forEach((item, index) => {
-            grandTotal += item.totalPrice;
+            // Нормализуем данные под любые вариации названий ключей
+            const title = item.productName || item.title || item.name || "Товар";
+            const subtitle = item.durationText || item.duration || item.type || "";
+            const qty = Number(item.quantity || item.qty || item.count || 1);
+            
+            // Нормализуем цену
+            const unitPrice = Number(item.pricePerUnit || item.price || (item.totalPrice ? item.totalPrice / qty : 0));
+            const itemTotal = Number(item.totalPrice) || (unitPrice * qty);
+            
+            // Синхронизируем обратно в объект на случай кликов +/-
+            item.quantity = qty;
+            item.qty = qty;
+            item.pricePerUnit = unitPrice;
+            item.price = unitPrice;
+            item.totalPrice = itemTotal;
+
+            grandTotal += itemTotal;
+
             const cartItemHtml = `
                 <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-radius: 12px; padding: 12px 16px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
                     <div style="display: flex; flex-direction: column; gap: 4px; max-width: 45%;">
-                        <span style="font-weight: 700; color: #0f172a; font-size: 0.95rem; line-height: 1.2;">${item.productName}</span>
-                        <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">${item.durationText}</span>
+                        <span style="font-weight: 700; color: #0f172a; font-size: 0.95rem; line-height: 1.2;">${title}</span>
+                        <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">${subtitle}</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 8px;">
                         <button type="button" class="drawer-qty-minus" data-index="${index}" style="background: none; border: none; cursor: pointer; font-weight: bold; color: #64748b;">-</button>
-                        <span style="font-weight: 700; font-size: 0.9rem; min-width: 16px; text-align: center;">${item.quantity}</span>
+                        <span style="font-weight: 700; font-size: 0.9rem; min-width: 16px; text-align: center;">${qty}</span>
                         <button type="button" class="drawer-qty-plus" data-index="${index}" style="background: none; border: none; cursor: pointer; font-weight: bold; color: #64748b;">+</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-weight: 800; color: #0f172a; font-size: 0.95rem; min-width: 70px; text-align: right;">${item.totalPrice} грн</span>
+                        <span style="font-weight: 800; color: #0f172a; font-size: 0.95rem; min-width: 70px; text-align: right;">${itemTotal} грн</span>
                         <button type="button" class="btn-remove-cart-item" data-index="${index}" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.3rem; font-weight: bold;">&times;</button>
                     </div>
                 </div>
@@ -392,28 +452,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (grandTotalDisplay) grandTotalDisplay.textContent = grandTotal;
 
+        // ПЛЮС
         container.querySelectorAll(".drawer-qty-plus").forEach(btn => {
             btn.addEventListener("click", () => {
                 const idx = parseInt(btn.getAttribute("data-index"));
-                cart[idx].quantity++;
-                cart[idx].totalPrice = cart[idx].quantity * cart[idx].pricePerUnit;
+                const currentItem = cart[idx];
+                const currentQty = Number(currentItem.quantity || currentItem.qty || 1) + 1;
+                const unitPrice = Number(currentItem.pricePerUnit || currentItem.price || 0);
+
+                currentItem.quantity = currentQty;
+                currentItem.qty = currentQty;
+                currentItem.totalPrice = currentQty * unitPrice;
+
                 saveAndUpdateCart();
                 renderCart();
             });
         });
 
+        // МИНУС
         container.querySelectorAll(".drawer-qty-minus").forEach(btn => {
             btn.addEventListener("click", () => {
                 const idx = parseInt(btn.getAttribute("data-index"));
-                if (cart[idx].quantity > 1) {
-                    cart[idx].quantity--;
-                    cart[idx].totalPrice = cart[idx].quantity * cart[idx].pricePerUnit;
+                const currentItem = cart[idx];
+                const currentQty = Number(currentItem.quantity || currentItem.qty || 1);
+                
+                if (currentQty > 1) {
+                    const newQty = currentQty - 1;
+                    const unitPrice = Number(currentItem.pricePerUnit || currentItem.price || 0);
+
+                    currentItem.quantity = newQty;
+                    currentItem.qty = newQty;
+                    currentItem.totalPrice = newQty * unitPrice;
+
                     saveAndUpdateCart();
                     renderCart();
                 }
             });
         });
 
+        // УДАЛЕНИЕ
         container.querySelectorAll(".btn-remove-cart-item").forEach(btn => {
             btn.addEventListener("click", () => {
                 const idx = parseInt(btn.getAttribute("data-index"));
@@ -679,8 +756,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Проверяем наличие чека
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-            alert("⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!");
+            const errorMsg = "⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!";
 
+            // 1. Нативное окно Telegram (если открыто в Telegram)
+            if (window.Telegram?.WebApp?.showAlert) {
+                window.Telegram.WebApp.showAlert(errorMsg);
+            } else {
+                // 2. Запасное красивое уведомление для браузера
+                showCustomNotice(errorMsg);
+            }
+
+            // Подсвечиваем зону загрузки красным
             if (uploadZone) {
                 uploadZone.style.border = "2px dashed #ef4444";
                 uploadZone.style.backgroundColor = "#fef2f2";
@@ -690,6 +776,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
             return;
+        }
+
+        // Хелпер для красивого уведомления в обычном браузере
+        function showCustomNotice(message) {
+            let notice = document.getElementById("custom-notice");
+            if (!notice) {
+                notice = document.createElement("div");
+                notice.id = "custom-notice";
+                notice.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(-20px);
+                    background: #0f172a;
+                    color: #fff;
+                    padding: 12px 20px;
+                    border-radius: 12px;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                    z-index: 9999;
+                    opacity: 0;
+                    transition: all 0.3s ease;
+                    text-align: center;
+                    max-width: 90%;
+                `;
+                document.body.appendChild(notice);
+            }
+
+            notice.textContent = message;
+
+            requestAnimationFrame(() => {
+                notice.style.opacity = "1";
+                notice.style.transform = "translateX(-50%) translateY(0)";
+            });
+
+            setTimeout(() => {
+                notice.style.opacity = "0";
+                notice.style.transform = "translateX(-50%) translateY(-20px)";
+            }, 3000);
         }
 
         if (uploadZone) {
