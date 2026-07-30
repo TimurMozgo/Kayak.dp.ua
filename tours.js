@@ -187,27 +187,76 @@ function bookTourAction(tourId) {
 // 5. ИНИЦИАЛИЗАЦИЯ И ОБРАБОТЧИКИ
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof updateCartUI === 'function') {
-        updateCartUI();
-    }
+    
+    const cartDrawer = document.getElementById('cart-drawer');
 
-    // Клик на иконку «Кошик» — только тут выезжает шторка
+    // 1. Открытие корзины по клику на нижнюю кнопку навигации
     const navCartBtn = document.getElementById('nav-cart-btn');
     if (navCartBtn) {
         navCartBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openCartDrawer();
+            e.preventDefault(); // Запрещаем ссылке переходить по #cart
+            
+            if (cartDrawer) {
+                cartDrawer.classList.add('active'); // Открываем шторку
+                
+                // При открытии сбрасываем вид на Step 1 (список товаров)
+                const step1 = document.getElementById('drawer-step-cart');
+                const step2 = document.getElementById('drawer-step-form');
+                if (step1 && step2) {
+                    step1.style.display = 'block';
+                    step2.style.display = 'none';
+                }
+
+                // Обновляем UI корзины, если функция существует
+                if (typeof updateCartUI === 'function') {
+                    updateCartUI();
+                }
+            } else {
+                console.error("Ошибка: Блок #cart-drawer не найден на странице!");
+            }
         });
     }
 
-    // Закрытие шторки
-    const closeCartBtn = document.getElementById('close-cart-btn');
-    if (closeCartBtn) {
-        closeCartBtn.addEventListener('click', closeCartDrawer);
-    }
+    // 2. ГЛОБАЛЬНЫЙ КЛИК-КОНТРОЛЛЕР (Закрытие, Переход на форму, Назад)
+    document.addEventListener('click', (e) => {
 
-    const cartOverlay = document.getElementById('cart-overlay');
-    if (cartOverlay) {
-        cartOverlay.addEventListener('click', closeCartDrawer);
-    }
+        // А) Закрытие корзины (крестик или затемнение)
+        if (e.target.closest('#close-cart-btn') || e.target.closest('#cart-overlay')) {
+            e.preventDefault();
+            if (cartDrawer) {
+                cartDrawer.classList.remove('active');
+            }
+        }
+
+        // Б) Переход к опросу (Шаг 1 -> Шаг 2)
+        if (e.target.closest('#btn-go-to-checkout')) {
+            e.preventDefault();
+            
+            const step1 = document.getElementById('drawer-step-cart');
+            const step2 = document.getElementById('drawer-step-form');
+
+            if (step1 && step2) {
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+                console.log("✅ Успешный переход на анкету!");
+            } else {
+                console.error("❌ Ошибка переключения: Не найден #drawer-step-cart или #drawer-step-form!");
+            }
+        }
+
+        // В) Возврат из опроса назад к списку (Шаг 2 -> Шаг 1)
+        if (e.target.closest('#btn-back-to-cart')) {
+            e.preventDefault();
+            
+            const step1 = document.getElementById('drawer-step-cart');
+            const step2 = document.getElementById('drawer-step-form');
+
+            if (step1 && step2) {
+                step2.style.display = 'none';
+                step1.style.display = 'block';
+            }
+        }
+
+    });
+
 });

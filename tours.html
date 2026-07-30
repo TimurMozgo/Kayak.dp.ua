@@ -224,30 +224,97 @@
 
     <div id="cart-drawer" class="cart-drawer">
         <div class="drawer-overlay" id="cart-overlay"></div>
-        <div class="drawer-content">
+        
+        <div class="drawer-content" style="background: #0b0f19; color: #f8fafc; border-left: 1px solid #1e293b;">
             
             <!-- Шапка шторки -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a;">Кошик</h3>
-                <button type="button" id="close-cart-btn" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #64748b;">&times;</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: #f8fafc;">Кошик</h3>
+                <button type="button" id="close-cart-btn" style="background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8;">&times;</button>
             </div>
 
-            <!-- Твоя точная начинка корзины -->
+            <!-- ================= ШАГ 1: СПИСОК ТОВАРОВ ================= -->
             <div id="drawer-step-cart" class="drawer-step">
                 <!-- Сюда JS рендерит товары -->
                 <div id="cart-items-container"></div>
 
                 <!-- Итог и кнопка перехода на Шаг 2 -->
-                <div id="cart-footer-box" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                <div id="cart-footer-box" style="margin-top: 20px; border-top: 1px solid #1e293b; padding-top: 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="font-weight: 600; color: #64748b;">Загальна сума:</span>
-                        <span style="font-weight: 800; font-size: 1.2rem; color: #0f172a;"><span id="cart-grand-total">0</span> грн</span>
+                        <span style="font-weight: 600; color: #94a3b8;">Загальна сума:</span>
+                        <span style="font-weight: 800; font-size: 1.2rem; color: #f8fafc;"><span id="cart-grand-total">0</span> грн</span>
                     </div>
                     
-                    <button type="button" id="btn-go-to-checkout" class="btn-primary" style="width: 100%; padding: 14px; background: #0088cc; color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;">
+                    <button type="button" id="btn-go-to-checkout" style="width: 100%; padding: 14px; background: #facc15; color: #0b0f19; border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.2s ease;">
                         Перейти до оформлення &rarr;
                     </button>
                 </div>
+            </div>
+
+            <!-- ================= ШАГ 2: АНКЕТА-ОПРОС ================= -->
+            <div id="drawer-step-form" class="drawer-step" style="display: none;">
+                
+                <!-- Кнопка назад -->
+                <button type="button" id="btn-back-to-cart" style="background: none; border: none; color: #facc15; cursor: pointer; font-weight: 600; padding: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 5px;">
+                    &larr; Назад до списку
+                </button>
+
+                <form id="tour-checkout-form" class="checkout-form">
+                    <h3 class="form-title" style="font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin-bottom: 15px;">Для реєстрації сплаву, вкажіть будь ласка:</h3>
+
+                    <!-- 1. ПІБ и телефон -->
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="checkout-fullname" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">1. ПІБ та номер телефону відповідального *</label>
+                        <input type="text" id="checkout-fullname" name="fullname" placeholder="Іванов Іван, +380631112233" required class="form-input">
+                    </div>
+
+                    <!-- 2. Откуда узнали -->
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="checkout-source" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">2. Як ви дізналися про kayak.dp.ua 🔆?</label>
+                        <input type="text" id="checkout-source" name="source" placeholder="Наприклад: з Instagram, від друзів..." class="form-input">
+                    </div>
+
+                    <!-- 3. Опыт -->
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">3. Чи маєте досвід у веслуванні?</label>
+                        <div class="radio-group" style="display: flex; gap: 15px; margin-top: 5px;">
+                            <label class="radio-label" style="font-size: 0.85rem; cursor: pointer; color: #f8fafc;">
+                                <input type="radio" name="experience" value="Так, є досвід" checked> Так, є досвід
+                            </label>
+                            <label class="radio-label" style="font-size: 0.85rem; cursor: pointer; color: #f8fafc;">
+                                <input type="radio" name="experience" value="Ні, вперше"> Ні, перша спроба
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 4. Плавсредства -->
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="checkout-boats" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">4. Які плавзасоби обрали та яка кількість?</label>
+                        <textarea id="checkout-boats" name="boats" rows="2" placeholder="Наприклад: 1 каяк одномісний, 1 двомісний" class="form-input"></textarea>
+                    </div>
+
+                    <!-- 5. Участники и дети -->
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="checkout-participants" style="display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 4px;">5. Кількість учасників (із них дітей + вік дітей)</label>
+                        <input type="text" id="checkout-participants" name="participants" placeholder="Наприклад: 3 дорослих, 1 дитина (10 років)" class="form-input">
+                    </div>
+
+                    <!-- 6. Чат участников -->
+                    <div class="chat-invite-block" style="background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                        <div class="chat-invite-text">
+                            <strong style="color: #38bdf8; font-size: 0.85rem;">6. Чат учасників сплаву:</strong>
+                            <p style="font-size: 0.78rem; color: #94a3b8; margin: 3px 0 8px 0;">Приєднуйтесь за посиланням до чату учасників, тут буде вся актуальна інформація по заходу!</p>
+                            <a href="https://t.me/+ваша_ссылка_на_чат" target="_blank" class="chat-link-btn" style="display: inline-block; background: #0284c7; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; text-decoration: none; font-weight: 600;">
+                                Увійти в чат сплаву 🚀
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка отправки -->
+                    <button type="submit" class="btn-submit-booking" style="width: 100%; padding: 14px; background: #facc15; color: #0b0f19; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.95rem;">
+                        Підтвердити реєстрацію
+                    </button>
+                </form>
             </div>
 
         </div>
