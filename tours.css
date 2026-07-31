@@ -442,7 +442,7 @@ body {
 }
 
 /* =========================================
-   ПРЕМІАЛЬНЕ ОФОРМЛЕННЯ ЗАЯВКИ
+   ПРЕМІАЛЬНЕ ОФОРМЛЕННЯ ЗАЯВКИ (MONOCHROME B&W)
    ========================================= */
 
 .checkout-form {
@@ -456,9 +456,9 @@ body {
 .form-title {
     font-size: 1.15rem;
     font-weight: 800;
-    color: #0f172a;
+    color: #ffffff;
     margin-bottom: 10px;
-    border-bottom: 2px solid #f1f5f9;
+    border-bottom: 1px solid #262626;
     padding-bottom: 12px;
     letter-spacing: -0.3px;
 }
@@ -472,32 +472,32 @@ body {
 .form-group label {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #475569;
+    color: #a3a3a3;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Элегантные поля ввода */
+/* Элегантные темные поля ввода */
 .form-input {
     width: 100%;
     padding: 14px 16px;
-    border: 1.5px solid #e5e5e5;
+    border: 1px solid #262626 !important;
     border-radius: 10px;
     font-size: 0.95rem;
-    background: #ffffff;
-    color: #111111;
+    background: #171717 !important;
+    color: #ffffff !important;
     outline: none;
     transition: all 0.2s ease;
 }
 
-/* Эффект фокуса — строгая черная рамка без лишнего свечения */
+/* Эффект фокуса — строгая белая рамка */
 .form-input:focus {
-    border-color: #111111;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
 }
 
 .form-input::placeholder {
-    color: #a3a3a3;
+    color: #525252 !important;
     font-weight: 400;
 }
 
@@ -511,7 +511,7 @@ body {
 .radio-label {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #334155;
+    color: #ffffff;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -520,32 +520,31 @@ body {
 }
 
 .radio-label:hover {
-    color: #0ea5e9;
+    color: #a3a3a3;
 }
 
-/* Блок с приглашением в чат (Стиль карточки-уведомления) */
+/* Блок с приглашением в чат (Темная строгая карточка) */
 .chat-invite-block {
-    background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 100%);
-    border: 1px solid #bae6fd;
+    background: #171717;
+    border: 1px solid #262626;
     border-radius: 14px;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
-    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.05);
 }
 
 .chat-invite-text strong {
     font-size: 0.95rem;
-    color: #0369a1;
+    color: #ffffff;
     display: block;
     margin-bottom: 4px;
 }
 
 .chat-invite-text p {
     font-size: 0.85rem;
-    color: #475569;
+    color: #a3a3a3;
     line-height: 1.4;
     margin: 0 0 12px 0;
 }
@@ -554,8 +553,9 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #0284c7;
+    background: #262626;
     color: #ffffff;
+    border: 1px solid #404040;
     padding: 10px 16px;
     border-radius: 8px;
     font-size: 0.85rem;
@@ -566,38 +566,36 @@ body {
 }
 
 .chat-link-btn:hover {
-    background: #0369a1;
+    background: #404040;
     transform: translateY(-1px);
 }
 
-/* Кнопка отправки (Главное целевое действие) */
+/* Кнопка отправки (Контрастная белая кнопка) */
 .btn-submit-booking {
     width: 100%;
-    /* Тот самый градиент: от глубокого синего к современному голубому */
-    background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%);
-    color: #ffffff;
+    background: #ffffff !important;
+    color: #000000 !important;
     border: none;
     padding: 16px;
     border-radius: 10px;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.05rem;
     cursor: pointer;
     margin-top: 15px;
-    box-shadow: 0 8px 20px rgba(2, 132, 199, 0.25);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .btn-submit-booking:hover {
-    background: linear-gradient(135deg, #1e293b 0%, #0369a1 100%);
-    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+    background: #e5e5e5 !important;
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
 
 .btn-submit-booking:active {
     transform: translateY(0);
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
 }
 
 /* Фиксируем подложку на весь экран */
@@ -614,7 +612,6 @@ body {
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* При добавлении класса active — показываем шторку */
 #cart-drawer.active {
     visibility: visible !important;
     opacity: 1 !important;
@@ -628,11 +625,11 @@ body {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    background: rgba(15, 23, 42, 0.6) !important;
-    backdrop-filter: blur(3px);
+    background: rgba(0, 0, 0, 0.75) !important;
+    backdrop-filter: blur(4px);
 }
 
-/* Сама панель корзины: по умолчанию сдвинута за правый край (-100%) */
+/* Сама панель корзины: глубокий темный фон */
 #cart-drawer .drawer-content {
     position: absolute !important;
     top: 0 !important;
@@ -640,21 +637,35 @@ body {
     width: 100% !important;
     max-width: 400px !important;
     height: 100vh !important;
-    background: #ffffff !important;
+    background: #0a0a0a !important;
+    color: #ffffff !important;
+    border-left: 1px solid #262626 !important;
     padding: 20px !important;
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.8) !important;
     overflow-y: auto !important;
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     z-index: 2 !important;
     box-sizing: border-box !important;
 }
 
-/* Когда шторка активна — панели задаем right: 0 (выезжает справа) */
 #cart-drawer.active .drawer-content {
     right: 0 !important;
 }
 
-/* РАЗДЕЛ КНОПКИ И САМОЙ КАРТОЧКИ (( ПОДРОБНЕЕ )) */
+/* 1. Название товара ("Кіно на острові") — белоснежное */
+#cart-items-container h4,
+#cart-items-container .cart-item-title,
+#cart-items-container strong,
+#cart-items-container div {
+    color: #ffffff !important;
+}
+
+/* 2. Подпись цены ("1900 грн / шт") — светлая серая */
+#cart-items-container p,
+#cart-items-container .cart-item-price,
+#cart-items-container small {
+    color: #a3a3a3 !important;
+}
 
 /* ==========================================
    ИДЕАЛЬНАЯ ШТОРКА (БЕЗ БАГОВ ПОЗИЦИОНИРОВАНИЯ)

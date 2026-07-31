@@ -85,6 +85,7 @@ function closeCartDrawer() {
 function openBookingDrawer(tourId) {
     const id = tourId || 'moon-tour';
     bookTourAction(id);
+    // 🔥 Корзину НЕ открываем автоматически! Юзер сам откроет, когда захочет
 }
 
 // ==========================================================================
@@ -123,7 +124,7 @@ function openTourDetails(tourId) {
             <div style="color: #94a3b8; font-size: 0.9rem;">🚣 Формат: ${tour.format}</div>
         </div>
 
-        <button onclick="bookTourAction('${tour.id}')" class="btn-book" style="width: 100%; padding: 14px; font-weight: 800; font-size: 1rem; background: #facc15; color: #0b0f19; border: none; border-radius: 12px; cursor: pointer;">
+        <button onclick="bookTourAction('${tour.id}');" class="btn-book" style="width: 100%; padding: 14px; font-weight: 800; font-size: 1rem; background: #facc15; color: #0b0f19; border: none; border-radius: 12px; cursor: pointer;">
             Забронювати
         </button>
     `;
@@ -144,7 +145,7 @@ function closeTourDetails() {
 }
 
 // ==========================================================================
-// 4. ДОБАВЛЕНИЕ В КОРЗИНУ (УНИВЕРСАЛЬНЫЕ КЛЮЧИ ДЛЯ КАТАЛОГА)
+// 4. ДОБАВЛЕНИЕ В КОРЗИНУ
 // ==========================================================================
 function bookTourAction(tourId) {
     const tour = toursData[tourId];
@@ -152,28 +153,20 @@ function bookTourAction(tourId) {
 
     if (typeof addToCart === 'function') {
         addToCart({
-            // Передаем все популярные наименования id и названия
             id: tour.id,
             tourId: tour.id,
-            
             title: tour.title,
             name: tour.title,
-            
-            // Передаем цену во всех форматах (и число, и строку)
             price: tour.numericPrice || 1200,
             cost: tour.numericPrice || 1200,
-            
-            // Количество товара
             qty: 1,
             quantity: 1,
             count: 1,
-            
-            // Доп параметры
-            type: 'похід',
+            type: 'tour',      // 🔥 Четкий тип для корзины
             category: 'похід'
         });
     } else {
-        console.error("Функция addToCart не найдена в script.js!");
+        console.error("Функция addToCart не найдена!");
     }
 
     closeTourDetails();
@@ -194,60 +187,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const navCartBtn = document.getElementById('nav-cart-btn');
     if (navCartBtn) {
         navCartBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // Запрещаем ссылке переходить по #cart
-            
-            if (cartDrawer) {
-                cartDrawer.classList.add('active'); // Открываем шторку
-                
-                // При открытии сбрасываем вид на Step 1 (список товаров)
-                const step1 = document.getElementById('drawer-step-cart');
-                const step2 = document.getElementById('drawer-step-form');
-                if (step1 && step2) {
-                    step1.style.display = 'block';
-                    step2.style.display = 'none';
-                }
+            e.preventDefault();
+            openCartDrawer();
 
-                // Обновляем UI корзины, если функция существует
-                if (typeof updateCartUI === 'function') {
-                    updateCartUI();
-                }
-            } else {
-                console.error("Ошибка: Блок #cart-drawer не найден на странице!");
+            const step1 = document.getElementById('drawer-step-cart');
+            const step2 = document.getElementById('drawer-step-form');
+            if (step1 && step2) {
+                step1.style.display = 'block';
+                step2.style.display = 'none';
             }
         });
     }
 
-    // 2. ГЛОБАЛЬНЫЙ КЛИК-КОНТРОЛЛЕР (Закрытие, Переход на форму, Назад)
+    // 2. ГЛОБАЛЬНЫЙ КЛИК-КОНТРОЛЛЕР
     document.addEventListener('click', (e) => {
 
-        // А) Закрытие корзины (крестик или затемнение)
-        if (e.target.closest('#close-cart-btn') || e.target.closest('#cart-overlay')) {
+        // А) Закрытие корзины (крестик или непосредственно клик по тёмному фону)
+        if (e.target.closest('#close-cart-btn') || e.target.id === 'cart-overlay') {
             e.preventDefault();
-            if (cartDrawer) {
-                cartDrawer.classList.remove('active');
-            }
+            closeCartDrawer();
         }
 
         // Б) Переход к опросу (Шаг 1 -> Шаг 2)
         if (e.target.closest('#btn-go-to-checkout')) {
             e.preventDefault();
-            
             const step1 = document.getElementById('drawer-step-cart');
             const step2 = document.getElementById('drawer-step-form');
 
             if (step1 && step2) {
                 step1.style.display = 'none';
                 step2.style.display = 'block';
-                console.log("✅ Успешный переход на анкету!");
             } else {
-                console.error("❌ Ошибка переключения: Не найден #drawer-step-cart или #drawer-step-form!");
+                console.error("❌ Не найден #drawer-step-cart или #drawer-step-form!");
             }
         }
 
-        // В) Возврат из опроса назад к списку (Шаг 2 -> Шаг 1)
+        // В) Возврат к корзине (Шаг 2 -> Шаг 1)
         if (e.target.closest('#btn-back-to-cart')) {
             e.preventDefault();
-            
             const step1 = document.getElementById('drawer-step-cart');
             const step2 = document.getElementById('drawer-step-form');
 
@@ -256,7 +233,132 @@ document.addEventListener('DOMContentLoaded', () => {
                 step1.style.display = 'block';
             }
         }
-
     });
 
+    // ==========================================================================
+    // ОТПРАВКА ФОРМЫ С АВТО-РАЗДЕЛЕНИЕМ ИМЕНИ И ТЕЛЕФОНА
+    // ==========================================================================
+    const checkoutForm = document.getElementById('tour-checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // 1. Достаем корзину
+            const currentCart = (typeof cart !== 'undefined' && Array.isArray(cart) && cart.length > 0) ? cart 
+                            : (typeof window.cart !== 'undefined' && Array.isArray(window.cart)) ? window.cart 
+                            : [];
+
+            // 2. Считываем сырые данные полей
+            let rawName = document.getElementById('checkout-fullname')?.value || '';
+            let rawPhone = document.getElementById('checkout-phone')?.value || '';
+
+            // 🎯 МИГИЯ ДЕЛЕНИЯ: Если телефон вписали прямо в поле Имени — вытаскиваем его оттуда!
+            const phoneRegex = /(\+?\d[\d\s\-\(\)]{8,}\d)/;
+            const match = rawName.match(phoneRegex);
+
+            let cleanPhone = rawPhone.trim();
+            let cleanName = rawName.trim();
+
+            if (match) {
+                if (!cleanPhone || cleanPhone === 'Не указано') {
+                    cleanPhone = match[0].trim(); // Забираем найденный номер
+                }
+                cleanName = cleanName.replace(match[0], '').trim(); // Вырезаем номер из имени
+            }
+
+            // 3. Собираем анкету
+            const experienceVal = document.querySelector('input[name="experience"]:checked')?.value || '';
+            const boatsVal = document.getElementById('checkout-boats')?.value || '';
+            const participantsVal = document.getElementById('checkout-participants')?.value || '';
+            const hasTourQuiz = (experienceVal !== '' && experienceVal !== 'Не вказано') || boatsVal.trim() !== '' || participantsVal.trim() !== '';
+
+            const isTourCart = currentCart.some(i => i.type === 'tour' || i.type === 'похід' || i.category === 'похід');
+            const isRentCart = currentCart.some(i => i.type === 'rent' || i.type === 'оренда' || i.category === 'оренда');
+
+            let calculatedOrderType = 'ОРЕНДА';
+            if ((isTourCart || hasTourQuiz) && isRentCart) {
+                calculatedOrderType = 'КОМБО (Похід + Оренда)';
+            } else if (isTourCart || hasTourQuiz) {
+                calculatedOrderType = 'ПОХІД';
+            }
+
+            // 4. Считаем итоговую сумму
+            let calculatedTotal = currentCart.reduce((sum, item) => sum + ((item.price || item.cost || 0) * (item.qty || item.quantity || 1)), 0);
+
+            // Если корзина была пустой, но заполнен поход — ставим дефолтную стоимость похода (например 1200 грн)
+            if (calculatedTotal === 0 && (isTourCart || hasTourQuiz)) {
+                calculatedTotal = 1200; 
+            }
+
+            const formData = {
+                fullname: cleanName || 'Клієнт',
+                phone: cleanPhone || 'Не вказано',
+                source: document.getElementById('checkout-source')?.value || 'Не указано',
+                experience: experienceVal || 'Не вказано',
+                boats: boatsVal || 'Не вказано',
+                participants: participantsVal || '1 особа',
+                
+                cartItems: currentCart.map(item => ({
+                    id: item.id,
+                    title: item.title || item.name,
+                    price: item.price || item.cost,
+                    qty: item.qty || item.quantity || 1,
+                    type: item.type || 'tour'
+                })),
+                
+                totalPrice: calculatedTotal,
+                orderType: calculatedOrderType,
+                timestamp: new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
+            };
+
+            // 5. Отправка на n8n
+            const webhookUrl = 'https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52';
+
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                console.log('✅ Данные ушли на n8n!');
+            } catch (error) {
+                console.error('❌ Ошибка отправки:', error);
+            }
+
+            // 6. Сброс и очистка + навешивание закрытия на "Чудово"
+            closeCartDrawer();
+            const successModal = document.getElementById('success-modal');
+            
+            if (successModal) {
+                // 1. Показываем плашку успеха
+                successModal.style.display = 'flex';
+
+                // 2. Находим кнопку "Чудово" или крестик внутри модалки
+                const closeBtn = successModal.querySelector('button') 
+                              || successModal.querySelector('.close-modal')
+                              || document.getElementById('close-success-btn');
+
+                if (closeBtn) {
+                    // При клике на "Чудово" скрываем плашку
+                    closeBtn.onclick = function() {
+                        successModal.style.display = 'none';
+                    };
+                }
+
+                // 3. Закрытие при клике мимо модалки (по темному фону)
+                successModal.onclick = function(e) {
+                    if (e.target === successModal) {
+                        successModal.style.display = 'none';
+                    }
+                };
+            }
+
+            // Очищаем корзины в памяти
+            if (typeof cart !== 'undefined' && Array.isArray(cart)) cart.length = 0;
+            if (typeof window.cart !== 'undefined' && Array.isArray(window.cart)) window.cart.length = 0;
+            if (typeof updateCartUI === 'function') updateCartUI();
+            
+            this.reset();
+        });
+    }
 });
