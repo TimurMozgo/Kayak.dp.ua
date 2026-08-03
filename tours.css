@@ -364,6 +364,34 @@ body {
     gap: 10px;
 }
 
+.tour-price-badge-dual {
+    position: absolute;
+    /* Убираем top, ставим бэдж вниз */
+    bottom: 15px; 
+    right: 15px; /* Можешь поменять на left: 15px, если хочешь в левый нижний угол */
+    
+    background: rgba(13, 27, 62, 0.85);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 237, 0, 0.3);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 2; /* Чтобы плашка поверх картинки была */
+}
+
+.tour-price-badge-dual strong {
+    color: #FFED00;
+}
+
+.price-divider {
+    color: rgba(255, 255, 255, 0.4);
+}
+
 /* Вторая кнопка (Детальніше) */
 .btn-secondary {
     display: flex;

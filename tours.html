@@ -113,7 +113,13 @@
         <article class="tour-card teaser-card night-theme">
             <div class="tour-image-box">
                 <img src="./img_tour/МАГІЯ_ЗОЛОТОЇ_ГОДИНИ.jpg" alt="МАГІЯ_ЗОЛОТОЇ_ГОДИНИ" class="tour-img">
-                <div class="tour-price-badge">950 грн</div>
+                
+                <!-- Двойной прайс-бэдж -->
+                <div class="tour-price-badge-dual">
+                    <span class="price-item">Будні: <strong>750 грн</strong></span>
+                    <span class="price-divider">/</span>
+                    <span class="price-item">Вихідні: <strong>950 грн</strong></span>
+                </div>
             </div>
             
             <div class="tour-content">
@@ -132,6 +138,40 @@
                         Забронювати
                     </button>
                     <button class="btn-primary-animated" onclick="openTourDetails('sich-golden-hour')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
+                <img src="./img_tour/ЧАРІВНІ_ЗАХОДИ_СОНЦЯ.jpg" alt="ЧАРІВНІ_ЗАХОДИ_СОНЦЯ" class="tour-img">
+                
+                <!-- Двойной прайс-бэдж -->
+                <div class="tour-price-badge-dual">
+                    <span class="price-item">Будні: <strong>750 грн</strong></span>
+                    <span class="price-divider">/</span>
+                    <span class="price-item">Вихідні: <strong>950 грн</strong></span>
+                </div>
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title">🌅 ЧАРІВНІ ЗАХОДИ СОНЦЯ</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Вечір, коли місто відпускає. Ти на воді, навколо тиша, і перед тобою — захід, який неможливо повторити. Підходить навіть якщо ти вперше здобуваєш знання з веслування 😍
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('magic-sunset-parus')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('magic-sunset-parus')">
                         Детальніше <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
