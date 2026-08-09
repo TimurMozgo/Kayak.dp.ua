@@ -1,5 +1,5 @@
 // ==========================================================================
-// БАЗА ДАННЫХ ТУРОВ
+// 1. БАЗА ДАННЫХ ТУРОВ
 // ==========================================================================
 const toursData = {
     'moon-tour': {
@@ -9,7 +9,7 @@ const toursData = {
         numericPrice: 1200,
         format: "каяк або SUP (на вибір)",
         intro: "Оленяча повня — одна з найкрасивіших повень року. Саме в цей період у оленів виростають нові роги, тому ця повня символізує оновлення, силу та новий етап.",
-        description: "Уяви: тиша плавнів, гладь води, зоряне небо і величезний золотий Місяць, що віддзеркалюється у річці. Це той момент, який неможливо передати на фото — його потрібно прожити.",
+        description: "Уяви: тиша плавнів, гладь води, зоряне небо і величезний золотий Місяць, що віддзеркалюється у річці.",
         features: [
             "🛶 короткий інструктаж перед стартом",
             "🌿 вечірня подорож Діївськими плавнями",
@@ -18,99 +18,224 @@ const toursData = {
             "📸 атмосферні фото та незабутні емоції"
         ]
     },
-
     'kino-na-ostrovi': {
         id: 'kino-na-ostrovi',
         title: "🎬 Кіно на острові",
-        price: "1900 грн (замість 3000 грн)",
+        price: "1900 грн",
         numericPrice: 1900,
         format: "нічний тур / намети / кіно просто неба",
-        intro: "Неймовірна пригода, що починається із заходом сонця! Коли місто засинає — природа оживає магією. Влаштуй собі вечір, який ти запам’ятаєш надовго.",
-        description: "На тебе чекає тепле багаття, казкові гірлянди, кіно просто неба на великому екрані, смачний плов, сміх, музика та душевна компанія до півночі із зустріччю світанку на острові.",
+        intro: "Неймовірна пригода, що починається із заходом сонця!",
+        description: "На тебе чекає тепле багаття, казкові гірлянди, кіно просто неба на великому екрані, смачний плов, сміх, музика та душевна компанія.",
         features: [
-            "🛶 Збір групи та екіпірування на ж/м Парус (20:00 - 09:00, щосуботи)",
-            "🛡 Інструктаж та виїзд на безлюдний острів під вечірнє сонце",
-            "🏕 Розміщення в таборі, гірлянди, фотозони та ночівля в наметах",
-            "🍲 Ароматний плов на вогнищі + чаювання зі смаколиками та сніданок",
-            "🎬 Кіно просто неба на великому екрані серед природи",
-            "🔥 Живе багаття, душевні розмови та пісні під гітару / караоке",
-            "🎲 Веселі ігри: Еліас, Крокодил, етно-барабани та челенджі",
+            "🛶 Збір групи та екіпірування на ж/м Парус",
+            "🏕 Розміщення в таборі та ночівля в наметах",
+            "🍲 Ароматний плов на вогнищі + чаювання",
+            "🎬 Кіно просто неба на великому екрані",
             "🌅 Зустріч неймовірного світанку на острові"
         ]
     },
-
     'sich-golden-hour': {
         id: 'sich-golden-hour',
         title: "🌅 Магія золотої години в Яхт-клубі «Січ»",
-        price: "від 750 грн (замість 1500 грн)",
+        price: "750 грн",
         numericPrice: 750,
         format: "каяк або SUP (на вибір)",
-        intro: "Вечір, коли місто залишається позаду, а перед вами — лише вода, золоте сонце та неймовірні краєвиди яхт-клубу «Січ».",
-        description: "Навіть якщо це ваша перша прогулянка на каяку чи SUP — усе просто. Кілька хвилин інструктажу, і ви вже насолоджуєтеся одним із найкрасивіших заходів сонця в Дніпрі. Акційна ціна діє при бронюванні до кінця липня або при купівлі подарункового сертифіката на сезон 2026.",
+        intro: "Вечір, коли місто залишається позаду, а перед вами — лише вода, золоте сонце та краєвиди.",
+        description: "Невеликий інструктаж — и вы наслаждаетесь красивейшим закатом.",
         features: [
-            "📍 Старт: Яхт-клуб «Січ» (м. Дніпро, вул. Набережна Перемоги, 77Б)",
-            "⏰ Час: 18:30–21:00 (Щочетверга, щоп’ятниці, щосуботи, щонеділі)",
-            "🛶 Прогулянка на каяках або SUP під керівництвом інструктора",
-            "🌅 Вихід на воду в наймальовничішу «золоту годину» заходу сонця",
+            "📍 Старт: Яхт-клуб «Січ»",
+            "🛶 Прогулянка під керівництвом інструктора",
             "☕ Затишне чаювання просто на воді",
-            "📸 Яскраві фото та відео на згадку",
-            "💳 Вартість: Будні — 750 грн / Вихідні — 950 грн (замість 1500 грн)"
+            "📸 Яскраві фото та відео на згадку"
         ]
     },
-
     'magic-sunset-parus': {
         id: 'magic-sunset-parus',
         title: "🌅 Чарівні заходи сонця",
-        price: "від 750 грн (замість 1500 грн)",
+        price: "750 грн",
         numericPrice: 750,
         format: "каяк або SUP (на вибір)",
-        intro: "Вечір, коли місто відпускає. Ти на воді, навколо тиша, і перед тобою — захід, який неможливо повторити.",
-        description: "Підходить навіть якщо ти вперше здобуваєш знання з веслування 😍. Це найпопулярніша прогулянка сезону. Ідеально для побачення, перезавантаження або просто щоб відчути щось справжнє. ⚡️ Акційна ціна діє при бронюванні до кінця липня або при купівлі сертифікату на весь сезон 2026.",
+        intro: "Вечір, коли місто відпускає. Ти на воді, навколо тиша, і перед тобою — захід сонця.",
+        description: "Ідеально для побачення, перезавантаження або просто щоб відчути щось справжнє.",
         features: [
-            "📍 Старт: м.Дніпро, ж/м Парус, вул. Набережна Заводська,106",
-            "⏰ Час: 18:00 – 21:00 (Вт, Ср, Чт, Пт, Сб, Вс!)",
+            "📍 Старт: ж/м Парус",
             "🛶 Легка прогулянка на каяках",
-            "🌅 Вихід у золоту годину",
             "☕️ Чаювання прямо на воді",
-            "📸 Дивовижні фото та відео на згадку",
-            "💳 Вартість: Будні — 750 грн / Вихідні — 950 грн (замість 1500 грн)"
+            "📸 Дивовижні фото та відео"
         ]
     }
-    
 };
 
 // ==========================================================================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ УПРАВЛЕНИЯ КОРЗИНОЙ
+// 2. РЕНДЕР И РАБОТА С КОРЗИНОЙ (TIMURTOUR_CART)
 // ==========================================================================
-function openCartDrawer() {
-    const cartDrawer = document.getElementById('cart-drawer');
-    if (cartDrawer) {
-        cartDrawer.classList.add('active');
-        if (typeof updateCartUI === 'function') {
-            updateCartUI();
+function getCart() {
+    try {
+        return JSON.parse(localStorage.getItem('timurtour_cart')) || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCart(cart) {
+    localStorage.setItem('timurtour_cart', JSON.stringify(cart));
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const cart = getCart();
+
+    // 1. Обновляем счетчик (Badge) на иконке корзины
+    const badgeEl = document.getElementById('cart-badge');
+    const totalCount = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+
+    if (badgeEl) {
+        if (totalCount > 0) {
+            badgeEl.textContent = totalCount;
+            badgeEl.style.display = 'flex'; // Показываем бейджик
+        } else {
+            badgeEl.textContent = '0';
+            badgeEl.style.display = 'none'; // Скрываем, если пусто
         }
     }
+
+    // 2. Отрисовка списка товаров в шторке
+    const container = document.getElementById('cart-items-container');
+    const grandTotalEl = document.getElementById('cart-grand-total');
+
+    if (!container) return;
+
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 30px 10px; color: #a3a3a3;">
+                <p style="font-size: 1.1rem; margin-bottom: 8px;">Кошик порожній 🛶</p>
+                <p style="font-size: 0.85rem;">Оберіть похід або тур для бронювання</p>
+            </div>
+        `;
+        if (grandTotalEl) grandTotalEl.textContent = '0';
+        updatePaymentAmounts(0);
+        return;
+    }
+
+    let grandTotal = 0;
+    let html = '';
+
+    cart.forEach((item, index) => {
+        const itemTotal = (item.price || 0) * (item.qty || 1);
+        grandTotal += itemTotal;
+
+        html += `
+            <div style="background: #111111; border: 1px solid #262626; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="font-weight: 700; color: #ffffff; font-size: 0.95rem; line-height: 1.3;">
+                        ${item.title || item.name || 'Тур'}
+                    </div>
+                    <button onclick="removeCartItem(${index})" style="background: none; border: none; color: #ef4444; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 8px; line-height: 1;">
+                        &times;
+                    </button>
+                </div>
+                <div style="font-size: 0.8rem; color: #a3a3a3;">
+                    ${item.durationText || 'Формат: каяк/SUP'}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                    <div style="display: flex; align-items: center; background: #000; border: 1px solid #333; border-radius: 6px; overflow: hidden;">
+                        <button onclick="changeQty(${index}, -1)" style="background: none; border: none; color: #fff; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">-</button>
+                        <span style="padding: 0 8px; color: #fff; font-size: 0.85rem; font-weight: 600;">${item.qty || 1}</span>
+                        <button onclick="changeQty(${index}, 1)" style="background: none; border: none; color: #fff; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">+</button>
+                    </div>
+                    <div style="font-weight: 800; color: #ffffff; font-size: 0.95rem;">
+                        ${itemTotal} грн
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+    if (grandTotalEl) grandTotalEl.textContent = grandTotal;
+    updatePaymentAmounts(grandTotal);
+}
+
+function changeQty(index, delta) {
+    const cart = getCart();
+    if (!cart[index]) return;
+    cart[index].qty = (cart[index].qty || 1) + delta;
+    if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+    }
+    saveCart(cart);
+}
+
+function removeCartItem(index) {
+    const cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+}
+
+function updatePaymentAmounts(total) {
+    const prepay = Math.round(total * 0.3);
+    const rest = total - prepay;
+
+    const fullEl = document.getElementById('payment-total-full');
+    const prepayEl = document.getElementById('payment-prepay-amount');
+    const restEl = document.getElementById('payment-rest-amount');
+
+    if (fullEl) fullEl.textContent = `${total} грн`;
+    if (prepayEl) prepayEl.textContent = `${prepay} грн`;
+    if (restEl) restEl.textContent = `${rest} грн`;
+}
+
+// ==========================================================================
+// 3. УПРАВЛЕНИЕ ШТОРКОЙ И ШАГАМИ
+// ==========================================================================
+function openCartDrawer() {
+    const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-overlay');
+
+    if (drawer) {
+        drawer.classList.add('active');
+        drawer.style.display = 'block';
+    }
+    if (overlay) {
+        overlay.classList.add('active');
+        overlay.style.display = 'block';
+    }
+
+    updateCartUI();
+    goToDrawerStep(1);
 }
 
 function closeCartDrawer() {
-    const cartDrawer = document.getElementById('cart-drawer');
-    if (cartDrawer) {
-        cartDrawer.classList.remove('active');
+    const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-overlay');
+
+    if (drawer) {
+        drawer.classList.remove('active');
+        drawer.style.display = 'none';
+    }
+    if (overlay) {
+        overlay.classList.remove('active');
+        overlay.style.display = 'none';
     }
 }
 
-// ==========================================================================
-// 1. ФУНКЦИЯ ДЛЯ КНОПКИ "ЗАБРОНЮВАТИ" В КАРТОЧКЕ
-// ==========================================================================
-function openBookingDrawer(tourId) {
-    const id = tourId || 'moon-tour';
-    bookTourAction(id);
-    // 🔥 Корзину НЕ открываем автоматически! Юзер сам откроет, когда захочет
+function goToDrawerStep(stepNumber) {
+    const step1 = document.getElementById('drawer-step-cart');
+    const step2 = document.getElementById('drawer-step-form');
+    const step3 = document.getElementById('drawer-step-payment');
+
+    if (step1) step1.style.display = (stepNumber === 1) ? 'block' : 'none';
+    if (step2) step2.style.display = (stepNumber === 2) ? 'block' : 'none';
+    if (step3) step3.style.display = (stepNumber === 3) ? 'block' : 'none';
 }
 
 // ==========================================================================
-// 2. ОТКРЫТИЕ МОДАЛКИ С ДЕТАЛЯМИ
+// 4. ДЕЙСТВИЯ С ТУРАМИ И МОДАЛКОЙ
 // ==========================================================================
+function openBookingDrawer(tourId) {
+    bookTourAction(tourId || 'moon-tour');
+}
+
 function openTourDetails(tourId) {
     const tour = toursData[tourId];
     if (!tour) return;
@@ -118,33 +243,21 @@ function openTourDetails(tourId) {
     const modal = document.getElementById('tourModal');
     const modalBody = document.getElementById('modalBody');
 
-    if (!modal || !modalBody) {
-        console.error("Не найден элемент #tourModal или #modalBody!");
-        return;
-    }
+    if (!modal || !modalBody) return;
 
     modalBody.innerHTML = `
-        <h2 style="color: #f8fafc; font-size: 1.3rem; margin-bottom: 12px; line-height: 1.3;">${tour.title}</h2>
-        
-        <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; margin-bottom: 12px;">
-            ${tour.intro}
-        </p>
-
-        <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; font-style: italic;">
-            ${tour.description}
-        </p>
-
+        <h2 style="color: #f8fafc; font-size: 1.3rem; margin-bottom: 12px;">${tour.title}</h2>
+        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 12px;">${tour.intro}</p>
+        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; font-style: italic;">${tour.description}</p>
         <h3 style="color: #f8fafc; font-size: 1rem; margin-bottom: 10px;">На вас чекає:</h3>
         <ul style="list-style: none; padding: 0; margin: 0 0 20px 0;">
-            ${tour.features.map(item => `<li style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px;">${item}</li>`).join('')}
+            ${tour.features.map(f => `<li style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px;">${f}</li>`).join('')}
         </ul>
-
         <div style="background: rgba(255, 255, 255, 0.05); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);">
             <div style="color: #facc15; font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💸 Вартість: ${tour.price}</div>
             <div style="color: #94a3b8; font-size: 0.9rem;">🚣 Формат: ${tour.format}</div>
         </div>
-
-        <button onclick="bookTourAction('${tour.id}');" class="btn-book" style="width: 100%; padding: 14px; font-weight: 800; font-size: 1rem; background: #facc15; color: #0b0f19; border: none; border-radius: 12px; cursor: pointer;">
+        <button onclick="bookTourAction('${tour.id}');" style="width: 100%; padding: 14px; font-weight: 800; font-size: 1rem; background: #facc15; color: #0b0f19; border: none; border-radius: 12px; cursor: pointer;">
             Забронювати
         </button>
     `;
@@ -153,9 +266,6 @@ function openTourDetails(tourId) {
     document.body.style.overflow = 'hidden';
 }
 
-// ==========================================================================
-// 3. ЗАКРЫТИЕ МОДАЛКИ ДЕТАЛЕЙ
-// ==========================================================================
 function closeTourDetails() {
     const modal = document.getElementById('tourModal');
     if (modal) {
@@ -164,221 +274,139 @@ function closeTourDetails() {
     }
 }
 
-// ==========================================================================
-// 4. ДОБАВЛЕНИЕ В КОРЗИНУ
-// ==========================================================================
 function bookTourAction(tourId) {
     const tour = toursData[tourId];
     if (!tour) return;
 
-    if (typeof addToCart === 'function') {
-        addToCart({
-            id: tour.id,
-            tourId: tour.id,
-            title: tour.title,
-            name: tour.title,
-            price: tour.numericPrice || 1200,
-            cost: tour.numericPrice || 1200,
-            qty: 1,
-            quantity: 1,
-            count: 1,
-            type: 'tour',      // 🔥 Четкий тип для корзины
-            category: 'похід'
-        });
+    const cart = getCart();
+    const existingIndex = cart.findIndex(i => i.id === tour.id);
+
+    if (existingIndex > -1) {
+        cart[existingIndex].qty = (cart[existingIndex].qty || 1) + 1;
     } else {
-        console.error("Функция addToCart не найдена!");
+        cart.push({
+            id: tour.id,
+            title: tour.title,
+            price: tour.numericPrice,
+            qty: 1,
+            durationText: tour.format,
+            type: 'TOUR'
+        });
     }
 
+    saveCart(cart);
     closeTourDetails();
-
-    if (typeof updateCartUI === 'function') {
-        updateCartUI();
-    }
+    openCartDrawer();
 }
 
 // ==========================================================================
-// 5. ИНИЦИАЛИЗАЦИЯ И ОБРАБОТЧИКИ
+// 5. ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    
-    const cartDrawer = document.getElementById('cart-drawer');
 
-    // 1. Открытие корзины по клику на нижнюю кнопку навигации
+    // Первичная отрисовка
+    updateCartUI();
+
+    // 1. Кнопка вызова корзины
     const navCartBtn = document.getElementById('nav-cart-btn');
     if (navCartBtn) {
         navCartBtn.addEventListener('click', (e) => {
             e.preventDefault();
             openCartDrawer();
-
-            const step1 = document.getElementById('drawer-step-cart');
-            const step2 = document.getElementById('drawer-step-form');
-            if (step1 && step2) {
-                step1.style.display = 'block';
-                step2.style.display = 'none';
-            }
         });
     }
 
-    // 2. ГЛОБАЛЬНЫЙ КЛИК-КОНТРОЛЛЕР
+    // 2. Обработка кликов внутри шторки
     document.addEventListener('click', (e) => {
 
-        // А) Закрытие корзины (крестик или непосредственно клик по тёмному фону)
+        // Закрытие
         if (e.target.closest('#close-cart-btn') || e.target.id === 'cart-overlay') {
             e.preventDefault();
             closeCartDrawer();
         }
 
-        // Б) Переход к опросу (Шаг 1 -> Шаг 2)
+        // Переход к шагу 2 (Анкета)
         if (e.target.closest('#btn-go-to-checkout')) {
             e.preventDefault();
-            const step1 = document.getElementById('drawer-step-cart');
-            const step2 = document.getElementById('drawer-step-form');
+            if (getCart().length === 0) {
+                alert('Кошик порожній!');
+                return;
+            }
+            goToDrawerStep(2);
+        }
 
-            if (step1 && step2) {
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-            } else {
-                console.error("❌ Не найден #drawer-step-cart или #drawer-step-form!");
+        // Возврат на Шаг 1
+        if (e.target.closest('#btn-back-to-cart')) {
+            e.preventDefault();
+            goToDrawerStep(1);
+        }
+
+        // Переход к Шагу 3 (Реквизиты)
+        if (e.target.closest('#btn-show-requisites')) {
+            e.preventDefault();
+            const form = document.getElementById('tour-checkout-form');
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            goToDrawerStep(3);
+        }
+
+        // Скопировать реквизиты
+        const copyCard = e.target.closest('.copy-card');
+        if (copyCard) {
+            const targetId = copyCard.getAttribute('data-copy-target');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                navigator.clipboard.writeText(targetEl.textContent.trim()).then(() => {
+                    const originalBg = copyCard.style.background;
+                    copyCard.style.background = '#22c55e22';
+                    setTimeout(() => copyCard.style.background = originalBg, 1000);
+                });
             }
         }
 
-        // В) Возврат к корзине (Шаг 2 -> Шаг 1)
-        if (e.target.closest('#btn-back-to-cart')) {
-            e.preventDefault();
-            const step1 = document.getElementById('drawer-step-cart');
-            const step2 = document.getElementById('drawer-step-form');
-
-            if (step1 && step2) {
-                step2.style.display = 'none';
-                step1.style.display = 'block';
-            }
+        // Закрытие успеха
+        if (e.target.closest('#close-success-btn')) {
+            const modal = document.getElementById('success-modal');
+            if (modal) modal.style.display = 'none';
+            closeCartDrawer();
+            localStorage.removeItem('timurtour_cart');
+            updateCartUI();
         }
     });
 
-    // ==========================================================================
-    // ОТПРАВКА ФОРМЫ С АВТО-РАЗДЕЛЕНИЕМ ИМЕНИ И ТЕЛЕФОНА
-    // ==========================================================================
-    const checkoutForm = document.getElementById('tour-checkout-form');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    // 3. Загрузка чека
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('receipt-file-input');
+    const idleState = document.getElementById('upload-idle-state');
+    const previewState = document.getElementById('upload-preview-state');
+    const previewImg = document.getElementById('receipt-preview-img');
 
-            // 1. Достаем корзину
-            const currentCart = (typeof cart !== 'undefined' && Array.isArray(cart) && cart.length > 0) ? cart 
-                            : (typeof window.cart !== 'undefined' && Array.isArray(window.cart)) ? window.cart 
-                            : [];
+    if (uploadZone && fileInput) {
+        uploadZone.addEventListener('click', () => fileInput.click());
 
-            // 2. Считываем сырые данные полей
-            let rawName = document.getElementById('checkout-fullname')?.value || '';
-            let rawPhone = document.getElementById('checkout-phone')?.value || '';
-
-            // 🎯 МИГИЯ ДЕЛЕНИЯ: Если телефон вписали прямо в поле Имени — вытаскиваем его оттуда!
-            const phoneRegex = /(\+?\d[\d\s\-\(\)]{8,}\d)/;
-            const match = rawName.match(phoneRegex);
-
-            let cleanPhone = rawPhone.trim();
-            let cleanName = rawName.trim();
-
-            if (match) {
-                if (!cleanPhone || cleanPhone === 'Не указано') {
-                    cleanPhone = match[0].trim(); // Забираем найденный номер
-                }
-                cleanName = cleanName.replace(match[0], '').trim(); // Вырезаем номер из имени
-            }
-
-            // 3. Собираем анкету
-            const experienceVal = document.querySelector('input[name="experience"]:checked')?.value || '';
-            const boatsVal = document.getElementById('checkout-boats')?.value || '';
-            const participantsVal = document.getElementById('checkout-participants')?.value || '';
-            const hasTourQuiz = (experienceVal !== '' && experienceVal !== 'Не вказано') || boatsVal.trim() !== '' || participantsVal.trim() !== '';
-
-            const isTourCart = currentCart.some(i => i.type === 'tour' || i.type === 'похід' || i.category === 'похід');
-            const isRentCart = currentCart.some(i => i.type === 'rent' || i.type === 'оренда' || i.category === 'оренда');
-
-            let calculatedOrderType = 'ОРЕНДА';
-            if ((isTourCart || hasTourQuiz) && isRentCart) {
-                calculatedOrderType = 'КОМБО (Похід + Оренда)';
-            } else if (isTourCart || hasTourQuiz) {
-                calculatedOrderType = 'ПОХІД';
-            }
-
-            // 4. Считаем итоговую сумму
-            let calculatedTotal = currentCart.reduce((sum, item) => sum + ((item.price || item.cost || 0) * (item.qty || item.quantity || 1)), 0);
-
-            // Если корзина была пустой, но заполнен поход — ставим дефолтную стоимость похода (например 1200 грн)
-            if (calculatedTotal === 0 && (isTourCart || hasTourQuiz)) {
-                calculatedTotal = 1200; 
-            }
-
-            const formData = {
-                fullname: cleanName || 'Клієнт',
-                phone: cleanPhone || 'Не вказано',
-                source: document.getElementById('checkout-source')?.value || 'Не указано',
-                experience: experienceVal || 'Не вказано',
-                boats: boatsVal || 'Не вказано',
-                participants: participantsVal || '1 особа',
-                
-                cartItems: currentCart.map(item => ({
-                    id: item.id,
-                    title: item.title || item.name,
-                    price: item.price || item.cost,
-                    qty: item.qty || item.quantity || 1,
-                    type: item.type || 'tour'
-                })),
-                
-                totalPrice: calculatedTotal,
-                orderType: calculatedOrderType,
-                timestamp: new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv' })
-            };
-
-            // 5. Отправка на n8n
-            const webhookUrl = 'https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52';
-
-            try {
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                console.log('✅ Данные ушли на n8n!');
-            } catch (error) {
-                console.error('❌ Ошибка отправки:', error);
-            }
-
-            // 6. Сброс и очистка + навешивание закрытия на "Чудово"
-            closeCartDrawer();
-            const successModal = document.getElementById('success-modal');
-            
-            if (successModal) {
-                // 1. Показываем плашку успеха
-                successModal.style.display = 'flex';
-
-                // 2. Находим кнопку "Чудово" или крестик внутри модалки
-                const closeBtn = successModal.querySelector('button') 
-                              || successModal.querySelector('.close-modal')
-                              || document.getElementById('close-success-btn');
-
-                if (closeBtn) {
-                    // При клике на "Чудово" скрываем плашку
-                    closeBtn.onclick = function() {
-                        successModal.style.display = 'none';
-                    };
-                }
-
-                // 3. Закрытие при клике мимо модалки (по темному фону)
-                successModal.onclick = function(e) {
-                    if (e.target === successModal) {
-                        successModal.style.display = 'none';
-                    }
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    if (previewImg) previewImg.src = event.target.result;
+                    if (idleState) idleState.style.display = 'none';
+                    if (previewState) previewState.style.display = 'block';
                 };
+                reader.readAsDataURL(file);
             }
+        });
+    }
 
-            // Очищаем корзины в памяти
-            if (typeof cart !== 'undefined' && Array.isArray(cart)) cart.length = 0;
-            if (typeof window.cart !== 'undefined' && Array.isArray(window.cart)) window.cart.length = 0;
-            if (typeof updateCartUI === 'function') updateCartUI();
-            
-            this.reset();
+    // 4. Финальная отправка чека
+    const finalBtn = document.getElementById('btn-final-submit');
+    if (finalBtn) {
+        finalBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modal = document.getElementById('success-modal');
+            if (modal) modal.style.display = 'flex';
         });
     }
 });

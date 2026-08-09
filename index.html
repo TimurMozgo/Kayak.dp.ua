@@ -141,11 +141,20 @@
 
     <!-- 2. Контейнер Заказов -->
     <main id="tab-orders" class="tab_content">
-        <section class="orders_section">
+        <section class="orders_section" style="padding: 20px 16px; min-height: 100vh; background-color: #f8fafc;">
             <div class="orders_header">
-                <h2 class="orders_title">Мої замовлення</h2>
+                <h2 class="orders_title" style="color: #0f172a; font-size: 22px; font-weight: 700; margin-bottom: 16px;">
+                    Мої замовлення
+                </h2>
             </div>
-            <div id="orders-container"></div>
+
+            <!-- Контейнер для списка -->
+            <div id="orders-container">
+                <!-- Временная заглушка, чтобы проверить, что таб работает -->
+                <div style="background: #9d9d9d; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; color: #64748b;">
+                    Немає активних замовлень
+                </div>
+            </div>
         </section>
     </main>
 

@@ -795,7 +795,7 @@ body, html {
 }
 
 .drawer-step {
-    display: none; /* По умолчанию ВСЕ шаги скрыты */
+    display: none !important; /* Гарантированно скрывает неактивные шаги */
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
@@ -805,7 +805,7 @@ body, html {
 
 /* Активный шаг становится флексом и идеально держит верстку */
 .drawer-step.active {
-    display: flex; 
+    display: flex !important; 
 }
 
 .drawer-step::-webkit-scrollbar {
@@ -965,135 +965,57 @@ body, html {
     background: #0077b3;
 }
 
-/* ==========================================================================
-   КАСТОМНЫЙ КАЛЕНДАРЬ И ВРЕМЯ (В СТИЛЕ "KAYAK BLUE")
-   ========================================================================== */
+/* СТИЛИЗАЦИЯ СЛОТОВ ВРЕМЕНИ */
 
-.widget-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
+/* Жестко задаем отображение сетки */
+#time-slots-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    min-height: 140px !important;
+    max-height: 180px !important;
+    overflow-y: auto !important;
+    padding: 4px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
-/* Заголовок текущего месяца */
-.booking-month-label {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 12px;
-    text-transform: capitalize;
+/* Стилизация самих кнопок времени */
+#time-slots-grid .time-slot-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    color: #334155 !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    outline: none !important;
 }
 
-/* Контейнер горизонтального скролла для дней */
-.days-scroll-container {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;   /* Горизонтальный скролл на мобилках */
-    width: 100%;        /* На всю ширину */
-    padding-bottom: 12px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Прячем дефолтный скролл в Firefox */
+/* Эффект при наведении */
+#time-slots-grid .time-slot-btn:hover {
+    border-color: #2563eb !important;
+    color: #2563eb !important;
+    background-color: #eff6ff !important;
 }
 
-.days-scroll-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
-
-/* Карточка отдельного дня */
-.day-card {
-    flex: 0 0 65px; /* фиксированная ширина плитки */
-    height: 80px;
-    background: var(--bg-light);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-
-.day-card:hover {
-    border-color: var(--primary-blue);
-    background: rgba(0, 136, 204, 0.03);
-}
-
-.day-month-name {
-    font-size: 10px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    font-weight: 600;
-    margin-bottom: 2px;
-}
-
-.day-number {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--text-main);
-    line-height: 1;
-    margin-bottom: 4px;
-}
-
-.day-week-name {
-    font-size: 10px;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
-/* Активное состояние дня (В наших синих цветах с неоновым свечением) */
-.day-card.active {
-    background: var(--primary-blue);
-    border-color: var(--primary-blue);
-    box-shadow: 0 6px 15px rgba(0, 136, 204, 0.35);
-    transform: translateY(-2px);
-}
-
-.day-card.active .day-month-name,
-.day-card.active .day-number,
-.day-card.active .day-week-name {
-    color: #ffffff; /* Белый текст на синем фоне */
-}
-
-/* Сетка времени в 2 колонки */
-.time-slots-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 8px;
-}
-
-/* Кнопка выбора времени */
-.time-slot-btn {
-    background: var(--bg-light);
-    border: 1px solid var(--border-light);
-    color: var(--text-main);
-    padding: 12px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-}
-
-.time-slot-btn:hover {
-    border-color: var(--primary-blue);
-    background: rgba(0, 136, 204, 0.03);
-}
-
-/* Активное состояние кнопки времени */
-.time-slot-btn.active {
-    background: #0088cc;
-    border-color: #0088cc;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
-    transform: translateY(-1px);
+/* Активная выбранная кнопка */
+#time-slots-grid .time-slot-btn.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
 }
 
 /* ==========================================================================

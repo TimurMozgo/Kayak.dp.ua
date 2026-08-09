@@ -305,11 +305,55 @@
                         Давайте дізнаємося про вас більше:
                     </h3>
 
-                    <!-- 1. Имя и Телефон (ПОКАЗЫВАЕТСЯ ВСЕГДА) -->
+                    <!-- 1. Имя и Телефон -->
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label for="checkout-fullname" style="display: block; font-size: 0.85rem; font-weight: 500; color: #a3a3a3; margin-bottom: 6px;">ПІБ та номер телефону *</label>
-                        <input type="text" id="checkout-fullname" name="fullname" placeholder="Іванов Іван, +380631112233" required class="form-input">
+                        <label for="checkout-fullname" style="display: block; font-size: 0.85rem; font-weight: 500; color: #a3a3a3; margin-bottom: 6px;">ПІБ *</label>
+                        <input type="text" id="checkout-fullname" name="fullname" placeholder="Іванов Іван" required class="form-input">
                     </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label for="checkout-phone" style="display: block; font-size: 0.85rem; font-weight: 500; color: #a3a3a3; margin-bottom: 6px;">Номер телефону *</label>
+                        <input type="tel" id="checkout-phone" name="phone" value="+380" placeholder="+380631112233" required class="form-input">
+                    </div>
+
+                    <!-- ================= 📅 БЛОК БРОНИРОВАНИЯ ================= -->
+                    <div class="form-group booking-calendar-card">
+                        <div class="booking-section-title">
+                            <span>📅</span> Виберіть будь ласка дату для своєї події
+                        </div>
+
+                        <!-- 🛶 Самостоятельная аренда -->
+                        <div class="booking-group-block">
+                            <span class="booking-group-title">🛶 Самостійна оренда:</span>
+                            
+                            <div class="booking-field-wrapper">
+                                <label for="checkout-rental-date" class="booking-label">Дата оренди</label>
+                                <input type="date" id="checkout-rental-date" name="rental_date" class="modern-field">
+                            </div>
+
+                            <div class="booking-field-wrapper" style="margin-top: 12px;">
+                                <label class="booking-label">Час старту</label>
+                                <!-- Скрытое поле для отправки значения на сервер/в бота -->
+                                <input type="hidden" id="checkout-rental-time" name="rental_time" value="">
+                                
+                                <!-- Контейнер для чипсов времени -->
+                                <div class="time-chips-grid" id="time-chips-container">
+                                    <!-- Генерируется через JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🏔 Походы / Туры -->
+                        <div>
+                            <span class="booking-group-title">🏔 Похід / Захід:</span>
+                            <div class="booking-field-wrapper">
+                                <label for="checkout-tour-date" class="booking-label">Дата заходу</label>
+                                <input type="date" id="checkout-tour-date" name="tour_date" class="modern-field">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= КОНЕЦ БЛОКА КАЛЕНДАРЯ ================= -->
 
                     <!-- ================= БЛОК ВОПРОСОВ ПОХОДА (УПРАВЛЯЕТСЯ ЧЕРЕЗ JS) ================= -->
                     <div id="tour-questions-block">
@@ -344,10 +388,116 @@
                     </div>
                     <!-- ================= КОНЕЦ БЛОКА ПОХОДОВ ================= -->
 
-                    <button type="submit" class="btn-submit-booking" style="width: 100%; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.95rem;">
+                    <button type="button" id="btn-show-requisites" class="btn-submit-booking" style="width: 100%; padding: 14px; background: #ffffff; color: #000000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.95rem;">
                         Підтвердити реєстрацію
                     </button>
                 </form>
+            </div>
+
+            <div id="drawer-step-payment" class="drawer-step" style="display: none;">
+                <div class="payment-wrapper" style="color: #ffffff;">
+                    
+                    <!-- 🚀 БЛОК: РАСЧЕТ 30% ПРЕДОПЛАТЫ -->
+                    <div class="prepayment-summary-card" style="background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 14px; margin-bottom: 15px;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                            💳 Деталі оплати
+                        </div>
+
+                        <!-- Пояснение про 30% предоплаты -->
+                        <p style="font-size: 0.8rem; color: #a1a1aa; margin: 0 0 12px 0; line-height: 1.4;">
+                            Для фіксації та підтвердження вашої броні вноситься <strong>передоплата у розмірі 30%</strong>. Залишок (70%) ви сплачуєте безпосередньо на локації.
+                        </p>
+
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #a1a1aa; margin-bottom: 8px;">
+                            <span>Загальна вартість замовлення:</span>
+                            <span id="payment-total-full" style="font-weight: 700; color: #ffffff;">0 грн</span>
+                        </div>
+
+                        <!-- Акцентная строка с 30% -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #000000; border: 1.5px solid #ffffff; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);">
+                            <div>
+                                <div style="font-size: 0.9rem; font-weight: 800; color: #ffffff;">Передоплата (30%):</div>
+                                <div style="font-size: 0.75rem; color: #a1a1aa; font-weight: 600;">Сума до сплати зараз</div>
+                            </div>
+                            <div id="payment-prepay-amount" style="font-size: 1.25rem; font-weight: 800; color: #ffffff;">
+                                0 грн
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #71717a;">
+                            <span>Залишок на локації (70%):</span>
+                            <span id="payment-rest-amount" style="font-weight: 600; color: #a1a1aa;">0 грн</span>
+                        </div>
+                    </div>
+
+                    <!-- 1. Реквизиты ФОП -->
+                    <div class="fop-payment-card" style="background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 14px; margin-bottom: 15px;">
+                        
+                        <div style="font-size: 0.8rem; color: #a1a1aa; margin-bottom: 2px;">Отримувач:</div>
+                        <div style="font-weight: 700; color: #ffffff; margin-bottom: 10px; font-size: 0.95rem;">
+                            ФОП «Жук Б.Л.»
+                        </div>
+
+                        <!-- IBAN -->
+                        <div style="font-size: 0.8rem; color: #a1a1aa; margin-bottom: 4px;">IBAN (рахунок ФОП):</div>
+                        <div class="copy-card" data-copy-target="iban-text" title="Натисніть, щоб скопіювати" style="display: flex; align-items: center; justify-content: space-between; background: #000000; border: 1px solid #444444; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s;">
+                            <span id="iban-text" style="font-family: monospace; font-weight: 700; font-size: 0.82rem; color: #ffffff; word-break: break-all;">
+                                UA023220010000026009310108944
+                            </span>
+                            <i class="copy-icon fa-regular fa-copy" style="color: #ffffff; font-size: 1.1rem; margin-left: 8px;"></i>
+                        </div>
+
+                        <!-- ЄДРПОУ и Призначение -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                            
+                            <!-- ЄДРПОУ -->
+                            <div class="copy-card" data-copy-target="edrpou-val" title="Натисніть, щоб скопіювати" style="background: #000000; border: 1px solid #444444; border-radius: 8px; padding: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                                <div>
+                                    <div style="font-size: 0.75rem; color: #a1a1aa;">ЄДРПОУ:</div>
+                                    <div id="edrpou-val" style="font-weight: 700; font-size: 0.85rem; color: #ffffff;">3516012074</div>
+                                </div>
+                                <i class="copy-icon fa-regular fa-copy" style="color: #a1a1aa; font-size: 0.95rem; margin-left: 4px;"></i>
+                            </div>
+
+                            <!-- Призначение -->
+                            <div class="copy-card" data-copy-target="purpose-val" title="Натисніть, щоб скопіювати" style="background: #000000; border: 1px solid #444444; border-radius: 8px; padding: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;">
+                                <div>
+                                    <div style="font-size: 0.75rem; color: #a1a1aa;">Призначення:</div>
+                                    <div id="purpose-val" style="font-weight: 700; font-size: 0.85rem; color: #ffffff;">оплата послуги</div>
+                                </div>
+                                <i class="copy-icon fa-regular fa-copy" style="color: #a1a1aa; font-size: 0.95rem; margin-left: 4px;"></i>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 2. Дропзона для загрузки скриншота -->
+                    <div class="file-upload-box" id="upload-zone" style="position: relative; border: 2px dashed #444444; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s; background: #111111; overflow: visible;">
+                        <input type="file" id="receipt-file-input" accept="image/*" style="display: none;">
+                        
+                        <!-- Состояние 1: До выбора файла -->
+                        <div class="upload-content" id="upload-idle-state" style="display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;">
+                            <i class="fa-solid fa-paperclip upload-icon" style="font-size: 1.5rem; color: #a1a1aa;"></i>
+                            <span id="upload-status-text" style="font-size: 0.85rem; font-weight: 600; color: #a1a1aa;">Прикріпити чек про оплату</span>
+                        </div>
+
+                        <!-- Состояние 2: Выбран скриншот -->
+                        <div id="upload-preview-state" style="display: none; position: relative; width: 100%;">
+                            <div style="position: relative; display: inline-block; max-width: 100%;">
+                                <span class="upload-badge" style="position: absolute; top: -10px; right: -10px; background: #ffffff; color: #000000; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 5px; z-index: 99;">
+                                    <i class="fa-solid fa-circle-check"></i> Чек прикріплено
+                                </span>
+                                <img id="receipt-preview-img" src="" alt="Скриншот чека" style="max-width: 100%; max-height: 160px; border-radius: 8px; object-fit: contain; border: 1px solid #444444; display: block;">
+                            </div>
+                            <p style="font-size: 0.75rem; color: #a1a1aa; font-weight: 500; margin: 8px 0 0 0;">Натисніть, щоб змінити файл</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Финальная кнопка -->
+                    <button type="button" id="btn-final-submit" style="width: 100%; margin-top: 15px; padding: 14px; background: #22c55e; color: #fff; border: none; border-radius: 10px; font-weight: 800; cursor: pointer;">
+                        Надіслати чек
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -369,19 +519,6 @@
             <p style="font-size: 0.88rem; color: #a3a3a3; line-height: 1.4; margin: 0 0 20px 0;">
                 Ваше замовлення успішно оформлене. Очікуйте на дзвінок менеджера для підтвердження броні!
             </p>
-            
-            <!-- БЛОК С ПРИГЛАШЕНИЕМ В ЧАТ -->
-            <div style="background: #171717; border: 1px solid #262626; border-radius: 12px; padding: 14px; text-align: left; margin-bottom: 20px;">
-                <strong style="color: #ffffff; font-size: 0.85rem; display: block; margin-bottom: 4px;">
-                    💬 А поки очікуєте — приєднуйтесь до чату:
-                </strong>
-                <p style="font-size: 0.78rem; color: #a3a3a3; margin: 0 0 12px 0; line-height: 1.3;">
-                    Тут буде вся актуальна інформація по сплаву, локации та связи с гидами!
-                </p>
-                <a href="https://t.me/+ваша_ссылка_на_чат" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #262626; color: #ffffff; border: 1px solid #404040; padding: 10px; border-radius: 8px; font-size: 0.85rem; text-decoration: none; font-weight: 700; transition: all 0.2s; box-sizing: border-box;">
-                    Увійти в чат сплаву 🚀
-                </a>
-            </div>
 
             <!-- Кнопка закрытия -->
             <button type="button" id="close-success-btn" style="width: 100%; background: #ffffff; color: #000000; border: none; border-radius: 10px; padding: 14px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-sizing: border-box;">
@@ -393,7 +530,7 @@
     <!-- НИЖНЕЕ НАВИГАЦИОННОЕ МЕНЮ -->
     <nav class="bottom_nav">
         <!-- Кнопка 1: Старт -->
-        <a href="./index.html" class="nav_item" data-tab="tab-start">
+            <a href="./index.html#start" class="nav_item" data-tab="tab-start">
             <div class="nav_icon_box">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>

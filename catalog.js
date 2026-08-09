@@ -1,4 +1,25 @@
-// Глобальный стейт — подтягиваем сохраненные товары из localStorage при старте
+// ==========================================================================
+// 1. КОНСТАНТЫ И ГЛОБАЛЬНЫЙ СТЕЙТ
+// ==========================================================================
+const availableTimeSlots = [
+    "08:00", "08:30", "09:00", "09:30",
+    "10:00", "10:30", "11:00", "11:30",
+    "12:00", "12:30", "13:00", "13:30",
+    "14:00", "14:30", "15:00", "15:30",
+    "16:00", "16:30", "17:00", "17:30",
+    "18:00", "18:30", "19:00", "19:30",
+    "20:00", "20:30", "21:00"
+];
+
+// Названия месяцев для календаря
+const ukMonths = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
+const ukMonthsGenitive = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+
+// Кэшируем глобальные элементы
+const timeSlotsGrid = document.getElementById('time-slots-grid');
+const hiddenDateTimeInput = document.getElementById('checkout-rental-time');
+
+// Глобальный стейт — корзина из localStorage
 let cart = JSON.parse(localStorage.getItem('timurtour_cart')) || [];
 
 // Выбранные пользователем дата и время
@@ -8,29 +29,47 @@ let selectedTime = null; // "HH:MM"
 // Текущая дата для навигации внутри календаря
 let navDate = new Date();
 
+// ==========================================================================
+// 2. ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА (DOMContentLoaded)
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Запуск полной инициализации скрипта...");
 
     // ----------------- ЭЛЕМЕНТЫ ИНТЕРФЕЙСА -----------------
     const productCards = document.querySelectorAll(".product-card");
     
-    // Drawer (Заказ / Корзина) - ищем по классу и ID для надежности
+    // Drawer (Заказ / Корзина)
     const bookingDrawer = document.querySelector(".booking-drawer") || document.getElementById("booking-drawer");
     const btnCloseDrawer = document.getElementById("btn-close-drawer") || document.querySelector(".close-drawer-btn");
     const drawerOverlay = document.querySelector(".drawer-overlay") || document.getElementById("drawer-close-overlay");
     const checkoutForm = document.getElementById("booking-checkout-form");
 
-    // Элементы для двух шагов внутри Drawer'а
+    // Шаги внутри Drawer
     const stepCart = document.getElementById("drawer-step-cart");
     const stepCheckout = document.getElementById("drawer-step-checkout");
     const btnGoToCheckout = document.getElementById("btn-go-to-checkout");
     const btnBackToCart = document.getElementById("btn-back-to-cart");
     const drawerTitle = document.getElementById("drawer-title");
 
+    // Модальное окно проверки заказа
+    const checkModal = document.getElementById("check-order-modal");
+    const detailsContainer = document.getElementById("check-order-details");
+
+    // Гибкий поиск кнопок внутри модалки проверки
+    const confirmPaymentBtn = document.getElementById("confirm-payment-btn") 
+        || checkModal?.querySelector('.btn-confirm') 
+        || checkModal?.querySelectorAll('button')[1] 
+        || checkModal?.querySelector('button:last-child');
+
+    const cancelCheckModalBtn = document.getElementById("btn-close-check-modal") 
+        || checkModal?.querySelector('.btn-back') 
+        || checkModal?.querySelectorAll('button')[0] 
+        || checkModal?.querySelector('button:first-child');
+
     // Плавающая кнопка корзины
     const floatingCart = document.getElementById("floating-cart");
 
-    // Календарь
+    // Элементы Календаря
     const btnOpenCalendar = document.getElementById("btn-open-calendar");
     const calendarModal = document.getElementById("calendar-modal");
     const calendarModalOverlay = document.getElementById("calendar-modal-overlay");
@@ -40,41 +79,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const calNextBtn = document.getElementById("cal-next-month");
     const selectedDateText = document.getElementById("selected-date-text");
 
-    const timeSlotsGrid = document.getElementById("time-slots-grid");
-    const hiddenDateTimeInput = document.getElementById("booking-datetime");
-
     // Modal (Детали товара)
     const detailsModal = document.getElementById("details-modal");
     const btnCloseModal = document.getElementById("btn-close-modal");
     const detailsOverlay = document.getElementById("details-overlay");
     const modalBookBtn = document.getElementById("modal-book-btn");
 
-    // Локализация для календаря
-    const ukMonths = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
-    const ukMonthsGenitive = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-    const availableTimeSlots = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"];
-
-
+    // ----------------- TELEGRAM WEBAPP -----------------
     if (window.Telegram?.WebApp) {
-
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
-
-        console.log("Telegram найден ✅");
-
-        console.log("initData:", Telegram.WebApp.initData);
-
-        console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
-
-        console.log("user:", Telegram.WebApp.initDataUnsafe.user);
-
+        console.log("Telegram найден ✅", Telegram.WebApp.initDataUnsafe?.user);
     } else {
-
         console.log("Telegram НЕ найден ❌");
-
     }
 
-    // ----------------- УПРАВЛЕНИЕ ШТОРКОЙ (DRAWER) И ШАГАМИ ----------------
+    // ----------------- УПРАВЛЕНИЕ ШТОРКОЙ (DRAWER) -----------------
     function showCartStep() {
         if (stepCart) stepCart.style.display = "block";
         if (stepCheckout) stepCheckout.style.display = "none";
@@ -128,72 +148,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ----------------- НИЖНЯЯ НАВИГАЦИЯ (BOTTOM NAV) -----------------
-
     const navItems = document.querySelectorAll('.bottom_nav .nav_item, .bottom_nav a');
-
     navItems.forEach(button => {
-
         button.addEventListener('click', (e) => {
-
             const href = button.getAttribute('href');
-
-            // Если ссылка ведет на другую страницу — не мешаем браузеру
             if (href && !href.startsWith('#')) return;
 
             e.preventDefault();
-
             const targetTabId = button.dataset.tab;
 
-            // =======================
-            // КНОПКА "КОШИК"
-            // =======================
-
             if (targetTabId === "tab-cart") {
-
                 window.openBookingDrawer();
-
                 return;
             }
 
-            // =======================
-            // ОБЫЧНЫЕ ВКЛАДКИ
-            // =======================
-
             navItems.forEach(btn => btn.classList.remove("active"));
-
             document.querySelectorAll(".tab_content").forEach(tab => {
                 tab.style.display = "none";
             });
 
             button.classList.add("active");
-
             if (targetTabId) {
-
                 const targetTab = document.getElementById(targetTabId);
-
-                if (targetTab) {
-                    targetTab.style.display = "block";
-                }
-
+                if (targetTab) targetTab.style.display = "block";
             }
-
         });
-
     });
 
     // ----------------- СОХРАНЕНИЕ И ОБНОВЛЕНИЕ КОРЗИНЫ -----------------
     function saveAndUpdateCart() {
         localStorage.setItem('timurtour_cart', JSON.stringify(cart));
         
-        // Считаем сумму и количество с защитой от разницы в названиях (qty / quantity)
         const totalQty = cart.reduce((sum, item) => sum + (Number(item.qty || item.quantity) || 0), 0);
         const totalSum = cart.reduce((sum, item) => {
             const itemQty = Number(item.qty || item.quantity) || 1;
-            const itemPrice = Number(item.price || item.totalPrice) || 0;
+            const itemPrice = Number(item.price || item.pricePerUnit || (item.totalPrice ? item.totalPrice / itemQty : 0)) || 0;
             return sum + (itemPrice * itemQty);
         }, 0);
 
-        // Обновляем плавающую плашку (если она есть)
         if (floatingCart) {
             if (totalQty > 0) {
                 floatingCart.style.display = "flex";
@@ -206,14 +198,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Обновляем красную плашку на иконке корзины
         const badge = document.getElementById('cart-badge');
         if (badge) {
             badge.textContent = totalQty;
             badge.style.display = totalQty > 0 ? 'flex' : 'none';
         }
 
-        // Если на странице есть общая корзина — обновляем и её
         if (typeof updateCartUI === 'function') {
             updateCartUI();
         }
@@ -225,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         floatingCart.addEventListener("click", window.openBookingDrawer);
     }
 
-    // ----------------- ИНИЦИАЛИЗАЦИЯ КАРТОЧЕК -----------------
+    // ----------------- ИНИЦИАЛИЗАЦИЯ КАРТОЧЕК ТОВАРОВ -----------------
     productCards.forEach(card => {
         const dropdown = card.querySelector(".custom-dropdown");
         const dropdownTrigger = card.querySelector(".dropdown-trigger");
@@ -303,7 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cleanDurationText = currentDurationText.split(" (")[0];
                 const computedTotal = Number(currentPricePerUnit) * Number(currentQty);
 
-                // Ищем существующий элемент
                 const existingItem = cart.find(item => 
                     (item.id === productId || item.productId === productId) && 
                     (item.durationText === cleanDurationText || item.duration === cleanDurationText)
@@ -313,39 +302,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     const newQty = Number(existingItem.qty || existingItem.quantity || 0) + Number(currentQty);
                     const unitPrice = Number(existingItem.pricePerUnit || existingItem.price || currentPricePerUnit);
 
-                    // Обновляем все вариации количества и цены
                     existingItem.qty = newQty;
                     existingItem.quantity = newQty;
                     existingItem.count = newQty;
                     existingItem.totalPrice = newQty * unitPrice;
                     existingItem.price = unitPrice;
                 } else {
-                    // Записываем объект со ВСЕМИ возможными наименованиями ключей
                     cart.push({
-                        // Идентификаторы
                         id: productId,
                         productId: productId,
-
-                        // Названия (для заголовка и подзаголовка)
                         title: productName,
                         productName: productName,
                         name: productName,
                         duration: cleanDurationText,
                         durationText: cleanDurationText,
                         subtitle: cleanDurationText,
-
-                        // Количество
                         qty: Number(currentQty),
                         quantity: Number(currentQty),
                         count: Number(currentQty),
-
-                        // Цены
                         price: Number(currentPricePerUnit),
                         pricePerUnit: Number(currentPricePerUnit),
                         totalPrice: computedTotal,
                         cost: Number(currentPricePerUnit),
-
-                        // Категория
                         type: 'ОРЕНДА'
                     });
                 }
@@ -371,7 +349,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (specsElem) specsElem.innerHTML = productSpecsHtml;
 
                 if (modalBookBtn) modalBookBtn.setAttribute("data-target-id", productId);
-                openDetailsModal();
+                
+                if (detailsModal) detailsModal.style.display = "flex";
             });
         }
     });
@@ -380,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalBookBtn.addEventListener("click", () => {
             const targetId = modalBookBtn.getAttribute("data-target-id");
             if (targetId) {
-                closeDetailsModal();
+                if (detailsModal) detailsModal.style.display = "none";
                 const targetCard = document.querySelector(`.product-card[data-id="${targetId}"]`);
                 if (targetCard) {
                     const targetBookBtn = targetCard.querySelector(".book-btn");
@@ -390,7 +369,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ----------------- РЕНДЕР КОРЗИНЫ В DRAWER (УНИВЕРСАЛЬНЫЙ) -----------------
+    // ----------------- ГЛОБАЛЬНЫЙ КЛИК ПО ".book-btn" -----------------
+    document.addEventListener("click", (e) => {
+        const bookBtn = e.target.closest(".book-btn");
+        if (!bookBtn) return;
+
+        if (typeof window.openBookingDrawer === "function") {
+            window.openBookingDrawer();
+        }
+    });
+
+    // ----------------- РЕНДЕР КОРЗИНЫ В DRAWER -----------------
     function renderCart() {
         const container = document.getElementById("cart-items-container");
         const grandTotalDisplay = document.getElementById("cart-grand-total");
@@ -412,16 +401,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         cart.forEach((item, index) => {
-            // Нормализуем данные под любые вариации названий ключей
             const title = item.productName || item.title || item.name || "Товар";
             const subtitle = item.durationText || item.duration || item.type || "";
             const qty = Number(item.quantity || item.qty || item.count || 1);
             
-            // Нормализуем цену
             const unitPrice = Number(item.pricePerUnit || item.price || (item.totalPrice ? item.totalPrice / qty : 0));
             const itemTotal = Number(item.totalPrice) || (unitPrice * qty);
             
-            // Синхронизируем обратно в объект на случай кликов +/-
             item.quantity = qty;
             item.qty = qty;
             item.pricePerUnit = unitPrice;
@@ -560,7 +546,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         selectedDateText.innerHTML = `<i class="fa-regular fa-calendar-check" style="color: #0088cc; font-size: 1.1rem;"></i> ${day} ${ukMonthsGenitive[month]} ${year}`;
                         selectedDateText.style.color = "#0f172a";
                     }
-                    updateHiddenInput();
+                    
+                    const rentalDateInput = document.getElementById('checkout-rental-date');
+                    if (rentalDateInput) rentalDateInput.value = selectedDate;
+
+                    initTimeSlots();
                     closeCalendarModal();
                 });
             }
@@ -601,10 +591,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ----------------- СЛОТЫ ВРЕМЕНИ -----------------
     function initTimeSlots() {
-        if (!timeSlotsGrid) return;
-        timeSlotsGrid.innerHTML = "";
-        selectedTime = null;
-        if (hiddenDateTimeInput) hiddenDateTimeInput.value = "";
+        const grid = document.getElementById('time-slots-grid');
+        if (!grid || typeof availableTimeSlots === 'undefined') return;
+
+        grid.innerHTML = "";
+
+        const rentalDateInput = document.getElementById('checkout-rental-date');
+        if (rentalDateInput && rentalDateInput.value) {
+            selectedDate = rentalDateInput.value;
+        }
+
+        const now = new Date();
+        const todayStr = now.toLocaleDateString('sv'); 
+        const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+        const isToday = (selectedDate === todayStr);
 
         availableTimeSlots.forEach(time => {
             const timeBtn = document.createElement("button");
@@ -612,65 +612,101 @@ document.addEventListener("DOMContentLoaded", () => {
             timeBtn.classList.add("time-slot-btn");
             timeBtn.textContent = time;
 
-            timeBtn.addEventListener("click", () => {
-                document.querySelectorAll(".time-slot-btn").forEach(el => el.classList.remove("active"));
+            if (selectedTime === time) {
                 timeBtn.classList.add("active");
-                selectedTime = time;
-                updateHiddenInput();
-            });
+            }
 
-            timeSlotsGrid.appendChild(timeBtn);
+            let isPastSlot = false;
+            if (isToday) {
+                const [h, m] = time.split(':').map(Number);
+                const slotTotalMinutes = h * 60 + m;
+                if (slotTotalMinutes <= currentTotalMinutes) {
+                    isPastSlot = true;
+                }
+            }
+
+            if (isPastSlot) {
+                timeBtn.style.cssText = "background: #f1f5f9 !important; color: #cbd5e1 !important; border: 1px solid #e2e8f0 !important; cursor: not-allowed !important; opacity: 0.6;";
+                timeBtn.disabled = true;
+            } else {
+                timeBtn.addEventListener("click", () => {
+                    document.querySelectorAll(".time-slot-btn").forEach(el => el.classList.remove("active"));
+                    timeBtn.classList.add("active");
+
+                    selectedTime = time;
+
+                    const hiddenTimeInput = document.getElementById('checkout-rental-time');
+                    if (hiddenTimeInput) {
+                        hiddenTimeInput.value = time;
+                    }
+                });
+            }
+
+            grid.appendChild(timeBtn);
         });
     }
-    
+
     initTimeSlots();
 
-    function updateHiddenInput() {
-        if (hiddenDateTimeInput) {
-            hiddenDateTimeInput.value = (selectedDate && selectedTime) ? `${selectedDate}T${selectedTime}` : "";
-        }
+    const rentalDateInput = document.getElementById('checkout-rental-date');
+    if (rentalDateInput) {
+        rentalDateInput.addEventListener('change', (e) => {
+            selectedDate = e.target.value;
+            selectedTime = null;
+
+            const hiddenTimeInput = document.getElementById('checkout-rental-time');
+            if (hiddenTimeInput) hiddenTimeInput.value = "";
+
+            initTimeSlots();
+        });
     }
 
-    function openDetailsModal() { if (detailsModal) detailsModal.classList.add("open"); }
-    function closeDetailsModal() { if (detailsModal) detailsModal.classList.remove("open"); }
-    if (btnCloseModal) btnCloseModal.addEventListener("click", closeDetailsModal);
-    if (detailsOverlay) detailsOverlay.addEventListener("click", closeDetailsModal);
-
-    window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            window.closeBookingDrawer();
-            closeDetailsModal();
-            closeCalendarModal();
-        }
-    });
-
-    // ----------------- ОТПРАВКА ДАННЫХ В N8N -----------------
+    // ----------------- 3. ПРОВЕРКА ДАННЫХ И МОДАЛКА ЧЕКА -----------------
     if (checkoutForm) {
         checkoutForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 alert("Ваш кошик порожній!");
                 return;
             }
 
-            if (!selectedDate || !selectedTime) {
+            const dateInput = document.getElementById("checkout-rental-date");
+            const timeInput = document.getElementById("checkout-rental-time");
+
+            const effectiveDate = dateInput?.value || selectedDate;
+            const effectiveTime = timeInput?.value || selectedTime;
+
+            if (!effectiveDate || !effectiveTime) {
                 alert("Будь ласка, оберіть дату та час для бронювання!");
                 return;
             }
 
+            selectedDate = effectiveDate;
+            selectedTime = effectiveTime;
+
             const nameInput = document.getElementById("user-name");
             const phoneInput = document.getElementById("user-phone");
 
-            const name = nameInput ? nameInput.value.trim() : "";
-            const phone = phoneInput ? phoneInput.value.trim() : "";
-            const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+            const name = nameInput ? nameInput.value.trim() : "Не вказано";
+            const phone = phoneInput ? phoneInput.value.trim() : "Не вказано";
+            
+            const totalCartPrice = cart.reduce((sum, item) => {
+                const itemQty = Number(item.qty || item.quantity || 1);
+                const itemPrice = Number(item.price || item.pricePerUnit || (item.totalPrice ? item.totalPrice / itemQty : 0));
+                return sum + (Number(item.totalPrice) || (itemPrice * itemQty));
+            }, 0);
 
-            const itemsSummary = cart.map(item => `${item.productName} (${item.durationText}) x${item.quantity}`).join("<br>");
+            const itemsSummary = cart.map(item => {
+                const title = item.productName || item.title || item.name || "Товар";
+                const duration = item.durationText || item.duration || item.subtitle || "1 година";
+                const qty = item.quantity || item.qty || 1;
+                return `${title} (${duration}) x${qty}`;
+            }).join("<br>");
+
             const dateParts = selectedDate.split("-");
             const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : selectedDate;
 
-            const detailsContainer = document.getElementById("check-order-details");
             if (detailsContainer) {
                 detailsContainer.innerHTML = `
                     <div><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ІМ'Я:</strong> <span style="font-weight: 700; color: #0f172a;">${name}</span></div>
@@ -681,182 +717,173 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
             }
 
-            const checkModal = document.getElementById("check-order-modal");
             if (checkModal) {
                 checkModal.style.display = "flex";
-                setTimeout(() => { if (checkModal.firstElementChild) checkModal.firstElementChild.style.transform = "scale(1)"; }, 50);
+                setTimeout(() => { 
+                    if (checkModal.firstElementChild) checkModal.firstElementChild.style.transform = "scale(1)"; 
+                }, 50);
             }
         });
     }
 
-    document.getElementById("check-back-btn")?.addEventListener("click", () => {
-        const checkModal = document.getElementById("check-order-modal");
-        if (checkModal) {
-            checkModal.style.display = "none";
-            if (checkModal.firstElementChild) checkModal.firstElementChild.style.transform = "scale(0.9)";
-        }
-    });
-
-    // ==========================================
-    // ЭТАП 1: Переход с проверки на Шаг 3 (Оплата и Загрузка чека)
-    // ==========================================
-    document.getElementById("check-confirm-btn")?.addEventListener("click", () => {
-        // 1. Закрываем модалку проверки (если она была открыта)
-        const checkModal = document.getElementById("check-order-modal");
+    // Закрытие модалки проверки
+    const closeCheckModal = () => {
         if (checkModal) checkModal.style.display = "none";
+    };
 
-        // 2. Переключаем шаги внутри боковой панели (Drawer)
-        const stepCheckout = document.getElementById("drawer-step-checkout");
-        const stepPayment = document.getElementById("drawer-step-payment");
-
-        if (stepCheckout) stepCheckout.style.display = "none";
-        if (stepPayment) stepPayment.style.display = "block";
-
-        // 3. Обновляем суммы на шаге оплаты
-        const totalCartPrice = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        const payPriceElem = document.getElementById("pay-item-price");
-        const payDepositElem = document.getElementById("pay-deposit-amount");
-
-        if (payPriceElem) payPriceElem.innerText = `${totalCartPrice} UAH`;
-        if (payDepositElem) payDepositElem.innerText = `${totalCartPrice} грн`;
-    });
-
-    // ==========================================
-    // 1. Вспомогательная функция: сброс картинок и возврат на Шаг 1
-    // ==========================================
-    function resetBookingState() {
-        // Очищаем input файла и превью картинки
-        const fileInput = document.getElementById('receipt-file-input');
-        const idleState = document.getElementById('upload-idle-state');
-        const previewState = document.getElementById('upload-preview-state');
-        const previewImg = document.getElementById('receipt-preview-img');
-
-        if (fileInput) fileInput.value = '';
-        if (previewImg) previewImg.src = '';
-        if (idleState) idleState.style.display = 'flex';
-        if (previewState) previewState.style.display = 'none';
-
-        // Переключаем шторку обратно на Шаг 1 (Корзина)
-        const stepCart = document.getElementById('drawer-step-cart');
-        const stepCheckout = document.getElementById('drawer-step-checkout');
-        const stepPayment = document.getElementById('drawer-step-payment');
-
-        if (stepCart) stepCart.style.display = 'block';
-        if (stepCheckout) stepCheckout.style.display = 'none';
-        if (stepPayment) stepPayment.style.display = 'none';
+    const checkBackBtn = document.getElementById("check-back-btn");
+    if (checkBackBtn) {
+        checkBackBtn.addEventListener("click", closeCheckModal);
     }
 
-    // ==========================================
-    // 2. Обработчик клика кнопки «Підтвердити та надіслати»
-    // ==========================================
-    document.getElementById("btn-submit-final-booking")?.addEventListener("click", async () => {
+    if (checkModal) {
+        checkModal.addEventListener("click", (e) => {
+            if (e.target === checkModal) closeCheckModal();
+        });
+    }
 
-        const fileInput = document.getElementById("receipt-file-input");
-        const uploadZone = document.getElementById("upload-zone");
+    // Кнопка «Внести передплату»: переводит на Шаг 5 (Оплата)
+    const checkConfirmBtn = document.getElementById("check-confirm-btn");
+    if (checkConfirmBtn) {
+        checkConfirmBtn.addEventListener("click", () => {
+            closeCheckModal();
 
-        // Проверяем наличие чека
-        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-            const errorMsg = "⚠️ Будь ласка, прикріпіть скріншот або квитанцію про оплату!";
+            // Расчет 30% предоплаты и 70% остатка
+            const totalCartPrice = cart.reduce((sum, item) => {
+                const itemQty = Number(item.qty || item.quantity || 1);
+                const itemPrice = Number(item.price || item.pricePerUnit || (item.totalPrice ? item.totalPrice / itemQty : 0));
+                return sum + (Number(item.totalPrice) || (itemPrice * itemQty));
+            }, 0);
 
-            // 1. Нативное окно Telegram (если открыто в Telegram)
-            if (window.Telegram?.WebApp?.showAlert) {
-                window.Telegram.WebApp.showAlert(errorMsg);
-            } else {
-                // 2. Запасное красивое уведомление для браузера
-                showCustomNotice(errorMsg);
+            const prepay30 = Math.round(totalCartPrice * 0.3);
+            const rest70 = totalCartPrice - prepay30;
+
+            // Подставляем значения в карточку оплаты
+            const totalElem = document.getElementById("payment-total-full");
+            const prepayElem = document.getElementById("payment-prepay-amount");
+            const restElem = document.getElementById("payment-rest-amount");
+
+            if (totalElem) totalElem.textContent = `${totalCartPrice} грн`;
+            if (prepayElem) prepayElem.textContent = `${prepay30} грн`;
+            if (restElem) restElem.textContent = `${rest70} грн`;
+
+            // Переключаем шаги в Drawer
+            if (stepCart) stepCart.style.display = "none";
+            if (stepCheckout) stepCheckout.style.display = "none";
+            
+            const stepPayment = document.getElementById("drawer-step-payment");
+            if (stepPayment) stepPayment.style.display = "block";
+
+            if (drawerTitle) drawerTitle.textContent = "Деталі оплати";
+
+            if (typeof window.openBookingDrawer === "function") {
+                window.openBookingDrawer();
             }
+        });
+    }
 
-            // Подсвечиваем зону загрузки красным
-            if (uploadZone) {
-                uploadZone.style.border = "2px dashed #ef4444";
-                uploadZone.style.backgroundColor = "#fef2f2";
-                uploadZone.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
+    // ----------------- 4. ОБРАБОТКА ЧЕКА, КОПИРОВАНИЕ И ОТПРАВКА В N8N -----------------
+    
+    // Загрузка и превью скриншота чека
+    const uploadZone = document.getElementById("upload-zone");
+    const receiptFileInput = document.getElementById("receipt-file-input");
+    const uploadIdleState = document.getElementById("upload-idle-state");
+    const uploadPreviewState = document.getElementById("upload-preview-state");
+    const receiptPreviewImg = document.getElementById("receipt-preview-img");
+
+    if (uploadZone && receiptFileInput) {
+        uploadZone.addEventListener("click", () => receiptFileInput.click());
+
+        receiptFileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                window.currentReceiptFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    if (receiptPreviewImg) receiptPreviewImg.src = event.target.result;
+                    if (uploadIdleState) uploadIdleState.style.display = "none";
+                    if (uploadPreviewState) uploadPreviewState.style.display = "block";
+                };
+                reader.readAsDataURL(file);
             }
-            return;
-        }
+        });
+    }
 
-        // Хелпер для красивого уведомления в обычном браузере
-        function showCustomNotice(message) {
-            let notice = document.getElementById("custom-notice");
-            if (!notice) {
-                notice = document.createElement("div");
-                notice.id = "custom-notice";
-                notice.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%) translateY(-20px);
-                    background: #0f172a;
-                    color: #fff;
-                    padding: 12px 20px;
-                    border-radius: 12px;
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-                    z-index: 9999;
-                    opacity: 0;
-                    transition: all 0.3s ease;
-                    text-align: center;
-                    max-width: 90%;
-                `;
-                document.body.appendChild(notice);
+    // Клик-копирование реквизитов (IBAN, ЄДРПОУ, Призначення)
+    document.querySelectorAll(".copy-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const targetId = card.getAttribute("data-copy-target");
+            const targetElem = document.getElementById(targetId);
+            if (targetElem) {
+                navigator.clipboard.writeText(targetElem.textContent.trim());
+                alert("Скопійовано в буфер обміну!");
             }
+        });
+    });
 
-            notice.textContent = message;
+    // Функция отправки заказа на n8n webhook
+    const executeOrderSubmission = async () => {
+        const btnSubmitFinal = document.getElementById("btn-submit-final-booking");
 
-            requestAnimationFrame(() => {
-                notice.style.opacity = "1";
-                notice.style.transform = "translateX(-50%) translateY(0)";
-            });
-
-            setTimeout(() => {
-                notice.style.opacity = "0";
-                notice.style.transform = "translateX(-50%) translateY(-20px)";
-            }, 3000);
-        }
-
-        if (uploadZone) {
-            uploadZone.style.border = "";
-            uploadZone.style.backgroundColor = "";
-        }
-
-        // --------------------------------------------------
-        // Данные клиента и визита
-        // --------------------------------------------------
         const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user || null;
         const telegramId = tgUser?.id ? String(tgUser.id) : "Сайт (Браузер)";
 
         const name = document.getElementById("user-name")?.value.trim() || "Не вказано";
         const phone = document.getElementById("user-phone")?.value.trim() || "Не вказано";
-        const scheduledAt = document.getElementById("booking-datetime")?.value || "";
-        const totalCartPrice = cart.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
 
-        // 🎯 1. Генерируем ЕДИНЫЙ 6-значный ID заказа для всего процесса
+        const rentalDate = document.getElementById("checkout-rental-date")?.value || selectedDate || "";
+        const rentalTime = document.getElementById("checkout-rental-time")?.value || selectedTime || "";
+        const tourDate = document.getElementById("checkout-tour-date")?.value || "";
+
+        const totalCartPrice = cart.reduce((sum, item) => {
+            const itemQty = Number(item.qty || item.quantity || 1);
+            const itemPrice = Number(item.price || item.pricePerUnit || (item.totalPrice ? item.totalPrice / itemQty : 0));
+            return sum + (Number(item.totalPrice) || (itemPrice * itemQty));
+        }, 0);
+
         const generatedOrderId = Math.floor(100000 + Math.random() * 900000).toString();
+        const scheduledAtFormatted = (rentalDate || tourDate) ? `${rentalDate || tourDate} ${rentalTime}`.trim() : 'Не вказано';
 
-        // 🎯 2. Формируем единый payload
         const payload = {
             id: generatedOrderId,
-            customer: {
-                name: name,
-                phone: phone,
-                telegramId: telegramId
-            },
+            customer: { name, phone, telegramId },
             booking: {
                 id: generatedOrderId,
-                items: cart.map(item => ({
-                    productId: item.productId || item.id,
-                    productName: item.productName || item.title || item.name,
-                    duration: item.durationText || item.duration || '1 година',
-                    quantity: item.quantity || 1,
-                    totalPrice: item.totalPrice,
-                    img: item.img || item.image || item.imgSrc || item.photo || ''
-                })),
+                scheduledAt: scheduledAtFormatted,
+                items: cart.map(item => {
+                    const pName = (item.productName || item.title || item.name || "").toLowerCase();
+                    const pId = (item.productId || item.id || "").toLowerCase();
+
+                    const isTour = item.isTour || item.type === 'tour' || 
+                                   pId.includes('tour') || pName.includes('похід') || 
+                                   pName.includes('тур') || pName.includes('подія');
+
+                    let itemDate = item.date || item.rentalDate || item.tourDate || item.selectedDate || "";
+                    let itemTime = item.time || item.rentalTime || item.selectedTime || "";
+
+                    if (!itemDate) itemDate = isTour ? (tourDate || rentalDate) : rentalDate;
+                    if (!itemTime && !isTour) itemTime = rentalTime;
+
+                    const qty = Number(item.quantity || item.qty || 1);
+                    const itemTotalPrice = item.totalPrice !== undefined && item.totalPrice !== null && !isNaN(Number(item.totalPrice))
+                        ? Number(item.totalPrice)
+                        : (Number(item.price || 0) * qty);
+
+                    return {
+                        productId: item.productId || item.id || 'unknown',
+                        productName: item.productName || item.title || item.name || 'Товар',
+                        duration: item.durationText || item.duration || '1 година',
+                        quantity: qty,
+                        totalPrice: itemTotalPrice,
+                        date: itemDate || 'Дата не вказана',
+                        time: itemTime || '',
+                        img: item.img || item.image || item.imgSrc || item.photo || ''
+                    };
+                }),
                 totalPrice: totalCartPrice,
-                scheduledAt: scheduledAt
+                rentalDate: rentalDate,
+                rentalTime: rentalTime,
+                tourDate: tourDate
             },
             meta: {
                 source: "Website Catalog",
@@ -864,377 +891,89 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
 
-        // 🎯 3. Сохраняем в локальную историю
-        if (typeof saveOrderToHistory === "function") {
-            saveOrderToHistory(payload.booking);
+        // Защита от спам-кликов
+        let originalText = "";
+        if (btnSubmitFinal) {
+            originalText = btnSubmitFinal.textContent;
+            btnSubmitFinal.disabled = true;
+            btnSubmitFinal.textContent = "Обробка...";
         }
 
-        // 🎯 4. Упаковываем данные в FormData для отправки
+        saveOrderToHistory(payload.booking);
+
         const formData = new FormData();
         formData.append("payload", JSON.stringify(payload));
-        formData.append("receipt_file", fileInput.files[0]);
-
-        console.log("📦 Payload перед отправкой:", payload);
+        
+        const receiptInput = document.getElementById('receipt-file-input');
+        const fileToSend = window.currentReceiptFile || receiptInput?.files?.[0];
+        
+        if (fileToSend) {
+            formData.append("receipt_file", fileToSend);
+        }
 
         try {
-            // Отправляем в n8n на сохранение в Google Таблицу
             const response = await fetch(
                 "https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52",
-                {
-                    method: "POST",
-                    body: formData
-                }
+                { method: "POST", body: formData }
             );
 
-            if (!response.ok) {
-                throw new Error(`Помилка сервера: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Помилка сервера: ${response.status}`);
 
-            console.log(`✅ Успешно отправлено в n8n (Заказ №${generatedOrderId})`);
-
-            // 🎯 5. Очищаем корзину и сбрасываем форму
+            // Очистка состояния после успешной отправки
             cart = [];
             selectedDate = null;
             selectedTime = null;
+            window.currentReceiptFile = null;
 
-            if (typeof saveAndUpdateCart === "function") {
-                saveAndUpdateCart();
-            }
+            saveAndUpdateCart();
 
             document.getElementById("booking-checkout-form")?.reset();
 
-            if (typeof resetBookingState === "function") {
-                resetBookingState();
-            }
+            if (uploadIdleState) uploadIdleState.style.display = "flex";
+            if (uploadPreviewState) uploadPreviewState.style.display = "none";
+            if (receiptFileInput) receiptFileInput.value = "";
 
+            closeCheckModal();
             window.closeBookingDrawer?.();
 
-            // Показываем модалку успеха
+            // Показываем окно успеха
             const successModal = document.getElementById("success-modal");
             if (successModal) {
                 successModal.style.display = "flex";
                 setTimeout(() => {
-                    successModal.firstElementChild?.style.setProperty(
-                        "transform",
-                        "scale(1)"
-                    );
+                    if (successModal.firstElementChild) successModal.firstElementChild.style.transform = "scale(1)";
                 }, 50);
-            }
-
-            const closeSuccessBtn = document.getElementById("close-success-btn");
-            if (closeSuccessBtn) {
-                closeSuccessBtn.addEventListener("click", () => {
-                    const successModal = document.getElementById("success-modal");
-                    if (successModal) successModal.style.display = "none";
-                });
             }
 
         } catch (error) {
             console.error("Помилка відправки:", error);
             alert("❌ Не вдалося відправити бронювання. Спробуйте ще раз.");
-        }
-    });
-
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    // ==========================================
-    // Универсальное копирование по клику на карточку
-    // ==========================================
-    document.querySelectorAll('.copy-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const targetId = card.getAttribute('data-copy-target');
-            const textElem = document.getElementById(targetId);
-            const iconElem = card.querySelector('.copy-icon');
-
-            if (!textElem) return;
-
-            // Для IBAN и ЄДРПОУ вычищаем пробелы, обычный текст оставляем как есть
-            let cleanText = textElem.innerText.trim();
-            if (targetId === 'iban-text' || targetId === 'edrpou-val') {
-                cleanText = cleanText.replace(/\s+/g, '');
+        } finally {
+            if (btnSubmitFinal) {
+                btnSubmitFinal.disabled = false;
+                btnSubmitFinal.textContent = originalText || "Підтвердити та надіслати";
             }
-
-            navigator.clipboard.writeText(cleanText).then(() => {
-                if (!iconElem) return;
-
-                // Сохраняем исходное состояние иконки
-                const originalClass = iconElem.className;
-                const originalColor = iconElem.style.color;
-
-                // Включаем зелёную галочку
-                iconElem.className = 'copy-icon fa-solid fa-check';
-                iconElem.style.color = '#0088cc';
-
-                // Через 1.8 секунды возвращаем иконку назад
-                setTimeout(() => {
-                    iconElem.className = originalClass;
-                    iconElem.style.color = originalColor;
-                }, 1800);
-
-            }).catch(err => {
-                console.error('Помилка копіювання:', err);
-            });
-        });
-    });
-
-    // ----------------------------------------------------
-    // 2. Работа со скриншотом оплаты
-    // ----------------------------------------------------
-
-    window.currentReceiptFile = null;
-
-    const uploadZone = document.getElementById('upload-zone');
-    const fileInput = document.getElementById('receipt-file-input');
-
-    const idleState = document.getElementById('upload-idle-state');
-    const previewState = document.getElementById('upload-preview-state');
-    const previewImg = document.getElementById('receipt-preview-img');
-
-    function renderImagePreview(file) {
-
-        if (!file) return;
-
-        if (!file.type.startsWith('image/')) return;
-
-        window.currentReceiptFile = file;
-
-        const imageUrl = URL.createObjectURL(file);
-
-        if (previewImg) {
-            previewImg.src = imageUrl;
         }
-
-        if (idleState) {
-            idleState.style.display = 'none';
-        }
-
-        if (previewState) {
-            previewState.style.display = 'block';
-        }
-
-        if (uploadZone) {
-            uploadZone.style.border = '';
-            uploadZone.style.backgroundColor = '';
-        }
-
-    }
-
-    if (uploadZone && fileInput) {
-
-        uploadZone.addEventListener('click', () => {
-
-            fileInput.click();
-
-        });
-
-        fileInput.addEventListener('change', e => {
-
-            const file = e.target.files?.[0];
-
-            if (file) {
-
-                renderImagePreview(file);
-
-            }
-
-        });
-
-        document.addEventListener('paste', e => {
-
-            const items = e.clipboardData?.items;
-
-            if (!items) return;
-
-            for (const item of items) {
-
-                if (item.type.startsWith('image/')) {
-
-                    const file = item.getAsFile();
-
-                    if (file) {
-
-                        renderImagePreview(file);
-
-                    }
-
-                    break;
-
-                }
-
-            }
-
-        });
-
-    }
-
-});
-
-// 1. Улучшенная функция сохранения заказа
-function saveOrderToHistory(bookingData) {
-    let orders = [];
-    try {
-        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
-    } catch (e) {
-        orders = [];
-    }
-
-    // 🎯 Берем ВСЕ товары из корзины (cart) или из bookingData.items
-    const rawItems = (bookingData.items && bookingData.items.length > 0) 
-        ? bookingData.items 
-        : (typeof cart !== 'undefined' ? cart : []);
-
-    const items = rawItems.map(item => ({
-        productId: item.productId || item.id,
-        productName: item.productName || item.title || item.name || 'Товар',
-        duration: item.durationText || item.duration || '1 година',
-        quantity: item.quantity || 1,
-        totalPrice: item.totalPrice || 0,
-        img: item.img || item.image || item.imgSrc || item.photo || ''
-    }));
-
-    const newOrder = {
-        id: bookingData.id,
-        items: items, // 👈 Сохраняем полный массив со всеми 3 товарами!
-        totalPrice: bookingData.totalPrice,
-        scheduledAt: bookingData.scheduledAt,
-        status: 'Очікує підтвердження',
-        createdAt: new Date().toISOString()
     };
 
-    // Удаляем дубликаты с таким же ID (если случайно вызвалось дважды)
-    orders = orders.filter(o => String(o.id) !== String(newOrder.id));
-
-    // Добавляем новый заказ в начало списка
-    orders.unshift(newOrder);
-
-    localStorage.setItem('kayakdpua_orders', JSON.stringify(orders));
-
-    if (typeof renderOrdersHistory === 'function') {
-        renderOrdersHistory();
+    // Навешиваем клик на финальную кнопку отправки
+    const btnSubmitFinal = document.getElementById("btn-submit-final-booking");
+    if (btnSubmitFinal) {
+        btnSubmitFinal.addEventListener("click", executeOrderSubmission);
     }
-}
 
-// 🎯 1. Локальное обновление статуса (твоя функция, немного оптимизированная)
-function updateOrderStatus(orderId, newStatus = 'Підтверджено') {
-    try {
-        let orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
-        let updated = false;
-
-        orders = orders.map(order => {
-            if (String(order.id) === String(orderId)) {
-                order.status = newStatus;
-                updated = true;
-            }
-            return order;
+    // Закрытие окна успеха по кнопке «Чудово»
+    const closeSuccessBtn = document.getElementById("close-success-btn");
+    if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener("click", () => {
+            const successModal = document.getElementById("success-modal");
+            if (successModal) successModal.style.display = "none";
         });
-
-        if (updated) {
-            localStorage.setItem('kayakdpua_orders', JSON.stringify(orders));
-            if (typeof renderOrdersHistory === 'function') {
-                renderOrdersHistory();
-            }
-            console.log(`🚀 Статус заказа №${orderId} изменен на: ${newStatus}`);
-        }
-    } catch (e) {
-        console.error("Ошибка при локальном обновлении статуса:", e);
     }
-}
+});
 
-function renderOrdersHistory() {
-    const container = document.getElementById('orders-container');
-    if (!container) return;
 
-    let orders = [];
-    try {
-        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
-    } catch (e) {
-        orders = [];
-    }
 
-    if (orders.length === 0) {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px; color: #94a3b8;">
-                <i class="fa-solid fa-box-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #cbd5e1;"></i>
-                <p style="margin: 0; font-weight: 600; font-size: 0.95rem;">У вас поки немає активних замовлень</p>
-            </div>
-        `;
-        return;
-    }
-
-    const resolveProductImg = (item) => {
-        let img = item.img || item.image || item.imgSrc || item.photo || '';
-        const name = (item.productName || item.title || item.name || '').toLowerCase();
-
-        if (name.includes('lite') || name.includes('literowing')) return './img/LiteRowing_9.5.webp';
-        if (name.includes('carolina')) return './img/Perception Carolina_12_Perception Carolina_14.webp';
-        if (name.includes('speed') || name.includes('speedrowing')) return './img/SpeedRowing_16.0.webp';
-        if (name.includes('чотиримісн')) return './img/Чотиримісна_байдарка.webp';
-        if (name.includes('тримісн')) return './img/Тримісна_байдарка.webp';
-        if (name.includes('двомісн')) return './img/Двомісна_байдарка.webp';
-        if (name.includes('vista') || name.includes('perception vista')) return './img/Perception_Vista.webp';
-        if (name.includes('family') || name.includes('familyrowing')) return './img/FamilyRowing_15.0.webp';
-        if (name.includes('sup') || name.includes('сап') || name.includes('дошк')) return './img/Sup_дошки.webp';
-        if (name.includes('дитяч') || name.includes('детск') || name.includes('сидіння')) return './img/Дитяче_сидіння_для_Perception_Vista.webp';
-        if (name.includes('одномісн') || name.includes('одноместн') || name.includes('керуванн')) return './img/Одномісний_каяк_з_системою_керування_2.webp';
-
-        return img || './img/LiteRowing_9.5.webp';
-    };
-
-    container.innerHTML = orders.map((order) => {
-        let itemsList = Array.isArray(order.items) && order.items.length > 0 
-            ? order.items 
-            : [{
-                productName: (order.productName || 'Байдарка').replace(/\(\+\s*ще\s*\d+\)/gi, '').trim(),
-                quantity: order.quantity || 1,
-                duration: order.duration || '1 година',
-                img: order.img || ''
-            }];
-
-        const itemsHtml = itemsList.map((item, i) => {
-            const productImg = resolveProductImg(item);
-            const title = item.productName || item.title || item.name || 'Товар';
-            const qty = item.quantity || 1;
-            const duration = item.duration || item.durationText || '1 година';
-
-            return `
-                <div style="display: flex; gap: 12px; align-items: center; ${i > 0 ? 'margin-top: 10px; padding-top: 10px; border-top: 1px dashed #f1f5f9;' : ''}">
-                    <img src="${productImg}" style="width: 55px; height: 55px; border-radius: 10px; object-fit: cover; flex-shrink: 0;" alt="${title}">
-                    <div style="flex-grow: 1;">
-                        <div style="font-weight: 700; font-size: 0.9rem; color: #0f172a; margin-bottom: 3px;">${title}</div>
-                        <div style="font-size: 0.8rem; color: #64748b; display: flex; gap: 12px; align-items: center;">
-                            <span>🚣 ${qty} шт.</span>
-                            <span>⏱️ ${duration}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        return `
-            <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                
-                <!-- Шапка карточки -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
-                    <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">Замовлення № ${order.id || '—'}</span>
-                </div>
-
-                <!-- Список товаров -->
-                <div style="margin-bottom: 12px; background: #fafafa; padding: 10px 12px; border-radius: 12px; border: 1px solid #f1f5f9;">
-                    ${itemsHtml}
-                </div>
-
-                <!-- Дата и время визита -->
-                <div style="font-size: 0.82rem; color: #0f172a; font-weight: 600; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px;">
-                    <span>📅</span> <span>Дата та час візиту: <strong>${order.scheduledAt || 'Не вказано'}</strong></span>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// 3. Вызываем отрисовку при стартe страницы
 document.addEventListener('DOMContentLoaded', () => {
     renderOrdersHistory();
 });
