@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ----------------- СОХРАНЕНИЕ И ОБНОВЛЕНИЕ КОРЗИНЫ -----------------
+
     function saveAndUpdateCart() {
         localStorage.setItem('timurtour_cart', JSON.stringify(cart));
         
@@ -204,8 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
             badge.style.display = totalQty > 0 ? 'flex' : 'none';
         }
 
-        if (typeof updateCartUI === 'function') {
-            updateCartUI();
+        // Добавляем автоматический перерендер шторки корзины
+        if (typeof renderCart === 'function') {
+            renderCart();
         }
     }
 
@@ -289,46 +291,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (bookBtn) {
-            bookBtn.addEventListener("click", () => {
+            bookBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
                 const cleanDurationText = currentDurationText.split(" (")[0];
-                const computedTotal = Number(currentPricePerUnit) * Number(currentQty);
+                const price = Number(currentPricePerUnit) || 0;
+                const quantity = Number(currentQty) || 1;
 
-                const existingItem = cart.find(item => 
-                    (item.id === productId || item.productId === productId) && 
-                    (item.durationText === cleanDurationText || item.duration === cleanDurationText)
-                );
-
-                if (existingItem) {
-                    const newQty = Number(existingItem.qty || existingItem.quantity || 0) + Number(currentQty);
-                    const unitPrice = Number(existingItem.pricePerUnit || existingItem.price || currentPricePerUnit);
-
-                    existingItem.qty = newQty;
-                    existingItem.quantity = newQty;
-                    existingItem.count = newQty;
-                    existingItem.totalPrice = newQty * unitPrice;
-                    existingItem.price = unitPrice;
-                } else {
-                    cart.push({
-                        id: productId,
-                        productId: productId,
-                        title: productName,
-                        productName: productName,
-                        name: productName,
-                        duration: cleanDurationText,
-                        durationText: cleanDurationText,
-                        subtitle: cleanDurationText,
-                        qty: Number(currentQty),
-                        quantity: Number(currentQty),
-                        count: Number(currentQty),
-                        price: Number(currentPricePerUnit),
-                        pricePerUnit: Number(currentPricePerUnit),
-                        totalPrice: computedTotal,
-                        cost: Number(currentPricePerUnit),
-                        type: 'ОРЕНДА'
-                    });
+                if (typeof addToCart !== "function") {
+                    console.error("❌ addToCart() не найдена в script.js");
+                    return;
                 }
 
-                saveAndUpdateCart();
+                addToCart({
+                    id: productId,
+                    productId: productId,
+                    title: productName,
+                    productName: productName,
+                    name: productName,
+                    duration: cleanDurationText,
+                    durationText: cleanDurationText,
+                    subtitle: cleanDurationText,
+                    qty: quantity,
+                    quantity: quantity,
+                    price: price,
+                    pricePerUnit: price,
+                    totalPrice: price * quantity,
+                    type: "ОРЕНДА"
+                });
+
+                if (typeof window.openBookingDrawer === "function") {
+                    window.openBookingDrawer();
+                }
             });
         }
 
@@ -1107,3 +1102,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+

@@ -24,8 +24,9 @@ if (tg) {
 
 // Проверка: позиция является туром/ивентом или обычным прокатом
 function isTourItem(item) {
+    if (!item) return false;
     const name = item.productName || item.title || item.name || '';
-    const id = item.productId || item.id || '';
+    const id = String(item.productId || item.id || '');
     
     return id.includes('tour') || 
            id.includes('kino') || 
@@ -38,12 +39,10 @@ function isTourItem(item) {
 }
 
 // ==========================================================================
-// ХРАНИЛИЩЕ И ОТРИСОВКА ЗАКАЗОВ (ЖЕЛЕЗОБЕТОН)
+// 2. ХРАНИЛИЩЕ И ОТРИСОВКА ЗАКАЗОВ
 // ==========================================================================
-
 const ORDERS_KEY = 'kayakdpua_orders';
 
-// 1. Сохранение заказа в LocalStorage
 function saveOrderToHistory(bookingData) {
     let orders = [];
     try {
@@ -52,7 +51,6 @@ function saveOrderToHistory(bookingData) {
         orders = [];
     }
 
-    // Собираем надежный объект заказа (с фоллбеками на случай пустых данных)
     const newOrder = {
         id: bookingData?.id || Math.floor(1000 + Math.random() * 9000),
         date: new Date().toLocaleDateString('uk-UA'),
@@ -64,28 +62,20 @@ function saveOrderToHistory(bookingData) {
         ]
     };
 
-    // Закидываем НАВЕРХ массива (чтобы свежий был первым)
     orders.unshift(newOrder);
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-
-    // Сразу же принудительно перерисовываем
     renderOrdersHistory();
 }
-
-// ==========================================================================
-// ОТРИСОВКА ЗАКАЗОВ (СВЕТЛАЯ ТЕМА, БЕЗ СТАТУСОВ)
-// ==========================================================================
 
 function renderOrdersHistory() {
     const container = document.getElementById('orders-container');
     if (!container) return;
 
-    // Принудительно отображаем контейнер
     container.style.display = 'block';
 
     let orders = [];
     try {
-        orders = JSON.parse(localStorage.getItem('kayakdpua_orders')) || [];
+        orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
     } catch (e) {
         orders = [];
     }
@@ -105,8 +95,6 @@ function renderOrdersHistory() {
         
         return `
         <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; margin-bottom: 12px; font-family: inherit; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
-            
-            <!-- Шапка карточки без статусов -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f3f4f6; padding-bottom: 8px;">
                 <span style="font-weight: 800; color: #111827; font-size: 0.95rem;">Замовлення #${order.id}</span>
             </div>
@@ -115,19 +103,12 @@ function renderOrdersHistory() {
                 📅 <strong>Дата/Час броні:</strong> ${orderTimeText}
             </div>
 
-            <!-- Список товаров -->
             <div style="margin-bottom: 10px;">
                 ${(order.items || []).map(item => {
                     const name = item.productName || item.title || 'Товар';
-                    
-                    const isTour = (item.productId && (item.productId.includes('tour') || item.productId.includes('kino'))) ||
-                                   name.includes('🌕') || 
-                                   name.includes('🎬') || 
-                                   name.toLowerCase().includes('тур') || 
-                                   name.toLowerCase().includes('похід');
+                    const isTour = isTourItem(item);
 
                     let rightSideInfo = '';
-
                     if (isTour) {
                         const tourDate = item.date || item.scheduledAt || (orderTimeText !== 'Час не вказано' ? orderTimeText : '');
                         rightSideInfo = tourDate ? `📅 ${tourDate}` : '';
@@ -144,7 +125,6 @@ function renderOrdersHistory() {
                 }).join('')}
             </div>
 
-            <!-- Итог -->
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 8px; margin-top: 8px;">
                 <span style="font-size: 0.8rem; color: #6b7280;">Разом до сплати:</span>
                 <span style="font-size: 1.1rem; font-weight: 800; color: #16a34a;">${order.totalPrice || 0} грн</span>
@@ -155,8 +135,31 @@ function renderOrdersHistory() {
 }
 
 // ==========================================================================
-// 2. УПРАВЛЕНИЕ ШТОРКОЙ КОРЗИНЫ И ШАГАМИ
+// 3. УПРАВЛЕНИЕ ШТОРКОЙ КОРЗИНЫ
 // ==========================================================================
+function openCart() {
+    const drawer = document.getElementById('cart-drawer') || 
+                   document.getElementById('drawer') || 
+                   document.querySelector('.cart-drawer') || 
+                   document.querySelector('.cart-modal');
+    if (drawer) {
+        drawer.style.display = 'block';
+        drawer.classList.add('active', 'open');
+    }
+    goToDrawerStep(1);
+    updateCartUI();
+}
+
+function closeCart() {
+    const drawer = document.getElementById('cart-drawer') || 
+                   document.getElementById('drawer') || 
+                   document.querySelector('.cart-drawer') || 
+                   document.querySelector('.cart-modal');
+    if (drawer) {
+        drawer.style.display = 'none';
+        drawer.classList.remove('active', 'open');
+    }
+}
 
 function goToDrawerStep(stepNumber) {
     document.querySelectorAll('.drawer-step').forEach(step => {
@@ -185,35 +188,27 @@ function goToDrawerStep(stepNumber) {
 }
 
 // ==========================================================================
-// 3. НАВИГАЦИЯ И ПЕРЕКЛЮЧЕНИЕ ТАБОВ (ЖЕЛЕЗОБЕТОННАЯ ЛОГИКА)
+// 4. НАВИГАЦИЯ И ПЕРЕКЛЮЧЕНИЕ ТАБОВ
 // ==========================================================================
-
 function activateTab(tabId) {
     const targetTabEl = document.getElementById(tabId);
     if (!targetTabEl) return;
 
-    // 1. Снимаем active со всех табов
     document.querySelectorAll('.tab_content').forEach(tab => tab.classList.remove('active'));
-    
-    // 2. Снимаем active со всех кнопок навигации
     document.querySelectorAll('.bottom_nav .nav_item').forEach(nav => nav.classList.remove('active'));
 
-    // 3. Активируем нужный таб и подсвечиваем кнопку
     targetTabEl.classList.add('active');
     const activeNav = document.querySelector(`.bottom_nav .nav_item[data-tab="${tabId}"]`);
     if (activeNav) activeNav.classList.add('active');
 
-    // 4. Если перешли на заказы — рендерим их
     if (tabId === 'tab-orders' && typeof renderOrdersHistory === 'function') {
         renderOrdersHistory();
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // A. Проверяем, на какой странице мы находимся
     const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
 
-    // B. Если мы на ГЛАВНОЙ — проверяем хэш в URL (#orders или #start)
     if (isHomePage) {
         const currentHash = window.location.hash.replace('#', '');
         if (currentHash === 'orders') {
@@ -225,41 +220,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // C. Обработчик кликов по нижнему меню
     const navItems = document.querySelectorAll('.bottom_nav .nav_item');
-
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const targetTabId = item.getAttribute('data-tab');
             const targetTabEl = document.getElementById(targetTabId);
 
-            // 🎯 СТРОГОЕ УСЛОВИЕ:
-            // Переключаем табы без перезагрузки ТОЛЬКО если мы на Главной странице И нужный таб там реально есть
             if (isHomePage && targetTabId && targetTabEl) {
-                e.preventDefault(); // Блокируем перезагрузку только на index.html
+                e.preventDefault();
                 activateTab(targetTabId);
             } 
-            // Если мы на catalog.html (или любой другой странице) — e.preventDefault() НЕ ВЫЗЫВАЕТСЯ.
-            // Браузер спокойно берет href="./index.html#start" и переходит на главную!
         });
     });
 
-    // D. КЛИК ПО КНОПКЕ "ЧУДОВО" В МОДАЛКЕ УСПЕХА
     const closeSuccessBtn = document.getElementById('close-success-btn');
     const successModal = document.getElementById('success-modal');
 
     if (closeSuccessBtn) {
         closeSuccessBtn.addEventListener('click', () => {
-            // 1. Прячем модальное окно
             if (successModal) {
                 successModal.style.display = 'none';
             }
 
-            // 2. Если мы на index.html — мгновенно включаем таб Замовлення
             if (isHomePage && typeof activateTab === 'function') {
                 activateTab('tab-orders');
             } else {
-                // 3. Если мы на catalog.html — летим на главную прямиком в заказы
                 window.location.href = './index.html#orders';
             }
         });
@@ -267,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================================================
-// 3. КОРЗИНА И РАСЧЕТЫ
+// 5. КОРЗИНА И РАСЧЕТЫ
 // ==========================================================================
 const CART_KEY = 'timurtour_cart';
 
@@ -324,12 +309,18 @@ function addToCart(itemData) {
     openCart();
 }
 
-function changeCartQty(id, delta, type) {
+function changeCartQty(identifier, delta, type) {
     let cart = getCart();
-    const index = cart.findIndex(item => String(item.id) === String(id) && (type ? item.type === type : true));
+    let index = -1;
+
+    if (typeof identifier === 'number' && identifier < cart.length) {
+        index = identifier;
+    } else {
+        index = cart.findIndex(item => String(item.id) === String(identifier) && (type ? item.type === type : true));
+    }
 
     if (index > -1) {
-        cart[index].qty += delta;
+        cart[index].qty = Number(cart[index].qty || 1) + delta;
         if (cart[index].qty <= 0) {
             cart.splice(index, 1);
         }
@@ -337,9 +328,13 @@ function changeCartQty(id, delta, type) {
     }
 }
 
-function removeCartItem(id, type) {
+function removeCartItem(identifier, type) {
     let cart = getCart();
-    cart = cart.filter(item => !(String(item.id) === String(id) && (type ? item.type === type : true)));
+    if (typeof identifier === 'number' && identifier < cart.length) {
+        cart.splice(identifier, 1);
+    } else {
+        cart = cart.filter(item => !(String(item.id) === String(identifier) && (type ? item.type === type : true)));
+    }
     saveCart(cart);
 }
 
@@ -350,12 +345,10 @@ function clearCart() {
 }
 
 function updateCartUI() {
-    const cart = typeof getCart === 'function' ? getCart() : [];
+    const cart = getCart();
 
-    // 1. Ищем счетчик (Badge)
     const badgeEl = document.getElementById('cart-badge') || document.querySelector('.cart-badge');
     
-    // 2. Ищем контейнер для карточек
     const container = document.getElementById('cart-items-container') || 
                       document.getElementById('drawer-cart-items-container') || 
                       document.getElementById('cart-items') || 
@@ -363,12 +356,10 @@ function updateCartUI() {
                       document.querySelector('.drawer-cart-items') ||
                       document.querySelector('.cart-drawer-items');
 
-    // 3. Ищем элементы с итоговой суммой
     const grandTotalEl = document.getElementById('cart-grand-total') || 
                          document.getElementById('drawer-cart-grand-total') || 
                          document.getElementById('cart-total-price');
 
-    // 4. Кнопка оформления
     const checkoutBtn = document.getElementById('btn-go-to-checkout');
 
     let totalQty = 0;
@@ -385,30 +376,25 @@ function updateCartUI() {
         grandTotal += (cleanPrice * qty);
     });
 
-    // --- ОБНОВЛЯЕМ БЕЙДЖ СЧЕТЧИКА ---
     if (badgeEl) {
         badgeEl.textContent = totalQty;
         badgeEl.style.display = totalQty > 0 ? 'flex' : 'none';
     }
 
-    // --- ОБНОВЛЯЕМ КНОПКУ ОФОРМЛЕНИЯ ---
     if (checkoutBtn) {
         checkoutBtn.disabled = cart.length === 0;
         checkoutBtn.style.opacity = cart.length === 0 ? '0.4' : '1';
         checkoutBtn.style.pointerEvents = cart.length === 0 ? 'none' : 'auto';
     }
 
-    // --- ОБНОВЛЯЕМ ИТОГОВУЮ СУММУ ---
     if (grandTotalEl) {
         grandTotalEl.textContent = grandTotal.toLocaleString('uk-UA');
     }
 
-    // Обновление суммы предоплаты (если функция есть на странице)
-    if (typeof updatePaymentAmounts === 'function') {
-        updatePaymentAmounts(grandTotal);
+    if (typeof updatePaymentSummary === 'function') {
+        updatePaymentSummary();
     }
 
-    // --- РЕНДЕРИМ КАРТОЧКИ ТОВАРОВ В ШТОРКЕ ---
     if (!container) return;
 
     if (cart.length === 0) {
@@ -422,13 +408,12 @@ function updateCartUI() {
     }
 
     container.innerHTML = cart.map((item, index) => {
-        const isTour = (typeof isTourItem === 'function' && isTourItem(item)) || item.type === 'TOUR' || item.type === 'ПОХІД';
+        const isTour = isTourItem(item);
         const qty = Number(item.qty || item.quantity || 1);
         const rawPrice = item.price ?? item.cost ?? 0;
         const price = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
         const itemTotal = price * qty;
 
-        // Инфа о дате / времени
         let infoText = '';
         if (isTour) {
             const tourDate = item.date || item.selectedDate || item.tourDate;
@@ -449,7 +434,7 @@ function updateCartUI() {
                             ${item.title || item.name || item.productName || 'Товар'}
                         </div>
                     </div>
-                    <button onclick="if(typeof removeCartItem === 'function') removeCartItem(${index}, '${item.type || ''}'); else if(typeof removeCartItem === 'function') removeCartItem('${item.id}', '${item.type || ''}')" style="background: none; border: none; color: #ef4444 !important; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 8px; line-height: 1;">
+                    <button type="button" onclick="window.removeCartItem(${index}, '${item.type || ''}')" style="background: none; border: none; color: #ef4444 !important; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 8px; line-height: 1;">
                         &times;
                     </button>
                 </div>
@@ -462,9 +447,9 @@ function updateCartUI() {
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
                     <div style="display: flex; align-items: center; background: #09090b !important; border: 1px solid #27272a !important; border-radius: 6px; overflow: hidden;">
-                        <button onclick="if(typeof changeQty === 'function') changeQty(${index}, -1); else if(typeof changeCartQty === 'function') changeCartQty('${item.id}', -1, '${item.type}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">-</button>
+                        <button type="button" onclick="window.changeCartQty(${index}, -1, '${item.type || ''}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">-</button>
                         <span style="padding: 0 8px; color: #ffffff !important; font-size: 0.85rem; font-weight: 600;">${qty}</span>
-                        <button onclick="if(typeof changeQty === 'function') changeQty(${index}, 1); else if(typeof changeCartQty === 'function') changeCartQty('${item.id}', 1, '${item.type}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">+</button>
+                        <button type="button" onclick="window.changeCartQty(${index}, 1, '${item.type || ''}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">+</button>
                     </div>
                     <div style="font-weight: 800; color: #ffffff !important; font-size: 0.95rem;">
                         ${itemTotal} грн
@@ -496,10 +481,26 @@ function updatePaymentSummary() {
     if (restEl) restEl.textContent = `${rest.toLocaleString('uk-UA')} грн`;
 }
 
-// Экспортируем в окно
+// ==========================================================================
+// 6. ЭКСПОРТ В ГЛОБАЛЬНЫЙ SCOPE (WINDOW)
+// ==========================================================================
+window.getCart = getCart;
+window.saveCart = saveCart;
 window.addToCart = addToCart;
+window.changeCartQty = changeCartQty;
+window.changeQty = changeCartQty;
+window.removeCartItem = removeCartItem;
+window.clearCart = clearCart;
 window.updateCartUI = updateCartUI;
 window.updatePaymentSummary = updatePaymentSummary;
+
+window.openCart = openCart;
+window.closeCart = closeCart;
+window.goToDrawerStep = goToDrawerStep;
+window.activateTab = activateTab;
+
+window.saveOrderToHistory = saveOrderToHistory;
+window.renderOrdersHistory = renderOrdersHistory;
 
 // ==========================================================================
 // 5. УПРАВЛЕНИЕ ШТОРКОЙ, МОДАЛКАМИ И РОУТИНГ
