@@ -972,8 +972,138 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
     renderOrdersHistory();
+});
+
+// ==========================================
+// ЛОГИКА МОДАЛЬНОГО ОКНА "ПОДРОБНЕЕ"
+// ==========================================
+
+function openProductDetails(btn) {
+    const modal = document.getElementById('details-modal');
+    if (!modal) return;
+
+    // 1. Ищем родительскую карточку товара
+    const card = btn.closest('.product-card, .catalog-card, .card, .item') || btn.parentElement;
+    if (!card) return;
+
+    // 2. Считываем данные из карточки
+    const img = card.querySelector('img')?.src || '';
+    const title = card.querySelector('h2, h3, .product-title, .card-title, .title')?.textContent?.trim() || 'Назва товару';
+    
+    // Описание (из data-desc атрибута или текстового тега)
+    const desc = card.dataset.desc || 
+                 card.querySelector('.product-desc, .card-desc, .desc, p')?.textContent?.trim() || 
+                 'Чудовий вибір для активного відпочинку на воді!';
+
+    // 3. Заполняем элементы модалки
+    const modalImg = document.getElementById('modal-product-img');
+    const modalName = document.getElementById('modal-product-name');
+    const modalDesc = document.getElementById('modal-product-desc');
+    const modalSpecs = document.getElementById('modal-product-specs');
+
+    if (modalImg) {
+        modalImg.src = img;
+        modalImg.alt = title;
+    }
+    if (modalName) modalName.textContent = title;
+    if (modalDesc) modalDesc.innerHTML = desc;
+
+    if (modalSpecs) {
+        modalSpecs.innerHTML = '';
+        const specsInCard = card.querySelectorAll('ul li, .specs li, .product-specs li');
+        if (specsInCard.length > 0) {
+            specsInCard.forEach(li => modalSpecs.appendChild(li.cloneNode(true)));
+        } else if (card.dataset.specs) {
+            modalSpecs.innerHTML = card.dataset.specs.split(';').map(s => `<li>${s.trim()}</li>`).join('');
+        } else {
+            modalSpecs.innerHTML = '<li>Весла та жилети в комплекті</li><li>Стійкий та безпечний на воді</li>';
+        }
+    }
+
+    // 4. Логика для кнопки "Забронювати" внутри модалки
+    const bookBtn = document.getElementById('modal-book-btn');
+    if (bookBtn) {
+        bookBtn.onclick = function() {
+            closeProductDetails();
+            const originalBookBtn = card.querySelector('.btn-book, .btn-primary, [data-action="book"]');
+            if (originalBookBtn) {
+                originalBookBtn.click();
+            } else if (typeof addToCart === 'function') {
+                addToCart({
+                    id: card.dataset.id || title,
+                    title: title,
+                    price: card.dataset.price || 0,
+                    type: 'ОРЕНДА'
+                });
+            }
+        };
+    }
+
+    // 5. ПРИНУДИТЕЛЬНЫЙ ВЫВОД НА ЭКРАН (Сбрасываем скрывающие CSS правила)
+    modal.style.cssText = `
+        display: flex !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 999999 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        justify-content: center;
+        align-items: center;
+    `;
+
+    // Принудительно проявляем внутреннее содержимое окна
+    const modalContent = modal.querySelector('.modal-content');
+    if (modalContent) {
+        modalContent.style.cssText = `
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            display: block !important;
+            z-index: 1000000 !important;
+        `;
+    }
+
+    modal.classList.add('active', 'show');
+    document.body.style.overflow = 'hidden'; // Блокируем скролл заднего фона
+}
+
+function closeProductDetails() {
+    const modal = document.getElementById('details-modal');
+    if (!modal) return;
+
+    modal.style.display = 'none';
+    modal.classList.remove('active', 'show');
+    document.body.style.overflow = ''; // Возвращаем скролл
+}
+
+// 6. СЛУШАТЕЛИ СОБЫТИЙ
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('btn-close-modal');
+    const overlay = document.getElementById('details-overlay');
+
+    if (closeBtn) closeBtn.onclick = closeProductDetails;
+    if (overlay) overlay.onclick = closeProductDetails;
+
+    // Закрытие по клавише Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeProductDetails();
+    });
+
+    // Перехват клика по кнопкам "Детальніше"
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-details, .btn-more, [data-action="details"]') ||
+                    (e.target.tagName === 'BUTTON' && e.target.textContent.includes('Детальніше') ? e.target : null);
+
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProductDetails(btn);
+        }
+    });
 });

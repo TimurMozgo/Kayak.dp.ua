@@ -350,102 +350,129 @@ function clearCart() {
 }
 
 function updateCartUI() {
-    const cart = getCart();
+    const cart = typeof getCart === 'function' ? getCart() : [];
+
+    // 1. Ищем счетчик (Badge)
+    const badgeEl = document.getElementById('cart-badge') || document.querySelector('.cart-badge');
     
-    // 1. Ищем контейнер товаров под любым возможным ID или классом
-    const container = document.getElementById('drawer-cart-items-container') || 
+    // 2. Ищем контейнер для карточек
+    const container = document.getElementById('cart-items-container') || 
+                      document.getElementById('drawer-cart-items-container') || 
                       document.getElementById('cart-items') || 
                       document.getElementById('drawer-items') ||
                       document.querySelector('.drawer-cart-items') ||
                       document.querySelector('.cart-drawer-items');
 
-    const totalEl = document.getElementById('drawer-cart-grand-total') || document.getElementById('cart-total-price');
-    const badgeEl = document.getElementById('cart-badge') || document.querySelector('.cart-badge');
+    // 3. Ищем элементы с итоговой суммой
+    const grandTotalEl = document.getElementById('cart-grand-total') || 
+                         document.getElementById('drawer-cart-grand-total') || 
+                         document.getElementById('cart-total-price');
+
+    // 4. Кнопка оформления
     const checkoutBtn = document.getElementById('btn-go-to-checkout');
 
     let totalQty = 0;
-    let totalPrice = 0;
+    let grandTotal = 0;
 
     cart.forEach(item => {
-        // Подтягиваем цену с фоллбеками (если забыли передать price)
+        const qty = Number(item.qty || item.quantity || 1);
         const rawPrice = item.price ?? item.cost ?? item.numericPrice ?? 0;
         const cleanPrice = typeof rawPrice === 'number' 
             ? rawPrice 
             : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
-            
-        const qty = Number(item.qty || item.quantity || 1);
+
         totalQty += qty;
-        totalPrice += (cleanPrice * qty);
+        grandTotal += (cleanPrice * qty);
     });
 
-    // Управление кнопкой оформления
+    // --- ОБНОВЛЯЕМ БЕЙДЖ СЧЕТЧИКА ---
+    if (badgeEl) {
+        badgeEl.textContent = totalQty;
+        badgeEl.style.display = totalQty > 0 ? 'flex' : 'none';
+    }
+
+    // --- ОБНОВЛЯЕМ КНОПКУ ОФОРМЛЕНИЯ ---
     if (checkoutBtn) {
         checkoutBtn.disabled = cart.length === 0;
         checkoutBtn.style.opacity = cart.length === 0 ? '0.4' : '1';
         checkoutBtn.style.pointerEvents = cart.length === 0 ? 'none' : 'auto';
     }
 
-    // Бейдж количества
-    if (badgeEl) {
-        badgeEl.textContent = totalQty;
-        badgeEl.style.display = totalQty > 0 ? 'flex' : 'none';
+    // --- ОБНОВЛЯЕМ ИТОГОВУЮ СУММУ ---
+    if (grandTotalEl) {
+        grandTotalEl.textContent = grandTotal.toLocaleString('uk-UA');
     }
 
-    // Итоговая сумма
-    if (totalEl) {
-        totalEl.textContent = `${totalPrice.toLocaleString('uk-UA')}`;
+    // Обновление суммы предоплаты (если функция есть на странице)
+    if (typeof updatePaymentAmounts === 'function') {
+        updatePaymentAmounts(grandTotal);
     }
 
-    // Рендер списка товаров в шторке
-    if (container) {
-        if (cart.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 40px 10px; color: #a3a3a3;">
-                    <p style="font-size: 1.1rem; font-weight: 600; color: #ffffff; margin-bottom: 5px;">Ваш кошик порожній</p>
-                    <p style="font-size: 0.9rem; color: #737373;">Оберіть щось у каталозі або походах</p>
-                </div>
-            `;
+    // --- РЕНДЕРИМ КАРТОЧКИ ТОВАРОВ В ШТОРКЕ ---
+    if (!container) return;
+
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 35px 10px; color: #a1a1aa !important;">
+                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #ffffff !important;">Кошик порожній 🛶</p>
+                <p style="font-size: 0.85rem; color: #a1a1aa !important;">Оберіть похід або тур для бронювання</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = cart.map((item, index) => {
+        const isTour = (typeof isTourItem === 'function' && isTourItem(item)) || item.type === 'TOUR' || item.type === 'ПОХІД';
+        const qty = Number(item.qty || item.quantity || 1);
+        const rawPrice = item.price ?? item.cost ?? 0;
+        const price = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
+        const itemTotal = price * qty;
+
+        // Инфа о дате / времени
+        let infoText = '';
+        if (isTour) {
+            const tourDate = item.date || item.selectedDate || item.tourDate;
+            infoText = tourDate ? `📅 ${tourDate}` : '';
         } else {
-            container.innerHTML = cart.map(item => {
-                const isTour = isTourItem(item) || item.type === 'TOUR' || item.type === 'ПОХІД';
-                
-                // Проверяем цену, если 0 — ставим заглушку
-                const itemPrice = item.price || item.cost || 0;
-                
-                // Инфа о дате/времени
-                let infoText = '';
-                if (isTour) {
-                    const tourDate = item.date || item.selectedDate || item.tourDate;
-                    infoText = tourDate ? `📅 ${tourDate}` : '';
-                } else {
-                    const rentalTime = item.time || item.durationText || item.duration;
-                    infoText = rentalTime ? `⏱ ${rentalTime}` : '';
-                }
+            const rentalTime = item.time || item.durationText || item.duration;
+            infoText = rentalTime ? `⏱ ${rentalTime}` : '';
+        }
 
-                return `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: #18181b; border: 1px solid #27272a; border-radius: 12px; color: #ffffff;">
-                    <div style="flex: 1; padding-right: 10px;">
-                        <span style="font-size: 0.65rem; background: ${isTour ? '#7c2d12' : '#1e3a8a'}; color: ${isTour ? '#ffedd5' : '#dbeafe'}; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-bottom: 4px;">
+        return `
+            <div style="background: #18181b !important; border: 1px solid #27272a !important; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span style="background: ${isTour ? '#c2410c' : '#1e40af'} !important; color: #ffffff !important; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; text-transform: uppercase;">
                             ${item.type || (isTour ? 'ПОХІД' : 'ОРЕНДА')}
                         </span>
-                        <div style="font-weight: 700; color: #ffffff; font-size: 0.9rem; line-height: 1.2;">
+                        <div style="font-weight: 700; color: #ffffff !important; font-size: 0.95rem; line-height: 1.3;">
                             ${item.title || item.name || item.productName || 'Товар'}
                         </div>
-                        ${infoText ? `<div style="font-size: 0.75rem; color: #10b981; font-weight: 600; margin-top: 2px;">${infoText}</div>` : ''}
-                        <div style="color: #a1a1aa; font-size: 0.8rem; margin-top: 3px;">
-                            ${itemPrice > 0 ? `${itemPrice} грн / шт` : '<span style="color:#ef4444;">Ціну не вказано</span>'}
-                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <button onclick="changeCartQty('${item.id}', -1, '${item.type}')" style="width: 28px; height: 28px; border: 1px solid #3f3f46; background: #27272a; color: #ffffff; border-radius: 6px; cursor: pointer; font-weight: 700;">-</button>
-                        <span style="font-weight: 700; font-size: 0.85rem; min-width: 16px; text-align: center; color: #ffffff;">${item.qty}</span>
-                        <button onclick="changeCartQty('${item.id}', 1, '${item.type}')" style="width: 28px; height: 28px; border: 1px solid #3f3f46; background: #27272a; color: #ffffff; border-radius: 6px; cursor: pointer; font-weight: 700;">+</button>
-                        <button onclick="removeCartItem('${item.id}', '${item.type}')" style="background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; margin-left: 2px;">&times;</button>
+                    <button onclick="if(typeof removeCartItem === 'function') removeCartItem(${index}, '${item.type || ''}'); else if(typeof removeCartItem === 'function') removeCartItem('${item.id}', '${item.type || ''}')" style="background: none; border: none; color: #ef4444 !important; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 8px; line-height: 1;">
+                        &times;
+                    </button>
+                </div>
+
+                ${infoText ? `<div style="font-size: 0.8rem; color: #10b981 !important; font-weight: 600;">${infoText}</div>` : ''}
+
+                <div style="font-size: 0.85rem; color: #a1a1aa !important;">
+                    ${price > 0 ? `${price} грн / шт` : '<span style="color:#ef4444 !important;">Ціну не вказано</span>'}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                    <div style="display: flex; align-items: center; background: #09090b !important; border: 1px solid #27272a !important; border-radius: 6px; overflow: hidden;">
+                        <button onclick="if(typeof changeQty === 'function') changeQty(${index}, -1); else if(typeof changeCartQty === 'function') changeCartQty('${item.id}', -1, '${item.type}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">-</button>
+                        <span style="padding: 0 8px; color: #ffffff !important; font-size: 0.85rem; font-weight: 600;">${qty}</span>
+                        <button onclick="if(typeof changeQty === 'function') changeQty(${index}, 1); else if(typeof changeCartQty === 'function') changeCartQty('${item.id}', 1, '${item.type}')" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer; font-weight: bold;">+</button>
+                    </div>
+                    <div style="font-weight: 800; color: #ffffff !important; font-size: 0.95rem;">
+                        ${itemTotal} грн
                     </div>
                 </div>
-            `}).join('');
-        }
-    }
+            </div>
+        `;
+    }).join('');
 }
 
 function updatePaymentSummary() {
@@ -1016,3 +1043,4 @@ function initApp() {
 
 // Запуск после полной загрузки DOM
 document.addEventListener('DOMContentLoaded', initApp);
+
