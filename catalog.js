@@ -79,7 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const calNextBtn = document.getElementById("cal-next-month");
     const selectedDateText = document.getElementById("selected-date-text");
 
-    // Modal (Детали товара)
+    // ==========================================================================
+    // ЛОГИКА МОДАЛКИ (БРОНЕБОЙНОЕ ИЗВЛЕЧЕНИЕ ЦЕНЫ И ДАННЫХ)
+    // ==========================================================================
+
     const detailsModal = document.getElementById("details-modal");
     const btnCloseModal = document.getElementById("btn-close-modal");
     const detailsOverlay = document.getElementById("details-overlay");
@@ -135,11 +138,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnGoToCheckout) {
         btnGoToCheckout.addEventListener("click", () => {
-            if (cart.length === 0) {
+            // ✅ Достаем НАСТОЯЩИЙ массив изо всех возможных источников
+            const activeCart = (typeof getCart === 'function' ? getCart() : null) 
+                            || window.cart 
+                            || (typeof cart !== 'undefined' ? cart : []) 
+                            || JSON.parse(localStorage.getItem('cart') || '[]');
+
+            if (!activeCart || activeCart.length === 0) {
                 alert("Ваш кошик порожній! Оберіть щось перед оформленням.");
                 return;
             }
-            showCheckoutStep();
+
+            // Вызываем единый переключатель шагов из script.js
+            if (typeof goToDrawerStep === 'function') {
+                goToDrawerStep(2);
+            } else {
+                showCheckoutStep();
+            }
         });
     }
 
@@ -336,11 +351,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (detailsBtn) {
-            detailsBtn.addEventListener("click", () => {
+            detailsBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                
+                // Считываем контент карточки
                 const productImg = card.querySelector(".product-img-box img")?.src || "";
                 const productDesc = card.querySelector(".product-desc")?.textContent || "";
                 const productSpecsHtml = card.querySelector(".product-specs")?.innerHTML || "";
 
+                // Элементы модалки
                 const nameElem = document.getElementById("modal-product-name");
                 const imgElem = document.getElementById("modal-product-img");
                 const descElem = document.getElementById("modal-product-desc");
@@ -351,26 +370,46 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (descElem) descElem.textContent = productDesc;
                 if (specsElem) specsElem.innerHTML = productSpecsHtml;
 
-                if (modalBookBtn) modalBookBtn.setAttribute("data-target-id", productId);
+                // 🎯 ПОИСК ЦЕНЫ И ДАННЫХ С ПОДСТРАХОВКОЙ
+                const targetBookBtn = card.querySelector(".book-btn");
                 
-                if (detailsModal) detailsModal.style.display = "flex";
+                // 1. Извлекаем цену (data-attribute или текст из элемента цены)
+                let extractedPrice = targetBookBtn?.dataset.price || card.dataset.price;
+                if (!extractedPrice) {
+                    const priceElem = card.querySelector(".product-price, .price, .card-price, .product-card-price");
+                    if (priceElem) {
+                        const match = priceElem.textContent.replace(/\s+/g, '').match(/\d+/);
+                        if (match) extractedPrice = match[0];
+                    }
+                }
+                const finalPrice = parseFloat(extractedPrice) || 0;
+
+                // 2. Извлекаем длительность (например, "1 година")
+                let extractedDuration = targetBookBtn?.dataset.duration || card.dataset.duration;
+                if (!extractedDuration) {
+                    const durationElem = card.querySelector(".product-duration, .duration, .time-tag, .product-time");
+                    extractedDuration = durationElem ? durationElem.textContent.trim() : "1 година";
+                }
+
+                // 3. Тип товара
+                const extractedType = targetBookBtn?.dataset.type || card.dataset.type || "rental";
+
+                // 💾 ЗАПИСЫВАЕМ ВСЕ ЧИСТЫЕ ДАННЫЕ В КНОПКУ МОДАЛКИ
+                if (modalBookBtn) {
+                    modalBookBtn.dataset.id = productId || (targetBookBtn ? targetBookBtn.dataset.id : '');
+                    modalBookBtn.dataset.title = productName || '';
+                    modalBookBtn.dataset.price = finalPrice;
+                    modalBookBtn.dataset.duration = extractedDuration;
+                    modalBookBtn.dataset.type = extractedType;
+                }
+
+                if (detailsModal) {
+                    detailsModal.classList.add("active");
+                    detailsModal.style.display = "flex";
+                }
             });
         }
     });
-
-    if (modalBookBtn) {
-        modalBookBtn.addEventListener("click", () => {
-            const targetId = modalBookBtn.getAttribute("data-target-id");
-            if (targetId) {
-                if (detailsModal) detailsModal.style.display = "none";
-                const targetCard = document.querySelector(`.product-card[data-id="${targetId}"]`);
-                if (targetCard) {
-                    const targetBookBtn = targetCard.querySelector(".book-btn");
-                    if (targetBookBtn) targetBookBtn.click();
-                }
-            }
-        });
-    }
 
     // ----------------- ГЛОБАЛЬНЫЙ КЛИК ПО ".book-btn" -----------------
     document.addEventListener("click", (e) => {
@@ -669,13 +708,20 @@ document.addEventListener("DOMContentLoaded", () => {
         checkoutForm.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            if (!cart || cart.length === 0) {
+            // 🎯 Прямой вызов getCart() из script.js (все 11 товаров)
+            const activeCart = (typeof getCart === 'function' ? getCart() : null) 
+                            || (typeof window.getCart === 'function' ? window.getCart() : null)
+                            || window.cart 
+                            || (typeof cart !== 'undefined' ? cart : []);
+
+            if (!activeCart || activeCart.length === 0) {
                 alert("Ваш кошик порожній!");
                 return;
             }
 
-            const dateInput = document.getElementById("checkout-rental-date");
-            const timeInput = document.getElementById("checkout-rental-time");
+            // 1. Считываем инпуты даты и времени
+            const dateInput = document.getElementById("checkout-rental-date") || document.querySelector('input[type="date"]');
+            const timeInput = document.getElementById("checkout-rental-time") || document.querySelector('input[type="time"]');
 
             const effectiveDate = dateInput?.value || selectedDate;
             const effectiveTime = timeInput?.value || selectedTime;
@@ -688,38 +734,41 @@ document.addEventListener("DOMContentLoaded", () => {
             selectedDate = effectiveDate;
             selectedTime = effectiveTime;
 
-            const nameInput = document.getElementById("user-name");
-            const phoneInput = document.getElementById("user-phone");
+            // 2. Считываем контактные данные
+            const nameInput = document.getElementById("user-name") || document.getElementById("client-name");
+            const phoneInput = document.getElementById("user-phone") || document.getElementById("client-phone");
 
-            const name = nameInput ? nameInput.value.trim() : "Не вказано";
-            const phone = phoneInput ? phoneInput.value.trim() : "Не вказано";
-            
-            const totalCartPrice = cart.reduce((sum, item) => {
-                const itemQty = Number(item.qty || item.quantity || 1);
-                const itemPrice = Number(item.price || item.pricePerUnit || (item.totalPrice ? item.totalPrice / itemQty : 0));
-                return sum + (Number(item.totalPrice) || (itemPrice * itemQty));
-            }, 0);
+            const name = nameInput?.value?.trim() || "Не вказано";
+            const phone = phoneInput?.value?.trim() || "Не вказано";
 
-            const itemsSummary = cart.map(item => {
-                const title = item.productName || item.title || item.name || "Товар";
-                const duration = item.durationText || item.duration || item.subtitle || "1 година";
-                const qty = item.quantity || item.qty || 1;
-                return `${title} (${duration}) x${qty}`;
+            // 3. Пробегаемся по ВСЕМ 11 товарам из getCart()
+            let totalCartPrice = 0;
+            const itemsListHTML = activeCart.map(item => {
+                const title = item.title || item.productName || item.name || "Товар";
+                const duration = item.duration || item.durationText || "1 година";
+                const qty = parseInt(item.quantity || item.qty || item.count || 1);
+                const price = parseFloat(item.price || item.pricePerUnit || 0);
+
+                totalCartPrice += price * qty;
+                return `• ${title} (${duration}) — ${qty} шт.`;
             }).join("<br>");
 
+            // 4. Форматируем дату в читаемый вид
             const dateParts = selectedDate.split("-");
             const formattedDate = dateParts.length === 3 ? `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}` : selectedDate;
 
+            // 5. Рендерим итоговый чек в контейнер модалки
             if (detailsContainer) {
                 detailsContainer.innerHTML = `
                     <div><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ІМ'Я:</strong> <span style="font-weight: 700; color: #0f172a;">${name}</span></div>
                     <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;"><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ТЕЛЕФОН:</strong> <span style="font-weight: 700; color: #0f172a;">${phone}</span></div>
                     <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;"><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ДАТА ТА ЧАС:</strong> <span style="font-weight: 700; color: #0f172a;">📅 ${formattedDate} о ${selectedTime}</span></div>
-                    <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;"><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ЗАМОВЛЕННЯ:</strong> <span style="font-weight: 600; color: #0f172a; line-height: 1.3;">${itemsSummary}</span></div>
-                    <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;"><strong style="color: #64748b; font-size: 0.85rem;">ЗАГАЛЬНА СУМА:</strong> <span style="font-weight: 800; color: #0284c7; font-size: 1.1rem;">${totalCartPrice} грн</span></div>
+                    <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;"><strong style="color: #64748b; font-size: 0.85rem; display: block; margin-bottom: 2px;">ЗАМОВЛЕННЯ:</strong> <span style="font-weight: 600; color: #0f172a; line-height: 1.4;">${itemsListHTML}</span></div>
+                    <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;"><strong style="color: #64748b; font-size: 0.85rem;">ЗАГАЛЬНА СУМА:</strong> <span style="font-weight: 800; color: #0088cc; font-size: 1.2rem;">${totalCartPrice} грн</span></div>
                 `;
             }
 
+            // 6. Открываем модальное окно
             if (checkModal) {
                 checkModal.style.display = "flex";
                 setTimeout(() => { 
@@ -993,9 +1042,9 @@ function openProductDetails(btn) {
 
     // 2. Считываем данные из карточки
     const img = card.querySelector('img')?.src || '';
-    const title = card.querySelector('h2, h3, .product-title, .card-title, .title')?.textContent?.trim() || 'Назва товару';
+    const title = card.querySelector('.product-name, h2, h3, .product-title, .card-title, .title')?.textContent?.trim() || 'Назва товару';
     
-    // Описание (из data-desc атрибута или текстового тега)
+    // Описание
     const desc = card.dataset.desc || 
                  card.querySelector('.product-desc, .card-desc, .desc, p')?.textContent?.trim() || 
                  'Чудовий вибір для активного відпочинку на воді!';
@@ -1030,21 +1079,32 @@ function openProductDetails(btn) {
     if (bookBtn) {
         bookBtn.onclick = function() {
             closeProductDetails();
-            const originalBookBtn = card.querySelector('.btn-book, .btn-primary, [data-action="book"]');
+            
+            // 🎯 Исправлен селектор: ищем родную кнопку .book-btn
+            const originalBookBtn = card.querySelector('.book-btn, .btn-book, .btn-primary, [data-action="book"]');
+            
             if (originalBookBtn) {
+                // Вызываем клик родной кнопки карточки (она сама всё посчитает с кастомного дропдауна и количества)
                 originalBookBtn.click();
             } else if (typeof addToCart === 'function') {
+                // Бронебойный fallback, если вдруг кнопки не оказалось
+                const calculatedPrice = parseFloat(card.querySelector('.price-val')?.textContent?.trim()) || 0;
+                const selectedDuration = card.querySelector('.dropdown-selected-text')?.textContent?.trim() || '1 година';
+                const quantityVal = parseInt(card.querySelector('.card-qty-value')?.textContent?.trim()) || 1;
+
                 addToCart({
                     id: card.dataset.id || title,
                     title: title,
-                    price: card.dataset.price || 0,
+                    price: calculatedPrice,
+                    duration: selectedDuration,
+                    quantity: quantityVal,
                     type: 'ОРЕНДА'
                 });
             }
         };
     }
 
-    // 5. ПРИНУДИТЕЛЬНЫЙ ВЫВОД НА ЭКРАН (Сбрасываем скрывающие CSS правила)
+    // 5. ПРИНУДИТЕЛЬНЫЙ ВЫВОД НА ЭКРАН
     modal.style.cssText = `
         display: flex !important;
         position: fixed !important;
@@ -1060,7 +1120,6 @@ function openProductDetails(btn) {
         align-items: center;
     `;
 
-    // Принудительно проявляем внутреннее содержимое окна
     const modalContent = modal.querySelector('.modal-content');
     if (modalContent) {
         modalContent.style.cssText = `
@@ -1073,7 +1132,7 @@ function openProductDetails(btn) {
     }
 
     modal.classList.add('active', 'show');
-    document.body.style.overflow = 'hidden'; // Блокируем скролл заднего фона
+    document.body.style.overflow = 'hidden'; 
 }
 
 function closeProductDetails() {

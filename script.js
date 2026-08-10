@@ -428,7 +428,7 @@ function updateCartUI() {
     if (cart.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 35px 10px; color: #a1a1aa !important;">
-                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #ffffff !important;">Кошик порожній 🛶</p>
+                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #a1a1aa !important;">Кошик порожній</p>
                 <p style="font-size: 0.85rem; color: #a1a1aa !important;">Оберіть похід або тур для бронювання</p>
             </div>
         `;
