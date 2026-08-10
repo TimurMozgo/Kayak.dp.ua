@@ -79,7 +79,9 @@ function getCart() {
 
 function saveCart(cart) {
     localStorage.setItem('timurtour_cart', JSON.stringify(cart));
-    updateCartUI();
+    if (typeof updateCartUI === 'function') {
+        updateCartUI();
+    }
 }
 
 function changeQty(index, delta) {
@@ -112,48 +114,58 @@ function updatePaymentAmounts(total) {
 }
 
 // ==========================================================================
-// 3. УПРАВЛЕНИЕ ШТОРКОЙ И ШАГАМИ
+// 3. УПРАВЛЕНИЕ ШТОРКОЙ КОРЗИНЫ
 // ==========================================================================
 function openCartDrawer() {
-    const drawer = document.getElementById('cart-drawer');
-    const overlay = document.getElementById('cart-overlay');
+    const drawer = document.getElementById('cart-drawer') || 
+                   document.getElementById('drawer') || 
+                   document.querySelector('.cart-drawer') || 
+                   document.querySelector('.cart-modal');
+    const overlay = document.getElementById('cart-overlay') || 
+                    document.querySelector('.cart-overlay');
 
     if (drawer) {
-        drawer.classList.add('active');
+        drawer.classList.add('active', 'open');
         drawer.style.display = 'block';
     }
     if (overlay) {
-        overlay.classList.add('active');
+        overlay.classList.add('active', 'open');
         overlay.style.display = 'block';
     }
 
-    updateCartUI();
-    goToDrawerStep(1);
+    if (typeof updateCartUI === 'function') {
+        updateCartUI();
+    }
+    
+    // Вызываем единую функцию переключения шагов из script.js
+    if (typeof window.goToDrawerStep === 'function') {
+        window.goToDrawerStep(1);
+    } else if (typeof goToDrawerStep === 'function') {
+        goToDrawerStep(1);
+    }
 }
 
 function closeCartDrawer() {
-    const drawer = document.getElementById('cart-drawer');
-    const overlay = document.getElementById('cart-overlay');
+    const drawer = document.getElementById('cart-drawer') || 
+                   document.getElementById('drawer') || 
+                   document.querySelector('.cart-drawer') || 
+                   document.querySelector('.cart-modal');
+    const overlay = document.getElementById('cart-overlay') || 
+                    document.querySelector('.cart-overlay');
 
     if (drawer) {
-        drawer.classList.remove('active');
+        drawer.classList.remove('active', 'open');
         drawer.style.display = 'none';
     }
     if (overlay) {
-        overlay.classList.remove('active');
+        overlay.classList.remove('active', 'open');
         overlay.style.display = 'none';
     }
 }
 
-function goToDrawerStep(stepNumber) {
-    const step1 = document.getElementById('drawer-step-cart');
-    const step2 = document.getElementById('drawer-step-form');
-    const step3 = document.getElementById('drawer-step-payment');
-
-    if (step1) step1.style.display = (stepNumber === 1) ? 'block' : 'none';
-    if (step2) step2.style.display = (stepNumber === 2) ? 'block' : 'none';
-    if (step3) step3.style.display = (stepNumber === 3) ? 'block' : 'none';
-}
+// Экспортируем функции открытия/закрытия в глобальную область
+window.openCartDrawer = openCartDrawer;
+window.closeCartDrawer = closeCartDrawer;
 
 // ==========================================================================
 // 4. ДЕЙСТВИЯ С ТУРАМИ И МОДАЛКОЙ
@@ -222,8 +234,19 @@ function bookTourAction(tourId) {
 
     saveCart(cart);
     closeTourDetails();
-    openCartDrawer();
+    
+    // Мгновенно открываем шторку с товаром
+    if (typeof openCart === 'function') {
+        openCart();
+    } else {
+        openCartDrawer();
+    }
 }
+
+window.openBookingDrawer = openBookingDrawer;
+window.openTourDetails = openTourDetails;
+window.closeTourDetails = closeTourDetails;
+window.bookTourAction = bookTourAction;
 
 // ==========================================================================
 // 5. ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ
@@ -231,7 +254,9 @@ function bookTourAction(tourId) {
 document.addEventListener('DOMContentLoaded', () => {
 
     // Первичная отрисовка
-    updateCartUI();
+    if (typeof updateCartUI === 'function') {
+        updateCartUI();
+    }
 
     // 1. Кнопка вызова корзины
     const navCartBtn = document.getElementById('nav-cart-btn');
@@ -254,17 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Переход к шагу 2 (Анкета)
         if (e.target.closest('#btn-go-to-checkout')) {
             e.preventDefault();
-            if (getCart().length === 0) {
-                alert('Кошик порожній!');
-                return;
+            if (typeof goToDrawerStep === 'function') {
+                goToDrawerStep(2);
             }
-            goToDrawerStep(2);
         }
 
         // Возврат на Шаг 1
         if (e.target.closest('#btn-back-to-cart')) {
             e.preventDefault();
-            goToDrawerStep(1);
+            if (typeof goToDrawerStep === 'function') {
+                goToDrawerStep(1);
+            }
         }
 
         // Переход к Шагу 3 (Реквизиты)
@@ -275,7 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 form.reportValidity();
                 return;
             }
-            goToDrawerStep(3);
+            if (typeof goToDrawerStep === 'function') {
+                goToDrawerStep(3);
+            }
         }
 
         // Скопировать реквизиты
@@ -298,7 +325,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modal) modal.style.display = 'none';
             closeCartDrawer();
             localStorage.removeItem('timurtour_cart');
-            updateCartUI();
+            if (typeof updateCartUI === 'function') {
+                updateCartUI();
+            }
         }
     });
 

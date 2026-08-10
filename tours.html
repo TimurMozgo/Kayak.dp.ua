@@ -193,14 +193,11 @@
                 </p>
                 <!-- Блок соцсетей -->
                 <div class="footer-socials">
-                    <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram">
+                    <a href="https://www.instagram.com/kayak.dp.ua?igsh=MWoxanEyOTFoOHJqYg==" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
-                    <a href="https://t.me/" target="_blank" rel="noopener" class="social-btn telegram" title="Telegram">
+                    <a href="https://t.me/kayakdpua" target="_blank" rel="noopener" class="social-btn telegram" title="Telegram">
                         <i class="fa-brands fa-telegram"></i>
-                    </a>
-                    <a href="viber://chat?number=%2B380637100636" class="social-btn viber" title="Viber">
-                        <i class="fa-brands fa-viber"></i>
                     </a>
                 </div>
             </div>
@@ -295,7 +292,7 @@
             <!-- ================= ШАГ 2: АНКЕТА-ОПРОС ================= -->
             <div id="drawer-step-form" class="drawer-step" style="display: none;">
                 
-                <button type="button" id="btn-back-to-cart" style="background: none; border: none; color: #a3a3a3; cursor: pointer; font-weight: 600; padding: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 5px;">
+                <button type="button" id="btn-back-to-cart" onclick="goToDrawerStep(1)" style="display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; width: 100%; justify-content: center; transition: all 0.2s;">
                     &larr; Назад до списку
                 </button>
 
@@ -397,6 +394,10 @@
             <div id="drawer-step-payment" class="drawer-step" style="display: none;">
                 <div class="payment-wrapper" style="color: #ffffff;">
                     
+                    <button type="button" onclick="goToDrawerStep(2)" style="display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; width: 100%; justify-content: center; transition: all 0.2s;">
+                        &larr; Назад до вводу даних
+                    </button>
+
                     <!-- 🚀 БЛОК: РАСЧЕТ 30% ПРЕДОПЛАТЫ -->
                     <div class="prepayment-summary-card" style="background: #111111; border: 1px solid #333333; border-radius: 12px; padding: 14px; margin-bottom: 15px;">
                         <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">

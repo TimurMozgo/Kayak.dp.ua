@@ -291,11 +291,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (bookBtn) {
-            bookBtn.addEventListener("click", (e) => {
+            // Используем .onclick вместо addEventListener, чтобы затирать старые слушатели!
+            bookBtn.onclick = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const cleanDurationText = currentDurationText.split(" (")[0];
+                const cleanDurationText = typeof currentDurationText === 'string' 
+                    ? currentDurationText.split(" (")[0] 
+                    : '';
+                    
                 const price = Number(currentPricePerUnit) || 0;
                 const quantity = Number(currentQty) || 1;
 
@@ -304,8 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
+                // Собираем уникальный ID (учитываем длительность, чтобы разные тарифы не слипались)
+                const uniqueId = cleanDurationText ? `${productId}-${cleanDurationText}` : productId;
+
                 addToCart({
-                    id: productId,
+                    id: uniqueId,
                     productId: productId,
                     title: productName,
                     productName: productName,
@@ -321,10 +328,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     type: "ОРЕНДА"
                 });
 
+                // Открываем корзину, если есть внешняя функция
                 if (typeof window.openBookingDrawer === "function") {
                     window.openBookingDrawer();
                 }
-            });
+            };
         }
 
         if (detailsBtn) {

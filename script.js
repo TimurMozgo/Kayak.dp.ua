@@ -161,31 +161,50 @@ function closeCart() {
     }
 }
 
+// ==========================================================================
+// ЕДИНЫЙ ЦЕНТР УПРАВЛЕНИЯ ШАГАМИ ШТОРКИ
+// ==========================================================================
 function goToDrawerStep(stepNumber) {
+    // 1. Проверка при переходе на Шаг 2 (Оформление)
+    if (stepNumber === 2) {
+        const currentCart = typeof getCart === 'function' ? getCart() : [];
+
+        if (!currentCart || currentCart.length === 0) {
+            alert("Ваш кошик порожній! Оберіть щось перед оформленням.");
+            return; // Не пускаем дальше, если корзина реально пустая
+        }
+    }
+
+    // 2. Сбрасываем видимость со всех шагов
     document.querySelectorAll('.drawer-step').forEach(step => {
         step.classList.remove('active');
-        step.style.display = ''; 
+        step.style.display = 'none';
     });
 
+    // 3. Включаем нужный шаг
     if (stepNumber === 1) {
         const step = document.getElementById('drawer-step-cart');
-        if (step) step.classList.add('active');
+        if (step) { step.classList.add('active'); step.style.display = 'block'; }
         const title = document.getElementById('drawer-title');
         if (title) title.textContent = 'Кошик';
     } 
     else if (stepNumber === 2) {
-        const step = document.getElementById('drawer-step-checkout');
-        if (step) step.classList.add('active');
+        // Всеядность: ищем или checkout, или form (что есть в HTML)
+        const step = document.getElementById('drawer-step-checkout') || document.getElementById('drawer-step-form');
+        if (step) { step.classList.add('active'); step.style.display = 'block'; }
         const title = document.getElementById('drawer-title');
         if (title) title.textContent = 'Оформлення';
     } 
     else if (stepNumber === 3) {
         const step = document.getElementById('drawer-step-payment');
-        if (step) step.classList.add('active');
+        if (step) { step.classList.add('active'); step.style.display = 'block'; }
         const title = document.getElementById('drawer-title');
         if (title) title.textContent = 'Оплата та передплата';
     }
 }
+
+// Экспортируем на уровень window, чтобы inline onclick="goToDrawerStep(...)" из HTML точно ее видели
+window.goToDrawerStep = goToDrawerStep;
 
 // ==========================================================================
 // 4. НАВИГАЦИЯ И ПЕРЕКЛЮЧЕНИЕ ТАБОВ
@@ -283,10 +302,14 @@ function addToCart(itemData) {
         ? rawPrice 
         : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
 
-    const itemId = String(itemData.id || itemData.tourId || Date.now());
+    // Гарантируем уникальный ID
+    const itemId = String(itemData.id || itemData.productId || itemData.tourId || Date.now());
     const itemType = String(itemData.type || itemData.category || 'ОРЕНДА').toUpperCase();
     const itemTitle = itemData.title || itemData.name || itemData.productName || 'Товар';
-    const itemQty = Number(itemData.qty || itemData.quantity || itemData.count || 1);
+    
+    // Безопасный парсинг количества
+    const parsedQty = parseInt(itemData.qty || itemData.quantity || itemData.count, 10);
+    const itemQty = (!isNaN(parsedQty) && parsedQty > 0) ? parsedQty : 1;
 
     const existingIndex = cart.findIndex(item => String(item.id) === itemId && item.type === itemType);
 
@@ -299,6 +322,7 @@ function addToCart(itemData) {
             price: cleanPrice,
             type: itemType,
             qty: itemQty,
+            duration: itemData.duration || '',
             img: itemData.img || '',
             date: itemData.date || itemData.selectedDate || itemData.tourDate || '',
             time: itemData.time || itemData.selectedTime || itemData.rentalTime || ''
@@ -306,7 +330,11 @@ function addToCart(itemData) {
     }
 
     saveCart(cart);
-    openCart();
+    
+    // Вызываем открытие корзины
+    if (typeof openCart === 'function') {
+        openCart();
+    }
 }
 
 function changeCartQty(identifier, delta, type) {
@@ -709,8 +737,21 @@ function initDateAndTime() {
     const rentalDateInput = document.getElementById('checkout-rental-date');
     const tourDateInput = document.getElementById('checkout-tour-date');
     const timeHiddenInput = document.getElementById('checkout-rental-time');
-    const chipsContainer = document.getElementById('time-chips-container');
+    
+    // Поддерживаем оба возможных ID контейнера
+    const chipsContainer = document.getElementById('time-chips-container') || document.getElementById('time-slots-grid');
 
+    // 1. СНАЧАЛА БЛОКИРУЕМ ПРОШЛЫЕ ДАТЫ (по локальному времени)
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
+    if (rentalDateInput) rentalDateInput.min = todayStr;
+    if (tourDateInput) tourDateInput.min = todayStr;
+
+    // 2. ЕСЛИ КОНТЕЙНЕРА ВРЕМЕНИ НЕТ — ВЫХОДИМ (но календарь УЖЕ заблокирован!)
     if (!chipsContainer) return;
 
     const timeSlots = [
@@ -720,45 +761,49 @@ function initDateAndTime() {
         "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00"
     ];
 
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    if (rentalDateInput) rentalDateInput.min = todayStr;
-    if (tourDateInput) tourDateInput.min = todayStr;
-
     function renderTimeSlots() {
         chipsContainer.innerHTML = '';
         const selectedDate = rentalDateInput ? rentalDateInput.value : '';
+        
         const currentNow = new Date();
-        const currentDateStr = currentNow.toISOString().split('T')[0];
+        const currentYear = currentNow.getFullYear();
+        const currentMonth = String(currentNow.getMonth() + 1).padStart(2, '0');
+        const currentDay = String(currentNow.getDate()).padStart(2, '0');
+        const currentDateStr = `${currentYear}-${currentMonth}-${currentDay}`;
+
         const currentHour = currentNow.getHours();
         const currentMinute = currentNow.getMinutes();
         const isToday = (selectedDate === currentDateStr);
 
         timeSlots.forEach(time => {
-            const chip = document.createElement('div');
-            chip.classList.add('time-chip');
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.classList.add('time-chip', 'time-slot-btn');
             chip.textContent = time;
 
             const [optHour, optMinute] = time.split(':').map(Number);
 
+            // Если дата совпадает с сегодняшней и время уже прошло — блочим
             if (isToday && (optHour < currentHour || (optHour === currentHour && optMinute <= currentMinute))) {
                 chip.classList.add('disabled');
+                chip.disabled = true;
             } else {
                 chip.addEventListener('click', () => {
-                    chipsContainer.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+                    chipsContainer.querySelectorAll('.time-chip, .time-slot-btn').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
-                    timeHiddenInput.value = time;
+                    if (timeHiddenInput) timeHiddenInput.value = time;
                 });
             }
 
-            if (timeHiddenInput.value === time && !chip.classList.contains('disabled')) {
+            if (timeHiddenInput && timeHiddenInput.value === time && !chip.classList.contains('disabled')) {
                 chip.classList.add('active');
             }
+
             chipsContainer.appendChild(chip);
         });
 
-        const activeChip = chipsContainer.querySelector('.time-chip.active');
-        if (!activeChip) timeHiddenInput.value = '';
+        const activeChip = chipsContainer.querySelector('.active');
+        if (!activeChip && timeHiddenInput) timeHiddenInput.value = '';
     }
 
     if (rentalDateInput) rentalDateInput.addEventListener('change', renderTimeSlots);
