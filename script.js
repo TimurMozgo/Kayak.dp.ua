@@ -137,6 +137,7 @@ function renderOrdersHistory() {
 // ==========================================================================
 // 3. УПРАВЛЕНИЕ ШТОРКОЙ КОРЗИНЫ
 // ==========================================================================
+
 function openCart() {
     const drawer = document.getElementById('cart-drawer') || 
                    document.getElementById('drawer') || 
@@ -146,19 +147,14 @@ function openCart() {
         drawer.style.display = 'block';
         drawer.classList.add('active', 'open');
     }
+    
+    // 🎯 ДОБАВЬ ЭТУ СТРОКУ СЮДА:
+    if (typeof syncTourDatesFromLocalStorage === 'function') {
+        syncTourDatesFromLocalStorage();
+    }
+
     goToDrawerStep(1);
     updateCartUI();
-}
-
-function closeCart() {
-    const drawer = document.getElementById('cart-drawer') || 
-                   document.getElementById('drawer') || 
-                   document.querySelector('.cart-drawer') || 
-                   document.querySelector('.cart-modal');
-    if (drawer) {
-        drawer.style.display = 'none';
-        drawer.classList.remove('active', 'open');
-    }
 }
 
 // ==========================================================================
@@ -289,10 +285,163 @@ function getCart() {
     return [];
 }
 
+// СТАТИЧНЫЙ ВЫБОР ОПРЕДЕЛЕННОЙ ДАТЫ ДЛЯ РАЗДЕЛА ПОХОДЫ 
+
+// 1. Вспомогательный генератор разрешенных дат
+function getAvailableDatesForTour(tourId) {
+    if (typeof toursData === 'undefined' || !toursData[tourId]) return [];
+    const tour = toursData[tourId];
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Точечные даты (customDates)
+    if (tour.customDates && tour.customDates.length > 0) {
+        return tour.customDates.filter(date => date >= todayStr);
+    }
+
+    // Дни недели (allowedDays)
+    if (tour.allowedDays && tour.allowedDays.length > 0) {
+        const validDates = [];
+        const today = new Date();
+
+        for (let i = 0; i < 30; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+
+            if (tour.allowedDays.includes(d.getDay())) {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                validDates.push(`${year}-${month}-${day}`);
+            }
+        }
+        return validDates;
+    }
+
+    return [];
+}
+
+// 2. Функция подгрузки валидных дат с ВОССТАНОВЛЕНИЕМ выбранной даты
+function updateCheckoutTourDates(tourId, savedDate = '') {
+    const tourDateInput = document.getElementById('checkout-tour-date');
+    if (!tourDateInput) return;
+
+    const availableDates = getAvailableDatesForTour(tourId);
+    const daysMap = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+
+    // Если дата уже была выбрана в DOM — запоминаем её
+    const currentDateVal = savedDate || tourDateInput.value;
+
+    tourDateInput.innerHTML = '<option value="">-- Оберіть дату походу --</option>';
+    
+    availableDates.forEach(dateStr => {
+        const [y, m, d] = dateStr.split('-');
+        // Безбаговый парсинг локальной даты
+        const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+        const dayName = daysMap[dateObj.getDay()];
+        
+        const option = document.createElement('option');
+        option.value = dateStr;
+        option.textContent = `${d}.${m}.${y} (${dayName})`;
+
+        // ЕСЛИ ЭТО ВЫБРАННАЯ ДАТА — ДЕЛАЕМ ЕЁ SELECTED!
+        if (dateStr === currentDateVal) {
+            option.selected = true;
+        }
+
+        tourDateInput.appendChild(option);
+    });
+}
+
+function syncTourDatesFromLocalStorage() {
+    const select = document.getElementById('checkout-tour-date');
+    if (!select) return;
+
+    // Читаем правильный ключ корзины
+    const cart = JSON.parse(localStorage.getItem('timurtour_cart') || '[]');
+    
+    // Ищем элемент похода (используем встроенную isTourItem или проверку по type)
+    const tourItem = cart.find(item => {
+        if (typeof isTourItem === 'function') return isTourItem(item);
+        const t = String(item.type || '').toUpperCase();
+        return t === 'TOUR' || t === 'ПОХІД' || t === 'POHID';
+    });
+
+    if (!tourItem) {
+        select.innerHTML = '<option value="">-- Оберіть спочатку похід --</option>';
+        return;
+    }
+
+    // Вытаскиваем ID изо всех возможных полей
+    let tourId = tourItem.id || tourItem.tourId || tourItem.productId || tourItem.slug;
+
+    // Страховка: если ID всё равно не найден, ищем в window.toursData по совпадению названия
+    if (!tourId && window.toursData) {
+        const itemTitle = tourItem.title || tourItem.name || tourItem.productName;
+        const foundTour = Object.values(window.toursData).find(t => t.title === itemTitle);
+        if (foundTour) tourId = foundTour.id;
+    }
+
+    // Получаем даты
+    const dates = (typeof window.getAvailableDatesForTour === 'function' && tourId) 
+        ? window.getAvailableDatesForTour(tourId) 
+        : [];
+
+    if (dates.length > 0) {
+        const daysMap = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+        let html = '<option value="">-- Оберіть дату походу --</option>';
+
+        const currentDateVal = tourItem.date || tourItem.selectedDate || tourItem.bookingDate || select.value;
+
+        dates.forEach(dateStr => {
+            const [y, m, d] = dateStr.split('-');
+            const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            const dayName = daysMap[dateObj.getDay()];
+            
+            const isSelected = (dateStr === currentDateVal) ? 'selected' : '';
+            html += `<option value="${dateStr}" ${isSelected}>${d}.${m}.${y} (${dayName})</option>`;
+        });
+
+        select.innerHTML = html;
+    } else {
+        select.innerHTML = '<option value="">-- Немає доступних дат --</option>';
+    }
+}
+
+// 4. Сохранение корзины
 function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    updateCartUI();
+    if (typeof updateCartUI === 'function') updateCartUI();
+    syncTourDatesFromLocalStorage();
 }
+
+// 5. ГЛАВНЫЙ ФИКС: Слушатель выбора даты пользователем
+function initTourDateListener() {
+    const tourDateSelect = document.getElementById('checkout-tour-date');
+    if (!tourDateSelect) return;
+
+    tourDateSelect.addEventListener('change', (e) => {
+        const chosenDate = e.target.value;
+        const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        
+        const tourInCart = cart.find(item => item.type === 'TOUR' || (typeof toursData !== 'undefined' && toursData[item.id]));
+        
+        if (tourInCart) {
+            // Пишем дату прямо в товар корзины!
+            tourInCart.bookingDate = chosenDate;
+            // Сохраняем напрямую в localStorage
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        }
+    });
+}
+
+// 🎯 Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    syncTourDatesFromLocalStorage();
+    initTourDateListener();
+});
+
+// ДОБАВЛЕНИЕ В КОРЗИНУ
 
 function addToCart(itemData) {
     let cart = getCart();
@@ -470,7 +619,7 @@ function updateCartUI() {
                 ${infoText ? `<div style="font-size: 0.8rem; color: #10b981 !important; font-weight: 600;">${infoText}</div>` : ''}
 
                 <div style="font-size: 0.85rem; color: #a1a1aa !important;">
-                    ${price > 0 ? `${price} грн / шт` : '<span style="color:#ef4444 !important;">Ціну не вказано</span>'}
+                    ${price > 0 ? `${price} грн / ${isTour ? 'людина' : 'шт'}` : '<span style="color:#ef4444 !important;">Ціну не вказано</span>'}
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
@@ -486,6 +635,11 @@ function updateCartUI() {
             </div>
         `;
     }).join('');
+
+    // 🎯 ВОТ ЭТА СТРОКА РЕШАЕТ ВСЕ ПРОБЛЕМЫ С ДАТАМИ:
+    if (typeof syncTourDatesFromLocalStorage === 'function') {
+        syncTourDatesFromLocalStorage();
+    }
 }
 
 function updatePaymentSummary() {

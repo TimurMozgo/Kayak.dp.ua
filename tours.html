@@ -178,6 +178,33 @@
 
         <article class="tour-card teaser-card night-theme">
             <div class="tour-image-box">
+                <img src="./img_tour/Захід_Сонця_на_SUP.jpg" alt="Захід_Сонця_на_SUP" class="tour-img">
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title">Захід Сонця на SUP</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Шукаєш, де перезавантажитись після роботи? 2 години — і ти інша людина. SUP. Захід. Тиша. Чай. Все, що треба, щоб відчути себе живим. Замість шумного міста — спокій хвиль і захід сонця. Дозволь собі більше!
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('zahid-sonca-na-sup')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('zahid-sonca-na-sup')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
                 <img src="./img_tour/Магія_вечірнього_багаття.jpg" alt="Магія_вечірнього_багаття" class="tour-img">
             </div>
             
@@ -201,6 +228,33 @@
                         Забронювати
                     </button>
                     <button class="btn-primary-animated" onclick="openTourDetails('magiya-bagattya')">
+                        Детальніше <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <article class="tour-card teaser-card night-theme">
+            <div class="tour-image-box">
+                <img src="./img_tour/сплав_по_орілі.jpg" alt="Сплав по Орелі" class="tour-img">
+            </div>
+            
+            <div class="tour-content">
+                <!-- 1. Назва -->
+                <h2 class="tour-title">Дводенний сплав по Орелі</h2>
+                
+                <!-- 2. Опис (Крючок) -->
+                <p class="tour-teaser-text">
+                    Запрошуємо на насичену подорож мальовничими краєвидами річки Оріль — найчистішої притоки Дніпра. Це 2 дні перезавантаження, природи, вогнища, спорту та крутої компанії!
+                </p>
+                
+                <!-- 3. Кнопки (Детальніше + Забронювати) -->
+                <div class="tour-actions">
+                    <!-- Кнопка бронирования на самой карточке -->
+                    <button class="btn-secondary" onclick="event.stopPropagation(); openBookingDrawer('dvodenniy-splav-po-oreli')">
+                        Забронювати
+                    </button>
+                    <button class="btn-primary-animated" onclick="openTourDetails('dvodenniy-splav-po-oreli')">
                         Детальніше <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
@@ -371,10 +425,15 @@
 
                         <!-- 🏔 Походы / Туры -->
                         <div>
-                            <span class="booking-group-title">🏔 Похід / Захід:</span>
-                            <div class="booking-field-wrapper">
-                                <label for="checkout-tour-date" class="booking-label">Дата заходу</label>
-                                <input type="date" id="checkout-tour-date" name="tour_date" class="modern-field">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: #3b82f6; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                                <span>🏔</span> ПОХОДИ
+                            </div>
+                            <div>
+                                <label for="checkout-tour-date" style="display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Дата заходу</label>
+                            
+                                <select id="checkout-tour-date" name="tour_date" class="dark-custom-select">
+                                    <option value="">-- Оберіть спочатку похід --</option>
+                                </select>
                             </div>
                         </div>
                     </div>
