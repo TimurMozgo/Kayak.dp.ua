@@ -5,7 +5,7 @@ const toursData = {
     // 🌅 1. ЧАРІВНІ ЗАХОДИ СОНЦЯ (Вт, Чт, Пт, Сб, Нд)
     'magic-sunset-parus': {
         id: 'magic-sunset-parus',
-        title: "🌅 Чарівні заходи сонця",
+        title: " Чарівні заходи сонця",
         price: "750 грн",
         numericPrice: 750,
         unit: "людина",
@@ -52,7 +52,7 @@ const toursData = {
     // 🚣‍♂️ 3. ДВОДЕННИЙ СПЛАВ ПО ОРЕЛІ (Конкретні дати)
     'dvodenniy-splav-po-oreli': {
         id: 'dvodenniy-splav-po-oreli',
-        title: "Дводенний сплав по Орелі 🛶",
+        title: "Дводенний сплав по Орелі",
         price: "5700 грн",
         numericPrice: 5700,
         regularPrice: 8700,
@@ -100,7 +100,7 @@ const toursData = {
     // 🔥 5. МАГІЯ ВЕЧІРНЬОГО БАГАТТЯ (Щосуботи)
     'magiya-bagattya': {
         id: 'magiya-bagattya',
-        title: "Магія вечірнього багаття 🔥",
+        title: "Магія вечірнього багаття",
         price: "1700 грн",
         numericPrice: 1700,
         regularPrice: 3000,
@@ -126,7 +126,7 @@ const toursData = {
     // ⛺️ 6. НОЧІВЛЯ НА ОСТРОВІ (Конкретні дати)
     'nochivlya-na-ostrovi': {
         id: 'nochivlya-na-ostrovi',
-        title: "Ночівля на острові з kayak.dp.ua 🔥",
+        title: "Ночівля на острові з kayak.dp.ua",
         price: "3000 грн",
         numericPrice: 3000,
         regularPrice: 3500,
@@ -155,7 +155,7 @@ const toursData = {
     // 🧘‍♀️ 7. ЗАХІД СОНЦЯ НА SUP (Середа, П'ятниця, Субота)
     'zahid-sonca-na-sup': {
         id: 'zahid-sonca-na-sup',
-        title: "🧘‍♀️🌅 Захід Сонця на SUP — Ідеальний Вечір",
+        title: " Захід Сонця на SUP — Ідеальний Вечір",
         price: "700 грн (будні) / 800 грн (вихідні)",
         numericPrice: 700,
         regularPrice: 1500,
@@ -179,505 +179,111 @@ const toursData = {
     }
 };
 
-window.toursData = toursData; // Экспортируем в глобальную область
-
-// ==========================================================================
-// 2. ДВИЖОК ДАТ (ЕДИНЫЙ ИСТОЧНИК ИСТИНЫ)
-// ==========================================================================
-window.getAvailableDatesForTour = function(tourId) {
-    if (!window.toursData) return [];
-    
-    const tour = window.toursData[tourId] || Object.values(window.toursData).find(t => t.id === tourId);
-    if (!tour) return [];
-
-    // Жестко заданные даты (срабатывают первыми)
-    if (tour.customDates && Array.isArray(tour.customDates) && tour.customDates.length > 0) {
-        return tour.customDates;
-    }
-    if (tour.dates && Array.isArray(tour.dates) && tour.dates.length > 0) {
-        return tour.dates;
-    }
-
-    // Дни недели: генерируем ликвидность на 45 дней вперед
-    if (tour.allowedDays && Array.isArray(tour.allowedDays) && tour.allowedDays.length > 0) {
-        const dates = [];
-        const today = new Date();
-        
-        for (let i = 0; i < 45; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() + i);
-            const dayOfWeek = d.getDay();
-            
-            if (tour.allowedDays.includes(dayOfWeek)) {
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                dates.push(`${yyyy}-${mm}-${dd}`);
-            }
-        }
-        return dates;
-    }
-
-    return [];
-};
-
-window.renderTourDateSelectOptions = function(tourId, selectElement, selectedValue = '') {
-    if (!selectElement) return;
-
-    const dates = window.getAvailableDatesForTour(tourId);
-
-    if (!dates || dates.length === 0) {
-        selectElement.innerHTML = '<option value="">-- Немає доступних дат --</option>';
+window.openTourDetails = function(tourId) {
+    const tour = toursData[tourId];
+    if (!tour) {
+        console.error('❌ Тур не найден:', tourId);
         return;
     }
-
-    const daysMap = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-    let html = '<option value="">-- Оберіть дату походу --</option>';
-
-    dates.forEach(dateStr => {
-        const [y, m, d] = dateStr.split('-');
-        const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-        const dayName = daysMap[dateObj.getDay()];
-        
-        const isSelected = (dateStr === selectedValue) ? 'selected' : '';
-        html += `<option value="${dateStr}" ${isSelected}>${d}.${m}.${y} (${dayName})</option>`;
-    });
-
-    selectElement.innerHTML = html;
-};
-
-// ==========================================================================
-// 3. РЕНДЕР И РАБОТА С КОРЗИНОЙ (TIMURTOUR_CART)
-// ==========================================================================
-function getCart() {
-    try {
-        return JSON.parse(localStorage.getItem('timurtour_cart')) || [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function saveCart(cart) {
-    localStorage.setItem('timurtour_cart', JSON.stringify(cart));
-    if (typeof updateCartUI === 'function') {
-        updateCartUI();
-    }
-}
-
-function changeQty(index, delta) {
-    const cart = getCart();
-    if (!cart[index]) return;
-    cart[index].qty = (cart[index].qty || 1) + delta;
-    if (cart[index].qty <= 0) {
-        cart.splice(index, 1);
-    }
-    saveCart(cart);
-}
-window.changeCartQty = changeQty; // Делаем доступной для HTML
-
-function removeCartItem(index) {
-    const cart = getCart();
-    cart.splice(index, 1);
-    saveCart(cart);
-}
-window.removeCartItem = removeCartItem;
-
-function updatePaymentAmounts(total) {
-    const prepay = Math.round(total * 0.3);
-    const rest = total - prepay;
-
-    const fullEl = document.getElementById('payment-total-full');
-    const prepayEl = document.getElementById('payment-prepay-amount');
-    const restEl = document.getElementById('payment-rest-amount');
-
-    if (fullEl) fullEl.textContent = `${total} грн`;
-    if (prepayEl) prepayEl.textContent = `${prepay} грн`;
-    if (restEl) restEl.textContent = `${rest} грн`;
-}
-
-// Проверка: Тур или Оренда?
-function isTourItem(item) {
-    const t = String(item.type || '').toUpperCase();
-    if (t === 'TOUR' || t === 'ПОХІД' || t === 'POHID') return true;
-    const itemId = item.id || item.tourId || item.productId;
-    if (window.toursData && itemId && window.toursData[itemId]) return true;
-    return false;
-}
-
-// Отрисовка визуала корзины
-function updateCartUI() {
-    const cart = getCart();
-    const badgeEl = document.getElementById('cart-badge') || document.querySelector('.cart-badge');
-    const container = document.getElementById('cart-items-container') || document.getElementById('drawer-cart-items-container');
-    const grandTotalEl = document.getElementById('cart-grand-total') || document.getElementById('drawer-cart-grand-total');
-    const checkoutBtn = document.getElementById('btn-go-to-checkout');
-
-    let totalQty = 0;
-    let grandTotal = 0;
-
-    cart.forEach(item => {
-        const qty = Number(item.qty || item.quantity || 1);
-        const rawPrice = item.price ?? item.cost ?? item.numericPrice ?? 0;
-        const cleanPrice = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
-
-        totalQty += qty;
-        grandTotal += (cleanPrice * qty);
-    });
-
-    if (badgeEl) {
-        badgeEl.textContent = totalQty;
-        badgeEl.style.display = totalQty > 0 ? 'flex' : 'none';
-    }
-
-    if (checkoutBtn) {
-        checkoutBtn.disabled = cart.length === 0;
-        checkoutBtn.style.opacity = cart.length === 0 ? '0.4' : '1';
-        checkoutBtn.style.pointerEvents = cart.length === 0 ? 'none' : 'auto';
-    }
-
-    if (grandTotalEl) {
-        grandTotalEl.textContent = grandTotal.toLocaleString('uk-UA');
-    }
-
-    updatePaymentAmounts(grandTotal);
-
-    if (!container) return;
-
-    if (cart.length === 0) {
-        container.innerHTML = `
-            <div style="text-align: center; padding: 35px 10px; color: #a1a1aa !important;">
-                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #a1a1aa !important;">Кошик порожній</p>
-                <p style="font-size: 0.85rem; color: #a1a1aa !important;">Оберіть похід або тур для бронювання</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = cart.map((item, index) => {
-        const isTour = isTourItem(item);
-        const qty = Number(item.qty || item.quantity || 1);
-        const rawPrice = item.price ?? item.cost ?? 0;
-        const price = typeof rawPrice === 'number' ? rawPrice : parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
-        const itemTotal = price * qty;
-
-        let infoText = '';
-        if (isTour) {
-            const tourDate = item.date || item.selectedDate || item.tourDate;
-            infoText = tourDate ? `📅 ${tourDate}` : '';
-        } else {
-            const rentalTime = item.time || item.durationText || item.duration;
-            infoText = rentalTime ? `⏱ ${rentalTime}` : '';
-        }
-
-        return `
-            <div style="background: #18181b !important; border: 1px solid #27272a !important; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <span style="background: ${isTour ? '#c2410c' : '#1e40af'} !important; color: #ffffff !important; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; text-transform: uppercase;">
-                            ${item.type || (isTour ? 'ПОХІД' : 'ОРЕНДА')}
-                        </span>
-                        <div style="font-weight: 700; color: #ffffff !important; font-size: 0.95rem;">
-                            ${item.title || item.name || item.productName || 'Товар'}
-                        </div>
-                    </div>
-                    <button type="button" onclick="window.removeCartItem(${index})" style="background: none; border: none; color: #ef4444 !important; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 8px;">
-                        &times;
-                    </button>
-                </div>
-                ${infoText ? `<div style="font-size: 0.8rem; color: #10b981 !important; font-weight: 600;">${infoText}</div>` : ''}
-                <div style="font-size: 0.85rem; color: #a1a1aa !important;">
-                    ${price > 0 ? `${price} грн / ${isTour ? 'людина' : 'шт'}` : '<span style="color:#ef4444 !important;">Ціну не вказано</span>'}
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                    <div style="display: flex; align-items: center; background: #09090b !important; border: 1px solid #27272a !important; border-radius: 6px; overflow: hidden;">
-                        <button type="button" onclick="window.changeCartQty(${index}, -1)" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer;">-</button>
-                        <span style="padding: 0 8px; color: #ffffff !important; font-size: 0.85rem; font-weight: 600;">${qty}</span>
-                        <button type="button" onclick="window.changeCartQty(${index}, 1)" style="background: none; border: none; color: #ffffff !important; width: 28px; height: 28px; cursor: pointer;">+</button>
-                    </div>
-                    <div style="font-weight: 800; color: #ffffff !important; font-size: 0.95rem;">
-                        ${itemTotal} грн
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    // Синхронизируем чекаут даты после каждого рендера
-    if (typeof window.syncTourDatesFromLocalStorage === 'function') {
-        window.syncTourDatesFromLocalStorage();
-    }
-}
-window.updateCartUI = updateCartUI;
-
-// Железобетонная синхронизация дат чекаута с корзиной
-window.syncTourDatesFromLocalStorage = function() {
-    const select = document.getElementById('checkout-tour-date');
-    if (!select) return;
-
-    const cart = getCart();
-    
-    // Ищем поход в корзине
-    const tourItem = cart.find(item => isTourItem(item));
-
-    if (!tourItem) {
-        select.innerHTML = '<option value="">-- Оберіть спочатку похід --</option>';
-        return;
-    }
-
-    let tourId = tourItem.id || tourItem.tourId || tourItem.productId || tourItem.slug;
-    
-    // Страховка по названию
-    if (!tourId && window.toursData) {
-        const title = tourItem.title || tourItem.name || tourItem.productName;
-        const found = Object.values(window.toursData).find(t => t.title === title);
-        if (found) tourId = found.id;
-    }
-
-    const currentVal = tourItem.date || tourItem.selectedDate || tourItem.bookingDate || select.value;
-    window.renderTourDateSelectOptions(tourId, select, currentVal);
-};
-
-// ==========================================================================
-// 4. УПРАВЛЕНИЕ ШТОРКОЙ КОРЗИНЫ
-// ==========================================================================
-function openCartDrawer() {
-    const drawer = document.getElementById('cart-drawer') || document.querySelector('.cart-drawer') || document.querySelector('.cart-modal');
-    const overlay = document.getElementById('cart-overlay') || document.querySelector('.cart-overlay');
-
-    if (drawer) {
-        drawer.classList.add('active', 'open');
-        drawer.style.display = 'block';
-    }
-    if (overlay) {
-        overlay.classList.add('active', 'open');
-        overlay.style.display = 'block';
-    }
-
-    updateCartUI();
-    
-    if (typeof window.goToDrawerStep === 'function') window.goToDrawerStep(1);
-    else if (typeof goToDrawerStep === 'function') goToDrawerStep(1);
-}
-
-function closeCartDrawer() {
-    const drawer = document.getElementById('cart-drawer') || document.querySelector('.cart-drawer') || document.querySelector('.cart-modal');
-    const overlay = document.getElementById('cart-overlay') || document.querySelector('.cart-overlay');
-
-    if (drawer) {
-        drawer.classList.remove('active', 'open');
-        drawer.style.display = 'none';
-    }
-    if (overlay) {
-        overlay.classList.remove('active', 'open');
-        overlay.style.display = 'none';
-    }
-}
-window.openCartDrawer = openCartDrawer;
-window.closeCartDrawer = closeCartDrawer;
-
-// ==========================================================================
-// 5. ДЕЙСТВИЯ С ТУРАМИ И МОДАЛКОЙ
-// ==========================================================================
-window.updateCheckoutTourDates = function(tourId) {
-    const select = document.getElementById('checkout-tour-date');
-    if (select) window.renderTourDateSelectOptions(tourId, select);
-};
-
-function openBookingDrawer(tourId) {
-    bookTourAction(tourId || 'moon-tour');
-}
-
-function openTourDetails(tourId) {
-    const tour = window.toursData[tourId];
-    if (!tour) return;
 
     const modal = document.getElementById('tourModal');
     const modalBody = document.getElementById('modalBody');
 
-    if (!modal || !modalBody) return;
+    if (!modal || !modalBody) {
+        console.error('❌ Элементы модалки не найдены!');
+        return;
+    }
 
+    // Заливаем адаптированный под темную тему HTML
     modalBody.innerHTML = `
-        <h2 style="color: #f8fafc; font-size: 1.3rem; margin-bottom: 12px;">${tour.title}</h2>
-        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 12px;">${tour.intro}</p>
-        <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; font-style: italic;">${tour.description}</p>
-        <h3 style="color: #f8fafc; font-size: 1rem; margin-bottom: 10px;">На вас чекає:</h3>
-        <ul style="list-style: none; padding: 0; margin: 0 0 20px 0;">
-            ${tour.features.map(f => `<li style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px;">${f}</li>`).join('')}
-        </ul>
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div style="color: #facc15; font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💸 Вартість: ${tour.price}</div>
-            <div style="color: #94a3b8; font-size: 0.9rem;">🚣 Формат: ${tour.format || 'Груповий'}</div>
+        <!-- Бейдж / Акция -->
+        ${tour.badge ? `
+            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; margin-bottom: 16px; border: 1px solid rgba(249, 115, 22, 0.3);">
+                ${tour.badge}
+            </div>
+        ` : ''}
+
+        <!-- Четкий белый заголовок -->
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0 0 14px 0; line-height: 1.3;">
+            ${tour.title}
+        </h2>
+
+        <!-- Локация и Время -->
+        <div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.9rem; color: #94a3b8; margin-bottom: 18px; font-weight: 500;">
+            <span style="display: flex; align-items: center; gap: 6px;">📍 ${tour.location}</span>
+            <span style="display: flex; align-items: center; gap: 6px;">⏱️ ${tour.time}</span>
         </div>
-        <button onclick="bookTourAction('${tour.id}');" style="width: 100%; padding: 14px; font-weight: 800; font-size: 1rem; background: #facc15; color: #0b0f19; border: none; border-radius: 12px; cursor: pointer;">
-            Забронювати
-        </button>
+
+        <!-- Краткое описание -->
+        <p style="font-size: 1.05rem; color: #f1f5f9; font-weight: 600; line-height: 1.5; margin-bottom: 14px;">
+            ${tour.intro}
+        </p>
+
+        <!-- Полный текст -->
+        <p style="font-size: 0.95rem; color: #94a3b8; line-height: 1.6; margin-bottom: 22px;">
+            ${tour.description}
+        </p>
+
+        <!-- Блок "В стоимость входит" в стиле Dark Glass -->
+        ${tour.features && tour.features.length ? `
+            <div style="background: rgba(255, 255, 255, 0.04); border-radius: 16px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin: 0 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                    У вартість входить:
+                </h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                    ${tour.features.map(f => `
+                        <li style="font-size: 0.95rem; color: #e2e8f0; display: flex; align-items: center; gap: 8px; line-height: 1.4;">
+                            ${f}
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+        ` : ''}
+
+        <!-- Футер: Цена + Кнопка -->
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 18px; margin-top: 10px;">
+            <div>
+                <span style="display: block; font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">ЦІНА ЗА ЛЮДИНУ:</span>
+                <span style="font-size: 1.6rem; font-weight: 800; color: #38bdf8;">${tour.price}</span>
+            </div>
+            <button type="button" onclick="closeTourDetails(); openBookingDrawer('${tour.id}')" style="background: #0088cc; color: #ffffff; border: none; border-radius: 12px; padding: 14px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 136, 204, 0.3);">
+                Забронювати
+            </button>
+        </div>
     `;
 
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+    modal.classList.add('active', 'open', 'show');
+    modal.style.setProperty('display', 'flex', 'important');
+};
 
-function closeTourDetails() {
+// ==========================================
+// ЗАКРЫТИЕ МОДАЛКИ ПОДРОБНОСТЕЙ (ЖЕЛЕЗОБЕТОН)
+// ==========================================
+
+window.closeTourDetails = function() {
+    console.log('🔒 Закрываем модалку подробностей');
     const modal = document.getElementById('tourModal');
     if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
+        modal.classList.remove('active', 'open', 'show');
+        modal.style.setProperty('display', 'none', 'important');
     }
-}
+};
 
-function bookTourAction(tourId) {
-    const tour = window.toursData[tourId];
-    if (!tour) return;
+// Перехватчик кликов: реагирует на крестик, оверлей и ESC
+document.addEventListener('click', function(e) {
+    const isCloseBtn = e.target.closest('.modal-close-btn');
+    const isOverlay = e.target.classList.contains('modal-overlay');
 
-    const cart = getCart();
-    const existingIndex = cart.findIndex(i => i.id === tour.id);
-
-    if (existingIndex > -1) {
-        cart[existingIndex].qty = (cart[existingIndex].qty || 1) + 1;
-    } else {
-        cart.push({
-            id: tour.id,
-            title: tour.title,
-            price: tour.numericPrice,
-            qty: 1,
-            durationText: tour.format,
-            type: 'TOUR'
-        });
+    if (isCloseBtn || isOverlay) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.closeTourDetails();
     }
+}, true);
 
-    saveCart(cart); // Это автоматически вызовет updateCartUI() и syncTourDatesFromLocalStorage()
-    closeTourDetails();
-    
-    // Мгновенно открываем шторку
-    openCartDrawer();
-}
-
-window.openBookingDrawer = openBookingDrawer;
-window.openTourDetails = openTourDetails;
-window.closeTourDetails = closeTourDetails;
-window.bookTourAction = bookTourAction;
-
-// ==========================================================================
-// 6. ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ
-// ==========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-
-    // 🎯 1. Первичная отрисовка корзины
-    updateCartUI();
-
-    // 🎯 2. Кнопка вызова корзины в шапке
-    const navCartBtn = document.getElementById('nav-cart-btn');
-    if (navCartBtn) {
-        navCartBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openCartDrawer();
-        });
-    }
-
-    // 🎯 3. Сохранение выбранной даты из селектора похода
-    const tourDateSelect = document.getElementById('checkout-tour-date');
-    if (tourDateSelect) {
-        tourDateSelect.addEventListener('change', (e) => {
-            const chosenDate = e.target.value;
-            const cart = getCart();
-            const tourItem = cart.find(item => isTourItem(item));
-
-            if (tourItem) {
-                tourItem.date = chosenDate;
-                tourItem.bookingDate = chosenDate;
-                saveCart(cart);
-            }
-        });
-    }
-
-    // 🎯 4. Обработка кликов внутри шторки (делегирование)
-    document.addEventListener('click', (e) => {
-
-        // Закрытие корзины
-        if (e.target.closest('#close-cart-btn') || e.target.id === 'cart-overlay') {
-            e.preventDefault();
-            closeCartDrawer();
-        }
-
-        // Переход к шагу 2 (Анкета)
-        if (e.target.closest('#btn-go-to-checkout')) {
-            e.preventDefault();
-            window.syncTourDatesFromLocalStorage();
-            if (typeof window.goToDrawerStep === 'function') window.goToDrawerStep(2);
-        }
-
-        // Возврат на Шаг 1
-        if (e.target.closest('#btn-back-to-cart')) {
-            e.preventDefault();
-            if (typeof window.goToDrawerStep === 'function') window.goToDrawerStep(1);
-        }
-
-        // Переход к Шагу 3 (Реквизиты)
-        if (e.target.closest('#btn-show-requisites')) {
-            e.preventDefault();
-            const form = document.getElementById('tour-checkout-form');
-            if (form && !form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            if (typeof window.goToDrawerStep === 'function') window.goToDrawerStep(3);
-        }
-
-        // Скопировать реквизиты
-        const copyCard = e.target.closest('.copy-card');
-        if (copyCard) {
-            const targetId = copyCard.getAttribute('data-copy-target');
-            const targetEl = document.getElementById(targetId);
-            if (targetEl) {
-                navigator.clipboard.writeText(targetEl.textContent.trim()).then(() => {
-                    const originalBg = copyCard.style.background;
-                    copyCard.style.background = '#22c55e22';
-                    setTimeout(() => copyCard.style.background = originalBg, 1000);
-                });
-            }
-        }
-
-        // Закрытие окна успеха
-        if (e.target.closest('#close-success-btn')) {
-            const modal = document.getElementById('success-modal');
-            if (modal) modal.style.display = 'none';
-            closeCartDrawer();
-            localStorage.removeItem('timurtour_cart');
-            updateCartUI();
-        }
-    });
-
-    // 🎯 5. Загрузка файла чека
-    const uploadZone = document.getElementById('upload-zone');
-    const fileInput = document.getElementById('receipt-file-input');
-    const idleState = document.getElementById('upload-idle-state');
-    const previewState = document.getElementById('upload-preview-state');
-    const previewImg = document.getElementById('receipt-preview-img');
-
-    if (uploadZone && fileInput) {
-        uploadZone.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    if (previewImg) previewImg.src = event.target.result;
-                    if (idleState) idleState.style.display = 'none';
-                    if (previewState) previewState.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    // 🎯 6. Финальная отправка чека
-    const finalBtn = document.getElementById('btn-final-submit');
-    if (finalBtn) {
-        finalBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const modal = document.getElementById('success-modal');
-            if (modal) modal.style.display = 'flex';
-        });
+// Закрытие по кнопке Esc на клавиатуре
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        window.closeTourDetails();
     }
 });

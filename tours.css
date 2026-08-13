@@ -8,11 +8,34 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
-
-body {
+ 
+html, body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    position: static !important;
     background-color: #000;
     color: #334155;
     line-height: 1.5;
+}
+
+/* 2. Если JS навешивает на body спец-классы для заморозки — сбиваем их */
+body.no-scroll, 
+body.modal-open, 
+body.drawer-open, 
+body.overflow-hidden {
+    overflow: auto !important;
+    position: static !important;
+    height: auto !important;
+}
+
+/* 3. Гарантируем, что закрытый оверлей/фон не ловит клики */
+.drawer-backdrop:not(.active),
+.modal-backdrop:not(.active),
+.cart-backdrop:not(.active),
+.overlay:not(.active),
+#booking-drawer-overlay:not(.active) {
+    display: none !important;
+    pointer-events: none !important;
 }
 
 .header-container {
@@ -285,6 +308,271 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* КОРЗИНА + ОФОРМЛЕНИЕ ЗАЯВКИ И ЗАВЕРШЕНИЕ ЗАКАЗА */
+
+/* ================= DRAWER (ОФОРМЛЕНИЕ ЗАКАЗА) ================= */
+.booking-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    visibility: hidden;
+    pointer-events: none; /* Чтобы шторка не перехватывала клики, пока закрыта */
+    transition: visibility 0.4s ease;
+}
+
+.drawer-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 450px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    overflow: hidden;
+
+    /* ИСПОЛЬЗУЕМ transform: translateX(100%) вместо right: -480px! 
+       Это убирает шторку РОВНО на 100% ее ширины на любых экранах */
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.drawer-step {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0; 
+    padding-right: 4px;
+}
+
+/* Активный шаг становится флексом и идеально держит верстку */
+.drawer-step.active {
+    display: flex; 
+}
+
+.drawer-step::-webkit-scrollbar {
+    width: 4px;
+}
+
+.drawer-step::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.booking-drawer.open {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.booking-drawer.open .drawer-overlay {
+    opacity: 1;
+}
+
+.booking-drawer.open .drawer-content {
+    transform: translateX(0); /* Плавно выезжает в ноль */
+}
+
+.drawer-body-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.drawer-body-form::-webkit-scrollbar {
+    width: 4px;
+}
+.drawer-body-form::-webkit-scrollbar-thumb {
+    background: var(--border-light, #e2e8f0);
+    border-radius: 4px;
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.drawer-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.close-drawer-btn {
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-muted, #64748b);
+}
+
+.drawer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.order-summary-card {
+    background: var(--bg-light, #f8fafc);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-light, #e2e8f0);
+}
+
+.order-summary-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.summary-details p {
+    font-size: 13px;
+    color: var(--text-muted, #64748b);
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    border-top: 1px solid var(--border-light, #e2e8f0);
+    padding-top: 12px;
+}
+
+.summary-total span:first-child {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.total-price {
+    font-size: 14px;            
+    font-weight: 600;            
+    color: var(--text-muted, #64748b);    
+}
+
+#summary-price-val {
+    font-size: 28px;            
+    font-weight: 800;           
+    color: var(--primary-blue, #0284c7);  
+    letter-spacing: -0.5px;      
+    margin-right: 4px;          
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted, #64748b);
+}
+
+.input-group input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light, #e2e8f0);
+    outline: none;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-blue, #0284c7);
+}
+
+.submit-order-btn {
+    background: #0088cc;
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.submit-order-btn:hover {
+    background: #0077b3;
+}
+
+/* СТИЛИЗАЦИЯ СЛОТОВ ВРЕМЕНИ */
+
+/* Кнопки слотов времени */
+.time-slot-btn {
+    padding: 8px 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* При наведении */
+.time-slot-btn:hover:not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+/* Выбранный слот */
+.time-slot-btn.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+
+/* Выбранный слот (поддерживаем оба варианта класса) */
+.time-slot-btn.active,
+.time-slot-btn.active-slot {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+
+/* Прошедшие/Заблокированные слоты */
+.time-slot-btn:disabled,
+.time-slot-btn.slot-disabled {
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    border-color: #e2e8f0 !important;
+    cursor: not-allowed !important;
+    opacity: 0.5;
 }
 
 /* ==========================================

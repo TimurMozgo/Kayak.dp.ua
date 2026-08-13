@@ -16,12 +16,33 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-body, html {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: var(--bg-light);
+/* --- СРОЧНЫЙ РЕМОНТ ЗАМОРОЗКИ ЭКРАНА --- */
+
+/* 1. Запрещаем кому-либо намертво блокировать скролл страницы */
+html, body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    position: static !important;
+}
+
+/* 2. Если JS навешивает на body спец-классы для заморозки — сбиваем их */
+body.no-scroll, 
+body.modal-open, 
+body.drawer-open, 
+body.overflow-hidden {
+    overflow: auto !important;
+    position: static !important;
+    height: auto !important;
+}
+
+/* 3. Гарантируем, что закрытый оверлей/фон не ловит клики */
+.drawer-backdrop:not(.active),
+.modal-backdrop:not(.active),
+.cart-backdrop:not(.active),
+.overlay:not(.active),
+#booking-drawer-overlay:not(.active) {
+    display: none !important;
+    pointer-events: none !important;
 }
 
 *, *::before, *::after {
@@ -795,7 +816,7 @@ body, html {
 }
 
 .drawer-step {
-    display: none !important; /* Гарантированно скрывает неактивные шаги */
+    display: none;
     flex-direction: column;
     flex: 1;
     overflow-y: auto;
@@ -805,7 +826,7 @@ body, html {
 
 /* Активный шаг становится флексом и идеально держит верстку */
 .drawer-step.active {
-    display: flex !important; 
+    display: flex; 
 }
 
 .drawer-step::-webkit-scrollbar {
@@ -967,55 +988,48 @@ body, html {
 
 /* СТИЛИЗАЦИЯ СЛОТОВ ВРЕМЕНИ */
 
-/* Жестко задаем отображение сетки */
-#time-slots-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 8px !important;
-    min-height: 140px !important;
-    max-height: 180px !important;
-    overflow-y: auto !important;
-    padding: 4px !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+/* Кнопки слотов времени */
+.time-slot-btn {
+    padding: 8px 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-/* Стилизация самих кнопок времени */
-#time-slots-grid .time-slot-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 36px !important;
-    min-height: 36px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 6px !important;
-    color: #334155 !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
-    line-height: 1 !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    outline: none !important;
+/* При наведении */
+.time-slot-btn:hover:not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
 }
 
-/* Эффект при наведении */
-#time-slots-grid .time-slot-btn:hover {
-    border-color: #2563eb !important;
-    color: #2563eb !important;
-    background-color: #eff6ff !important;
-}
-
-/* Активная выбранная кнопка */
-#time-slots-grid .time-slot-btn.active {
-    background-color: #2563eb !important;
+/* Выбранный слот */
+.time-slot-btn.active {
+    background: #2563eb !important;
     color: #ffffff !important;
     border-color: #2563eb !important;
+}
+
+/* Выбранный слот (поддерживаем оба варианта класса) */
+.time-slot-btn.active,
+.time-slot-btn.active-slot {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+
+/* Прошедшие/Заблокированные слоты */
+.time-slot-btn:disabled,
+.time-slot-btn.slot-disabled {
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    border-color: #e2e8f0 !important;
+    cursor: not-allowed !important;
+    opacity: 0.5;
 }
 
 /* ==========================================================================
@@ -1305,8 +1319,6 @@ body, html {
 .footer-bottom-links a {
     color: #64748b;
 }
-
-
 
 /* ================= СТИЛЬНЫЙ СКРОЛЛБАР ДЛЯ ПЛАШКИ ПРОВЕРКИ ================= */
 #check-order-details::-webkit-scrollbar {
