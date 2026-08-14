@@ -273,7 +273,7 @@ function renderCart() {
     if (!Array.isArray(cart) || cart.length === 0) {
         container.innerHTML = `
             <div style="text-align: center; padding: 35px 10px; opacity: 0.6; font-weight: 600; color: inherit;">
-                🛒 Ваша корзина пуста
+                🛒 Ваш кошик порожній !
             </div>`;
         if (totalEl) totalEl.textContent = '0';
         return;
