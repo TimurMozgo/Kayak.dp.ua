@@ -1867,6 +1867,7 @@ body.drawer-open {
     body{
         overflow-x:hidden;
         padding-top:72px;
+        background-color: #fff;
     }
 
     .main-header{
