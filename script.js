@@ -909,16 +909,21 @@ function openCheckOrderModal() {
         fullDateTimeString = dateParts.join(' | ');
     }
 
-    // 6. Формирование списка товаров (ТЁМНЫЙ СТИЛЬ)
-    const cartItemsHtml = currentCart.map(item => {
+    // 6. Формирование списка товаров (УНИВЕРСАЛЬНЫЙ АДАПТИВНЫЙ СТИЛЬ)
+    const cartItemsHtml = (currentCart || []).map(item => {
         const itemTitle = item.title || item.name || 'Послуга';
-        const itemQty = item.qty || item.quantity || item.count || 1;
-        const itemPrice = item.price ? `${item.price * itemQty} грн` : '';
+        const itemQty = Number(item.qty || item.quantity || item.count || 1);
+        
+        // Безопасный парсинг цены
+        const rawPrice = parseFloat(String(item.price || 0).replace(/[^\d.]/g, ''));
+        const itemPrice = rawPrice ? `${rawPrice * itemQty} грн` : '';
 
         return `
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; color: #e2e8f0; padding: 2px 0;">
-                <span style="font-weight: 500; line-height: 1.3; color: #cbd5e1;">• ${safeEscape(itemTitle)} ${itemQty > 1 ? `<b style="color:#38bdf8;">×${itemQty}</b>` : ''}</span>
-                <span style="font-weight: 800; color: #ffffff; margin-left: 8px; white-space: nowrap;">${itemPrice}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; color: inherit; padding: 4px 0;">
+                <span style="font-weight: 500; line-height: 1.3; color: inherit; opacity: 0.9;">
+                    • ${safeEscape(itemTitle)} ${itemQty > 1 ? `<b style="color: #2563eb; background: rgba(37, 99, 235, 0.12); padding: 1px 6px; border-radius: 6px; font-size: 0.78rem; margin-left: 4px;">×${itemQty}</b>` : ''}
+                </span>
+                <span style="font-weight: 800; color: inherit; margin-left: 8px; white-space: nowrap;">${itemPrice}</span>
             </div>
         `;
     }).join('');
@@ -926,52 +931,55 @@ function openCheckOrderModal() {
     // 7. Итоговые суммы
     const totalPriceEl = document.getElementById('checkout-total-price') || document.querySelector('.total-price-val');
     const depositPriceEl = document.getElementById('checkout-deposit-price') || document.querySelector('.deposit-price-val');
-    
+
     const totalPrice = totalPriceEl ? totalPriceEl.textContent.trim() : '';
     const depositPrice = depositPriceEl ? depositPriceEl.textContent.trim() : '';
 
-    // 8. Заполнение финального окна (DARK GLASSMORPHISM)
+    const hasTotal = totalPrice && totalPrice !== '0' && totalPrice !== '0 грн';
+    const hasDeposit = depositPrice && depositPrice !== '0' && depositPrice !== '0 грн';
+
+    // 8. Заполнение финального окна (УНИВЕРСАЛЬНЫЙ СТИЛЬ ДЛЯ СВЕТЛОЙ И ТЕМНОЙ ТЕМЫ)
     const detailsContainer = document.getElementById('check-order-details');
     if (detailsContainer) {
         detailsContainer.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
-                <span style="color:#94a3b8; font-size:0.85rem;">Ім'я:</span>
-                <span style="font-weight:700; color:#ffffff;">${safeEscape(name)}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(150, 150, 150, 0.2); padding-bottom:10px;">
+                <span style="opacity:0.7; color:inherit; font-size:0.85rem;">Ім'я:</span>
+                <span style="font-weight:700; color:inherit;">${safeEscape(name)}</span>
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
-                <span style="color:#94a3b8; font-size:0.85rem;">Телефон:</span>
-                <span style="font-weight:700; color:#ffffff;">${safeEscape(phone)}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(150, 150, 150, 0.2); padding-bottom:10px;">
+                <span style="opacity:0.7; color:inherit; font-size:0.85rem;">Телефон:</span>
+                <span style="font-weight:700; color:inherit;">${safeEscape(phone)}</span>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
-                <span style="color:#94a3b8; font-size:0.85rem;">Дата та час:</span>
-                <span style="font-weight:700; color:#38bdf8; background:rgba(0, 136, 204, 0.15); border:1px solid rgba(0, 136, 204, 0.3); padding:3px 10px; border-radius:8px; font-size:0.82rem;">${fullDateTimeString}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(150, 150, 150, 0.2); padding-bottom:10px;">
+                <span style="opacity:0.7; color:inherit; font-size:0.85rem;">Дата та час:</span>
+                <span style="font-weight:700; color:#0284c7; background:rgba(2, 132, 199, 0.12); border:1px solid rgba(2, 132, 199, 0.25); padding:3px 10px; border-radius:8px; font-size:0.82rem;">${fullDateTimeString}</span>
             </div>
 
-            <div style="margin-top:6px; padding:12px; background:rgba(255, 255, 255, 0.03); border-radius:14px; border:1px solid rgba(255, 255, 255, 0.07);">
-                <div style="font-size:0.75rem; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.5px;">Ваше замовлення:</div>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                    ${cartItemsHtml}
+            <div style="margin-top:8px; padding:12px; background:rgba(150, 150, 150, 0.08); border-radius:14px; border:1px solid rgba(150, 150, 150, 0.18); backdrop-filter:blur(8px);">
+                <div style="font-size:0.75rem; font-weight:800; opacity:0.7; color:inherit; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.5px;">Ваше замовлення:</div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    ${cartItemsHtml || '<span style="opacity:0.5; color:inherit; font-size:0.82rem;">Список порожній</span>'}
                 </div>
             </div>
 
-            ${totalPrice ? `
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; margin-top:4px;">
-                <span style="color:#94a3b8; font-size:0.85rem;">Загальна вартість:</span>
-                <span style="font-weight:800; color:#ffffff; font-size:1.1rem;">${totalPrice}</span>
+            ${hasTotal ? `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(150, 150, 150, 0.2); padding-top:10px; margin-top:8px;">
+                <span style="opacity:0.7; color:inherit; font-size:0.85rem;">Загальна вартість:</span>
+                <span style="font-weight:800; color:inherit; font-size:1.1rem;">${totalPrice}</span>
             </div>
             ` : ''}
 
-            ${depositPrice ? `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(34, 197, 94, 0.12); padding:10px 12px; border-radius:12px; border:1px solid rgba(34, 197, 94, 0.25); margin-top:6px;">
-                <span style="color:#4ade80; font-size:0.85rem; font-weight:600;">Передплата до сплати:</span>
-                <span style="font-weight:800; color:#4ade80; font-size:1.1rem;">${depositPrice}</span>
+            ${hasDeposit ? `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(16, 185, 129, 0.12); padding:10px 12px; border-radius:12px; border:1px solid rgba(16, 185, 129, 0.28); margin-top:8px;">
+                <span style="color:#059669; font-size:0.85rem; font-weight:700;">Передплата до сплати:</span>
+                <span style="font-weight:800; color:#059669; font-size:1.1rem;">${depositPrice}</span>
             </div>
             ` : ''}
         `;
     } else {
-        console.warn('⚠️ Элемент #check-order-details не найден!');
+        console.warn('⚠️ Елемент #check-order-details не знайдено!');
     }
 
     // 9. Открываем модалку
@@ -1080,7 +1088,6 @@ document.addEventListener('click', function(e) {
 // ВПОМОГАТЕЛЬНЫЕ ФУНКЦИИ РАСЧЕТА
 // ==========================================
 
-// Округление до ближайших 50 грн (675 -> 700, 620 -> 600)
 function roundTo50(num) {
     return Math.round(num / 50) * 50;
 }
@@ -1223,7 +1230,7 @@ if (uploadZone && receiptFileInput) {
 }
 
 // 6. Обработка и отправка брони на Webhook n8n
-const N8N_WEBHOOK_URL = 'https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947d-08702f215d52';
+const N8N_WEBHOOK_URL = 'https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52';
 const btnSubmitFinal = document.getElementById('btn-submit-final-booking');
 
 if (btnSubmitFinal) {
@@ -1400,6 +1407,66 @@ const getSmartRentalTime = () => {
     return 'Не вказано';
 };
 
+// ==========================================
+// 🧹 УМНАЯ И ПОЛНАЯ ОЧИСТКА КОРЗИНЫ (DATA + UI)
+// ==========================================
+
+function forceClearCart() {
+    // 1. Обнуляем массив корзины в JS (длину в 0, чтобы обнулить по ссылке)
+    if (typeof cart !== 'undefined' && Array.isArray(cart)) {
+        cart.length = 0;
+    }
+    if (typeof window.cart !== 'undefined' && Array.isArray(window.cart)) {
+        window.cart.length = 0;
+    }
+
+    // 2. Полностью вычищаем точный ключ из LocalStorage
+    try {
+        localStorage.removeItem('green_lounge_cart');
+        localStorage.setItem('green_lounge_cart', JSON.stringify([]));
+    } catch (e) {}
+
+    // 3. Вызываем ТВОЮ функцию saveCart(), которая сама перерисует интерфейс и занулит счетчики
+    if (typeof saveCart === 'function') {
+        try {
+            saveCart();
+        } catch (e) {}
+    }
+
+    console.log('🧹 Корзина green_lounge_cart очищена и UI перерисован!');
+}
+
+// ==========================================
+// 🧭 ТОЧНЫЙ ПОИСК ДАТЫ ПОХОДА / ТУРА
+// ==========================================
+function getSmartTourDate(cart) {
+    // 1. Ищем напрямую в родном инпуте формы checkout-tour-date
+    const tourInput = document.getElementById('checkout-tour-date');
+    if (tourInput && tourInput.value) {
+        console.log('📌 Найдена дата похода из #checkout-tour-date:', tourInput.value);
+        return tourInput.value;
+    }
+
+    // 2. Страховка: проверяем карточки товаров в корзине
+    if (Array.isArray(cart)) {
+        for (const item of cart) {
+            const isTour = item.type === 'tour' || item.type === 'hike' || 
+                (item.title && (item.title.toLowerCase().includes('похід') || item.title.toLowerCase().includes('захід') || item.title.toLowerCase().includes('маршрут')));
+            
+            if (isTour) {
+                const itemDate = item.tourDate || item.tour_date || item.date;
+                if (itemDate) return itemDate;
+
+                // Если дата зашита в название (например "Захід сонця 20 серпня")
+                const dateInTitle = (item.title || '').match(/\d{1,2}\s+[а-яА-Яa-zA-Z]+/);
+                if (dateInTitle) return dateInTitle[0];
+            }
+        }
+    }
+
+    return null;
+}
+
 // --- ОСНОВНОЙ ОБРАБОТЧИК КЛИКОВ ---
 document.addEventListener('click', async function(e) {
     const submitFinalBtn = e.target.closest('#btn-submit-final-booking');
@@ -1424,15 +1491,36 @@ document.addEventListener('click', async function(e) {
         // Б) ГЕНЕРИРУЕМ ЕДИНЫЙ АЙДИ ЗАКАЗА
         const orderId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
 
-        // В) Собираем точные данные с формы через умные функции
+        // В) Собираем базовые данные
         const name = getSmartClientName();
-        const phone = getSmartClientPhone(); // 🔥 Используем нашу всеядную функцию для телефона
-        const source = getSmartClientSource(); // 🔥 И для источника на всякий случай
+        const phone = getSmartClientPhone();
+        const source = getSmartClientSource();
         const rentalDate = getSmartRentalDate();
         const rentalTime = getSmartRentalTime();
 
         // Г) Корзина
         const currentCart = Array.isArray(window.cart) ? window.cart : ((typeof cart !== 'undefined' && Array.isArray(cart)) ? cart : []);
+
+        // 🔥 ДЕТЕКТИРУЕМ ТИП ЗАКАЗА (КОМБО / ОРЕНДА / ПОХІД) 🔥
+        const hasTour = currentCart.some(item => 
+            item.type === 'tour' || item.type === 'hike' || 
+            (item.title && (item.title.toLowerCase().includes('похід') || item.title.toLowerCase().includes('захід') || item.title.toLowerCase().includes('маршрут')))
+        );
+
+        const hasRental = currentCart.some(item => 
+            item.type === 'rental' || item.type === 'equipment' || 
+            (item.title && (item.title.toLowerCase().includes('байдарка') || item.title.toLowerCase().includes('сап') || item.title.toLowerCase().includes('каяк') || item.title.toLowerCase().includes('оренда')))
+        );
+
+        let categoryName = '🛶 САМОСТІЙНА ОРЕНДА';
+        if (hasTour && hasRental) {
+            categoryName = '🔥 КОМБО ЗАМОВЛЕННЯ';
+        } else if (hasTour) {
+            categoryName = '🧭 ПОХІД / ТУР';
+        }
+
+        // Вытягиваем дату похода
+        const tourDate = hasTour ? getSmartTourDate(currentCart) : null;
 
         let totalSum = 0;
         const itemsList = currentCart.map(item => {
@@ -1443,22 +1531,47 @@ document.addEventListener('click', async function(e) {
             return {
                 name: item.title || item.name || 'Послуга',
                 count: count,
-                price: price
+                price: price,
+                type: item.type || 'service'
             };
         });
 
-        // Корректировка сумм
-        const totalEl = document.getElementById('checkout-total-price') || document.getElementById('cart-total');
+        // Д) СЧИТЫВАЕМ ОБЩУЮ СУММУ ИЗ HTML
+        const totalEl = document.getElementById('payment-total-full')
+                     || document.getElementById('checkout-total-price') 
+                     || document.getElementById('cart-total');
+
         if (totalEl) {
             const parsedTotal = parseFloat(totalEl.textContent.replace(/[^\d.]/g, ''));
             if (!isNaN(parsedTotal) && parsedTotal > 0) totalSum = parsedTotal;
         }
 
-        const prepayEl = document.getElementById('checkout-prepay-price');
-        let prepaySum = 300; 
+        // Е) ТОЧНЫЙ РАСЧЕТ ПРЕДОПЛАТЫ И ОСТАТКА
+        let prepaySum = 0;
+        let restSum = 0;
+
+        const prepayEl = document.getElementById('payment-prepay-amount')
+                      || document.getElementById('checkout-prepay-price') 
+                      || document.querySelector('.checkout-prepay-price');
+
+        const restEl = document.getElementById('payment-rest-amount');
+
         if (prepayEl) {
             const parsedPrepay = parseFloat(prepayEl.textContent.replace(/[^\d.]/g, ''));
-            if (!isNaN(parsedPrepay)) prepaySum = parsedPrepay;
+            if (!isNaN(parsedPrepay) && parsedPrepay > 0) prepaySum = parsedPrepay;
+        }
+
+        if (restEl) {
+            const parsedRest = parseFloat(restEl.textContent.replace(/[^\d.]/g, ''));
+            if (!isNaN(parsedRest) && parsedRest >= 0) restSum = parsedRest;
+        }
+
+        if (prepaySum === 0 && totalSum > 0) {
+            const calculated = calculatePaymentAmounts(totalSum);
+            prepaySum = calculated.prepayAmount;
+            restSum = calculated.restAmount;
+        } else if (restSum === 0 && totalSum > 0) {
+            restSum = Math.max(0, totalSum - prepaySum);
         }
 
         // UX анимация
@@ -1471,16 +1584,20 @@ document.addEventListener('click', async function(e) {
             const receiptBase64 = await fileToBase64(file);
             submitFinalBtn.textContent = 'Надсилаємо замовлення...';
 
+            // 🔥 ОБНОВЛЕННЫЙ PAYLOAD ДЛЯ N8N 🔥
             const payload = {
-                order_id: orderId, // 🔥 ОТПРАВЛЯЕМ ЕДИНЫЙ АЙДИ В N8N
+                order_id: orderId,
+                category: categoryName,           // "🔥 КОМБО ЗАМОВЛЕННЯ" или "🛶 САМОСТІЙНА ОРЕНДА"
+                is_combo: (hasTour && hasRental),  // true / false
                 name: name,
                 phone: phone,
                 source: source,
-                date: rentalDate,
-                time: rentalTime,
+                rental_date: rentalDate,           // Дата для оренды
+                rental_time: rentalTime,           // Время для оренды
+                tour_date: tourDate || rentalDate, // Дата для похода (если отдельная — берется она, иначе fallback)
                 total_price: totalSum,
                 prepay_amount: prepaySum,
-                rest_amount: Math.max(0, totalSum - prepaySum),
+                rest_amount: restSum,
                 cart: itemsList,
                 receipt: {
                     filename: file.name,
@@ -1504,33 +1621,28 @@ document.addEventListener('click', async function(e) {
 
             console.log('✅ Успешно доставлено в n8n!');
 
-            // 🔥 СОХРАНЯЕМ В ИСТОРИЮ С ТЕМ ЖЕ САМЫМ АЙДИ
+            // СОХРАНЯЕМ В ИСТОРИЮ
             try {
                 if (typeof saveOrderToHistory === 'function') {
                     saveOrderToHistory({
-                        id: orderId, // Передаем сгенерированный ID
+                        id: orderId,
+                        category: categoryName,
                         rentalDate: rentalDate,
                         rentalTime: rentalTime,
+                        tourDate: tourDate,
                         items: itemsList,
                         totalAmount: totalSum,
                         prepayAmount: prepaySum,
-                        restAmount: Math.max(0, totalSum - prepaySum)
+                        restAmount: restSum
                     });
                 }
             } catch (err) { console.error('Ошибка истории:', err); }
 
-            // Полная очистка корзины
-            if (typeof clearCart === 'function') { try { clearCart(); } catch (err) {} }
-            if (typeof window.cart !== 'undefined') window.cart = [];
-            if (typeof cart !== 'undefined') cart = [];
+            // 🔥 ОЧИСТКА КОРЗИНЫ И UI 🔥
+            forceClearCart();
 
-            try {
-                localStorage.removeItem('cart');
-                localStorage.removeItem('shopping_cart');
-                localStorage.removeItem('rental_cart');
-            } catch (err) {}
+            if (receiptFileInput) receiptFileInput.value = '';
 
-            // Переключение UI
             document.querySelectorAll('#drawer-step-cart, #drawer-step-checkout, #drawer-step-3').forEach(el => {
                 el.style.setProperty('display', 'none', 'important');
             });
@@ -1555,7 +1667,7 @@ document.addEventListener('click', async function(e) {
         return;
     }
 
-    // Закрытие успеха
+    // Закрытие модалки успеха
     const closeSuccessBtn = e.target.closest('#close-success-btn');
     if (closeSuccessBtn) {
         e.preventDefault();

@@ -288,20 +288,6 @@ body.drawer-open {
     color: var(--text-main);
 }
 
-/* catalog.css */
-.badge-top-beginner {
-    position: absolute; 
-    top: 12px; 
-    right: 12px; 
-    background: #025338; 
-    color: #ffffff; 
-    padding: 6px 12px; 
-    border-radius: 8px; 
-    font-size: 0.75rem; 
-    font-weight: 800; 
-    text-transform: uppercase;
-}
-
 .badge-speed {
     position: absolute; 
     top: 12px; 
@@ -2217,15 +2203,6 @@ body.drawer-open {
 
     .book-btn:active{
         transform:scale(.98);
-    }
-
-    .product-badge{
-        top:16px;
-        left:16px;
-        padding:10px 16px;
-        border-radius:999px;
-        font-size:.75rem;
-        font-weight:700;
     }
 
     /*=========================================

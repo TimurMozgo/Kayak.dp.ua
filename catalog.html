@@ -53,26 +53,20 @@
             <div class="catalog-container">
                 
                 <div class="catalog-intro">
-                    <h1>Оренда спорядження у Дніпрі</h1>
+                    <h1>ОРЕНДА СПОРЯДЖЕННЯ</h1>
                     <p>Оберіть каяк або SUP-борд, вкажіть час та оформіть швидке бронювання.</p>
                 </div>
 
-                <!-- Сетка товаров (Все карточки идеально ровные) -->
+                <!-- Сетка товаров -->
                 <div class="catalog-grid" id="catalog-grid">
                     
                     <!-- КАРТОЧКА 1: LiteRowing 9.5 -->
                     <div class="product-card" data-id="literowing-9.5" style="position: relative;">
                         <div class="product-img-box">
                             <img src="./img/LiteRowing_9.5.webp" alt="LiteRowing 9.5">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                            <div class="product-badge badge-top-beginner">
-                                 ТОП ДЛЯ ПОЧАТКІВЦІВ
-                            </div>
                         </div>
                         <div class="product-info">
-                            <h3 class="product-name">LiteRowing 9.5</h3>
-                            <!-- Описание скрыто в CSS, но JS его прочитает для модалки -->
+                            <h3 class="product-name">Одномісний каяк</h3>
                             <p class="product-desc">Каяк для відпочинку, ефективний та простий у веслуванні. Має підвищену стійкість. Комфортний прогулянково-туристичний каяк для каякерів-початківців. У ньому Ви почуватиметеся спокійно та надійно. Відмінно підходить для неспішних прогулянок та легких туристичних походів.</p>
                             
                             <ul class="product-specs">
@@ -86,35 +80,21 @@
                                 <div class="calc-row">
                                     <label>Тривалість:</label>
                                     
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
                                     <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
                                         <div class="dropdown-trigger">
                                             <span class="dropdown-selected-text">1 година (300 грн)</span>
                                             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                                         </div>
                                         
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
                                         <div class="dropdown-options-list">
                                             <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
                                             <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
                                             <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
                                             <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                            <div class="dropdown-item" data-value="day" data-price="1100">Доба / 24 години (1100 грн)</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <div class="card-footer">
@@ -130,195 +110,48 @@
                         </div>
                     </div>
 
-                    <!-- КАРТОЧКА 2: Perception Carolina -->
-                    <div class="product-card" data-id="perception-carolina">
+                    <!-- КАРТОЧКА 2: Двомісна байдарка -->
+                    <div class="product-card" data-id="double-kayak" style="position: relative;">
                         <div class="product-img-box">
-                            <img src="./img/Perception Carolina_12_Perception Carolina_14.webp" alt="Perception Carolina">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">Perception Carolina 12 / 14</h3>
-                            <p class="product-desc">Perception Carolina 12 та Perception Carolina 14 - найкращий одномісний каяк для любителів. Стійкий, при цьому, каяк має високу швидкість, хорошу курсову стійкість та відмінну керованість. Завдяки зручному кокпіту в каяк дуже комфортно сідати та виходити з нього. Анатомічне сидіння з регульованою спинкою та регульовані упори для ніг дозволяють ідеально налаштувати каяк під себе. Каяк оснащений місткими вантажними відсіками в кормі та носі, що дозволяє розмістити у каяку досить великий обсяг речей.</p>
-                            
-                            <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>3,7 - 4,3 м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,66 м</strong></li>
-                                <li><span>Вага:</span> <strong>22 - 24 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong>150 - 170 кг</strong></li>
-                            </ul>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- КАРТОЧКА 3: SpeedRowing 16.0 -->
-                    <div class="product-card" data-id="speedrowing-16.0" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/SpeedRowing_16.0.webp" alt="SpeedRowing 16.0">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                            <div class="product-badge badge-speed">
-                                ТОП ШВИДКОСТІ
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">SpeedRowing 16.0</h3>
-                            <p class="product-desc">SpeedRowing 16.0 – одномісний морський туристичний каяк. Ідеальне поєднання швидкості та гарного балансу між маневреністю та утриманням курсу. Призначений для багатоденних морських та річкових походів, активного відпочинку на воді.</p>
-                            
-                            <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>4,85 м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,60 м</strong></li>
-                                <li><span>Вага:</span> <strong>26 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong>135 кг</strong></li>
-                            </ul>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-id="Двомісна_байдарка" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/Двомісна_байдарка.webp" alt="Двомісна_байдарка">
-
+                            <img src="./img/Двомісна_байдарка.webp" alt="Двомісна байдарка">
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">Двомісна байдарка</h3>
                             <p class="product-desc">Надувна двомісна байдарка. Ідеально підійде для легкої прогулянки. Топ комфортності для людей великої комплекції. Можна поставити додаткове байдаркове дитяче крісло.</p>
                             
                             <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong> 5 м</strong></li>
+                                <li><span>Довжина:</span> <strong>5 м</strong></li>
                                 <li><span>Ширина:</span> <strong>0,8 м</strong></li>
                                 <li><span>Вага:</span> <strong>13 кг</strong></li>
                                 <li><span>Вантажність:</span> <strong>450 кг</strong></li>
-                                <li><span>Стійкість</span> <strong>100%</strong></li>
+                                <li><span>Стійкість:</span> <strong>100%</strong></li>
                             </ul>
 
                             <div class="card-calculator">
                                 <div class="calc-row">
                                     <label>Тривалість:</label>
                                     
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
                                     <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
                                         <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                            <span class="dropdown-selected-text">1 година (400 грн)</span>
                                             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                                         </div>
                                         
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
                                         <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                            <div class="dropdown-item active" data-value="1" data-price="400">1 година (400 грн)</div>
+                                            <div class="dropdown-item" data-value="2" data-price="700">2 години (700 грн)</div>
+                                            <div class="dropdown-item" data-value="3" data-price="1000">3 години (1000 грн)</div>
+                                            <div class="dropdown-item" data-value="4" data-price="1300">4 години (1300 грн)</div>
+                                            <div class="dropdown-item" data-value="day" data-price="1600">Доба / 24 години (1600 грн)</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <div class="card-footer">
                                 <div class="card-price-row">
                                     <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
+                                    <span class="price-amount"><span class="price-val">400</span> грн</span>
                                 </div>
                                 <div class="card-buttons">
                                     <button class="details-btn">Детальніше</button>
@@ -328,11 +161,10 @@
                         </div>
                     </div>
 
-                    <div class="product-card" data-id="Тримісна_байдарка" style="position: relative;" >
+                    <!-- КАРТОЧКА 3: Тримісна байдарка -->
+                    <div class="product-card" data-id="triple-kayak" style="position: relative;">
                         <div class="product-img-box">
-                            <img src="./img/Тримісна_байдарка.webp" alt="Тримісна_байдарка">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
+                            <img src="./img/Тримісна_байдарка.webp" alt="Тримісна байдарка">
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">Тримісна байдарка</h3>
@@ -343,48 +175,34 @@
                                 <li><span>Ширина:</span> <strong>0,8 м</strong></li>
                                 <li><span>Вага:</span> <strong>13 кг</strong></li>
                                 <li><span>Вантажність:</span> <strong>135 кг</strong></li>
-                                <li><span>Стійкість</span> <strong>100%</strong></li>
+                                <li><span>Стійкість:</span> <strong>100%</strong></li>
                             </ul>
 
                             <div class="card-calculator">
                                 <div class="calc-row">
                                     <label>Тривалість:</label>
                                     
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
                                     <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
                                         <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                            <span class="dropdown-selected-text">1 година (500 грн)</span>
                                             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                                         </div>
                                         
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
                                         <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                            <div class="dropdown-item active" data-value="1" data-price="500">1 година (500 грн)</div>
+                                            <div class="dropdown-item" data-value="2" data-price="850">2 години (850 грн)</div>
+                                            <div class="dropdown-item" data-value="3" data-price="1200">3 години (1200 грн)</div>
+                                            <div class="dropdown-item" data-value="4" data-price="1550">4 години (1550 грн)</div>
+                                            <div class="dropdown-item" data-value="day" data-price="1900">Доба / 24 години (1900 грн)</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <div class="card-footer">
                                 <div class="card-price-row">
                                     <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
+                                    <span class="price-amount"><span class="price-val">500</span> грн</span>
                                 </div>
                                 <div class="card-buttons">
                                     <button class="details-btn">Детальніше</button>
@@ -394,14 +212,10 @@
                         </div>
                     </div>
 
-                    <div class="product-card" data-id="Чотиримісна_байдарка" style="position: relative;" >
+                    <!-- КАРТОЧКА 4: Чотиримісна байдарка -->
+                    <div class="product-card" data-id="quad-kayak" style="position: relative;">
                         <div class="product-img-box">
-                            <img src="./img/Чотиримісна_байдарка.webp" alt="Чотиримісна_байдарка">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                            <div class="product-badge badge-exclusive">
-                                ЕКСКЛЮЗИВ
-                            </div>
+                            <img src="./img/Чотиримісна_байдарка.webp" alt="Чотиримісна байдарка">
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">Чотиримісна байдарка</h3>
@@ -409,51 +223,37 @@
                             
                             <ul class="product-specs">
                                 <li><span>Довжина:</span> <strong>5,5 м</strong></li>
-                                <li><span>Ширина:</span> <strong> 0,9 м</strong></li>
+                                <li><span>Ширина:</span> <strong>0,9 м</strong></li>
                                 <li><span>Вага:</span> <strong>15 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong> 500 кг</strong></li>
-                                <li><span>Стійкість</span> <strong>100%</strong></li>
+                                <li><span>Вантажність:</span> <strong>500 кг</strong></li>
+                                <li><span>Стійкість:</span> <strong>100%</strong></li>
                             </ul>
 
                             <div class="card-calculator">
                                 <div class="calc-row">
                                     <label>Тривалість:</label>
                                     
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
                                     <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
                                         <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
+                                            <span class="dropdown-selected-text">1 година (600 грн)</span>
                                             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                                         </div>
                                         
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
                                         <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                            <div class="dropdown-item active" data-value="1" data-price="600">1 година (600 грн)</div>
+                                            <div class="dropdown-item" data-value="2" data-price="1000">2 години (1000 грн)</div>
+                                            <div class="dropdown-item" data-value="3" data-price="1400">3 години (1400 грн)</div>
+                                            <div class="dropdown-item" data-value="4" data-price="1800">4 години (1800 грн)</div>
+                                            <div class="dropdown-item" data-value="day" data-price="2200">Доба / 24 години (2200 грн)</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <div class="card-footer">
                                 <div class="card-price-row">
                                     <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
+                                    <span class="price-amount"><span class="price-val">600</span> грн</span>
                                 </div>
                                 <div class="card-buttons">
                                     <button class="details-btn">Детальніше</button>
@@ -463,152 +263,18 @@
                         </div>
                     </div>
 
-                    <div class="product-card" data-id="Perception_Vista" style="position: relative;" >
+                    <!-- КАРТОЧКА 5: SUP-дошки -->
+                    <div class="product-card" data-id="sup-board" style="position: relative;">
                         <div class="product-img-box">
-                            <img src="./img/Perception_Vista.webp" alt="Perception_Vista">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">Perception Vista</h3>
-                            <p class="product-desc">Perception Vista - найпопулярніший туристичний двомісний каяк. Швидкий, комфортний та надійний. Ідеально підходить для новачків, завдяки своїй стійкості та легкості в управлінні. Просторі, комфортні сидіння з високою спинкою та регульованими упорами для ніг дозволяють веслярам комфортно в ньому розташуватися. У каяках Vista можливе встановлення додаткового сидіння для дітей вагою до 30 кг. Каяк ідеально підходить як для легких прогулянок, так багатоденних походів.</p>
-                            
-                            <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>4,85 м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,82 м</strong></li>
-                                <li><span>Вага:</span> <strong>41 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong>300 кг</strong></li>
-                            </ul>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-id="FamilyRowing_15.0" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/FamilyRowing_15.0.webp" alt="FamilyRowing_15.0">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                            <div class="product-badge badge-top-beginner">
-                                 ТОП ДЛЯ ПОЧАТКІВЦІВ
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">FamilyRowing 15.0</h3>
-                            <p class="product-desc">FamilyRowing 15.0 - це надійний та стійкий каяк, ідеально підходить для сімейного відпочинку на воді. Завдяки новим європейським матеріалам композитний каяк важить значно менше поліетиленового, за рахунок чого простий в управління і легше набирає швидкість. Комфортні сидіння добре тримають спину, а у поєднанні з широким та стійким корпусом каяку надають почуття безпеки на воді. Також є можливість посадити між сидіннями маленьку дитину до 5 років</p>
-                            
-                            <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>4,85 м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,60 м</strong></li>
-                                <li><span>Вага:</span> <strong>26 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong>135 кг</strong></li>
-                            </ul>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-id="Sup_дошки" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/Sup_дошки.webp" alt="Sup_дошки">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
+                            <img src="./img/Sup_дошки.webp" alt="SUP-дошки">
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">SUP - дошки</h3>
                             <p class="product-desc">SUP-дошки - плавзасіб для веслування стоячи довгим однолопатевим веслом, цей різновид веслування подарує Вам нові унікальні відчуття, дозволить красиво і рівномірно засмагнути, гармонійно зміцнить і протренує все тіло.</p>
                             
                             <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>3,2м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,82м</strong></li>
+                                <li><span>Довжина:</span> <strong>3,2 м</strong></li>
+                                <li><span>Ширина:</span> <strong>0,82 м</strong></li>
                                 <li><span>Вага:</span> <strong>8 кг</strong></li>
                                 <li><span>Вантажність:</span> <strong>150 кг</strong></li>
                             </ul>
@@ -617,161 +283,21 @@
                                 <div class="calc-row">
                                     <label>Тривалість:</label>
                                     
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
                                     <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
                                         <div class="dropdown-trigger">
                                             <span class="dropdown-selected-text">1 година (300 грн)</span>
                                             <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                                         </div>
                                         
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
                                         <div class="dropdown-options-list">
                                             <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
                                             <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
                                             <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
                                             <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
+                                            <div class="dropdown-item" data-value="day" data-price="1100">Доба / 24 години (1100 грн)</div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-id="Дитяче_сидіння_для_Perception_Vista" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/Дитяче_сидіння_для_Perception_Vista.webp" alt="Дитяче_сидіння_для_Perception_Vista">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">Дитяче сидіння для Perception Vista</h3>
-                            <p class="product-desc">Ідеально підходить для дітей віком до 5 років (до 20 кг)</p>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
-                            </div>
-
-                            <div class="card-footer">
-                                <div class="card-price-row">
-                                    <span class="price-label">Разом:</span>
-                                    <span class="price-amount"><span class="price-val">300</span> грн</span>
-                                </div>
-                                <div class="card-buttons">
-                                    <button class="details-btn">Детальніше</button>
-                                    <button class="book-btn">Забронювати</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-id="Одномісний_каяк_з_системою_керування_2" style="position: relative;" >
-                        <div class="product-img-box">
-                            <img src="./img/Одномісний_каяк_з_системою_керування_2.webp" alt="Одномісний_каяк_з_системою_керування">
-
-                            <!-- Вставлять внутрь <div class="product-img-box"> -->
-                            <div class="product-badge badge-exclusive">
-                                ЕКСКЛЮЗИВ
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">Одномісний каяк з системою керування</h3>
-                            <p class="product-desc">Одномісний морський туристичний каяк. Ідеальне поєднання швидкості та гарного балансу між маневреністю та утриманням курсу. Призначений для багатоденних морських та річкових походів, активного відпочинку на воді. Підходить, перш за все, досвідченим каякерам, але при цьому також веслярам-початківцям, які бажають розвинути свої вміння. Рульова система дозволяє веслувати рівномірно, не втрачаючи швидкість і темп при виконанні маневрів, поворотів та зміни курсу</p>
-                            
-                            <ul class="product-specs">
-                                <li><span>Довжина:</span> <strong>4,87 м</strong></li>
-                                <li><span>Ширина:</span> <strong>0,59 м</strong></li>
-                                <li><span>Вага:</span> <strong>24 кг</strong></li>
-                                <li><span>Вантажність:</span> <strong>180 кг</strong></li>
-                            </ul>
-
-                            <div class="card-calculator">
-                                <div class="calc-row">
-                                    <label>Тривалість:</label>
-                                    
-                                    <!-- Наш новий кастомний дропдаун вбудований у твій calc-row -->
-                                    <div class="custom-dropdown">
-                                        <!-- Видима кнопка -->
-                                        <div class="dropdown-trigger">
-                                            <span class="dropdown-selected-text">1 година (300 грн)</span>
-                                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                                        </div>
-                                        
-                                        <!-- Схований список опцій (з твоїми рідними value) -->
-                                        <div class="dropdown-options-list">
-                                            <div class="dropdown-item active" data-value="1" data-price="300">1 година (300 грн)</div>
-                                            <div class="dropdown-item" data-value="2" data-price="500">2 години (500 грн)</div>
-                                            <div class="dropdown-item" data-value="3" data-price="700">3 години (700 грн)</div>
-                                            <div class="dropdown-item" data-value="4" data-price="900">4 години (900 грн)</div>
-                                            <div class="dropdown-item" data-value="5" data-price="1100">5 годин / День (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekday" data-price="1100">Доба будні (1100 грн)</div>
-                                            <div class="dropdown-item" data-value="day-weekend" data-price="1300">Доба вихідні (1300 грн)</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- <div class="calc-row">
-                                    <label>Кількість лодок:</label>
-                                    <div class="card-qty-control">
-                                        <button class="card-qty-btn minus">-</button>
-                                        <span class="card-qty-value">1</span>
-                                        <button class="card-qty-btn plus">+</button>
-                                    </div>
-                                </div> -->
                             </div>
 
                             <div class="card-footer">
@@ -877,7 +403,7 @@
                     <ul class="footer-contacts">
                         <li>
                             <i class="fa-solid fa-clock contact-icon clock-icon"></i>
-                            <span>Пн — Нд: 08:00 - 21:00</span>
+                            <span>Пн — Нд: 09:00 - 21:00</span>
                         </li>
                     </ul>
                 </div>
@@ -967,8 +493,6 @@
                                     
                                     <!-- Сетка кнопок времени -->
                                     <div id="time-slots-grid" style="display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; min-height: 140px !important; max-height: 180px !important; overflow-y: auto !important; padding: 4px !important;">
-                                        <button type="button" class="time-slot-btn">08:00</button>
-                                        <button type="button" class="time-slot-btn">08:30</button>
                                         <button type="button" class="time-slot-btn">09:00</button>
                                         <button type="button" class="time-slot-btn">09:30</button>
                                         <button type="button" class="time-slot-btn">10:00</button>
@@ -1180,7 +704,7 @@
                 </div>
 
                 <h3 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 0;">Заявка принята!</h3>
-                <p style="font-size: 0.95rem; color: #64748b; line-height: 1.5; margin: 0 0 24px 0;">Ваше замовлення успішно оформлене. Очікуйте на дзвінок менеджера для підтвердження броні!</p>
+                <p style="font-size: 0.95rem; color: #64748b; line-height: 1.5; margin: 0 0 24px 0;">Ваше замовлення успішно оформлене !</p>
                 
                 <!-- Кнопка закрытия, возвращающая на сайт -->
                 <button type="button" id="close-success-btn" style="width: 100%; background: #0088cc; color: #ffffff; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
