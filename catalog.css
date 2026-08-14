@@ -16,38 +16,19 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* --- СРОЧНЫЙ РЕМОНТ ЗАМОРОЗКИ ЭКРАНА --- */
-
-/* 1. Запрещаем кому-либо намертво блокировать скролл страницы */
+/* --- БАЗОВАЯ СТРУКТУРА СТРАНИЦЫ И КОРЗИНЫ --- */
 html, body {
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    position: static !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
 }
 
-/* 2. Если JS навешивает на body спец-классы для заморозки — сбиваем их */
-body.no-scroll, 
-body.modal-open, 
-body.drawer-open, 
-body.overflow-hidden {
-    overflow: auto !important;
-    position: static !important;
-    height: auto !important;
+/* При открытой шторке блокируем только скролл фона, но без поломки layout */
+body.drawer-open {
+    overflow: hidden;
 }
 
-/* 3. Гарантируем, что закрытый оверлей/фон не ловит клики */
-.drawer-backdrop:not(.active),
-.modal-backdrop:not(.active),
-.cart-backdrop:not(.active),
-.overlay:not(.active),
-#booking-drawer-overlay:not(.active) {
-    display: none !important;
-    pointer-events: none !important;
-}
-
-*, *::before, *::after {
-    box-sizing: inherit;
-}
 /* ================= ШАПКА САЙТА (2026 Style) ================= */
 .main-header {
     background: var(--bg-light);
@@ -2246,438 +2227,260 @@ body.overflow-hidden {
     }
 
     /*=========================================
-        BOOKING DRAWER MOBILE
+    BOOKING DRAWER MOBILE (КАТАЛОГ + ПОХОДИ)
     =========================================*/
 
-    .booking-drawer{
-        position:fixed;
-        inset:0;
-        display:flex;
-        align-items:flex-end;
-        justify-content:center;
-        z-index:9999;
-    }
-
-    .drawer-overlay{
-        position:absolute;
-        inset:0;
-        background:rgba(15,23,42,.55);
-        backdrop-filter:blur(8px);
-    }
-
-    .drawer-content{
-        position:relative;
-        width:100%;
-        height:92vh;
-        background:#ffffff;
-        border-radius:28px 28px 0 0;
-        display:flex;
-        flex-direction:column;
-        overflow:hidden;
-        box-shadow:0 -20px 60px rgba(0,0,0,.18);
-    }
-
-    .drawer-header{
-        position:relative;
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        padding:22px 20px;
-        background:#ffffff;
-        border-bottom:1px solid #edf2f7;
-        flex-shrink:0;
-    }
-
-    .drawer-header::before{
-        content:"";
-        position:absolute;
-        top:8px;
-        left:50%;
-        transform:translateX(-50%);
-        width:54px;
-        height:5px;
-        border-radius:999px;
-        background:#d6dde5;
-    }
-
-    .drawer-header h2{
-        margin:12px 0 0;
-        font-size:1.35rem;
-        font-weight:800;
-        color:#0f172a;
-    }
-
-    .close-drawer-btn{
-        width:44px;
-        height:44px;
-        border:none;
-        border-radius:50%;
-        background:#f8fafc;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:1rem;
-        color:#0f172a;
-    }
-
-    .drawer-body-form{
-        flex:1;
-        overflow-y:auto;
-        padding:20px 18px 140px;
-        display:flex;
-        flex-direction:column;
-        gap:22px;
-        -webkit-overflow-scrolling:touch;
-    }
-
-    .drawer-body-form::-webkit-scrollbar{
-        width:4px;
-    }
-
-    .drawer-body-form::-webkit-scrollbar-thumb{
-        background:#cbd5e1;
-        border-radius:999px;
-    }
-
-    .booking-summary-box{
-        background:#f8fafc;
-        border:1px solid #e2e8f0;
-        border-radius:22px;
-        padding:20px;
-    }
-
-    .booking-summary-box h3{
-        margin:0 0 16px;
-        font-size:1.1rem;
-        font-weight:800;
-        color:#0f172a;
-    }
-
-    .input-group{
-        display:flex;
-        flex-direction:column;
-        gap:10px;
-    }
-
-    .widget-title{
-        font-size:.95rem;
-        font-weight:700;
-        color:#334155;
-    }
-
-    .drawer-input{
-        width:100%;
-        height:58px;
-        padding:0 18px;
-        border:1px solid #dbe4ee;
-        border-radius:18px;
-        font-size:1rem;
-        background:#ffffff;
-    }
-
-    .drawer-input:focus{
-        outline:none;
-        border-color:#0284c7;
-        box-shadow:0 0 0 4px rgba(2,132,199,.12);
-    }
-
-    #btn-open-calendar{
-        width:100% !important;
-        height:58px !important;
-        border-radius:18px !important;
-        background:#ffffff !important;
-        border:1px solid #dbe4ee !important;
-        box-shadow:none !important;
-    }
-
-    .time-slots-grid{
-        display:grid;
-        grid-template-columns:repeat(2,1fr);
-        gap:10px;
-    }
-
-    .drawer-footer{
-        margin-top:24px;
-        padding:24px 0 0;
-        border-top:1px solid #edf2f7;
-        background:#ffffff;
-    }
-
-    .price-row{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:18px;
-    }
-
-    .price-total{
-        font-size:1rem;
-        font-weight:700;
-        color:#000;
-    }
-
-    .total-price{
-        font-size:1.6rem;
-        font-weight:800;
-        color:#0284c7;
-    }
-
-    .submit-booking-btn{
-        width:100%;
-        height:60px;
-        border:none;
-        border-radius:18px;
-        background:linear-gradient(135deg,#0284c7,#0369a1);
-        color:#ffffff;
-        font-size:1rem;
-        font-weight:800;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:12px;
-        box-shadow:0 16px 35px rgba(2,132,199,.25);
-    }
-
-    #cart-items-container{
-        display:flex;
-        flex-direction:column;
-        gap:18px;
-        margin-top:20px;
-        max-height:none !important;
-        overflow:visible !important;
-        padding:0 !important;
-    }
-
-    #cart-items-container > div{
-        width:100%;
-        display:flex;
-        flex-direction:column;
-        gap:20px;
-        padding:22px;
-        background:#ffffff;
-        border-radius:22px;
-        box-shadow:0 12px 30px rgba(15,23,42,.06);
-        box-sizing:border-box;
-    }
-
-    #cart-items-container h4{
-        margin:0;
-        font-size:1.3rem;
-        font-weight:800;
-        line-height:1.25;
-        color:#0f172a;
-        word-break:break-word;
-    }
-
-    #cart-items-container p{
-        display:flex;
-        align-items:center;
-        gap:8px;
-        margin:0;
-        font-size:.95rem;
-        color:#64748b;
-        font-weight:500;
-    }
-
-    #cart-items-container p::before{
-        content:"";
-        font-size:1rem;
-    }
-
-    #cart-items-container .cart-bottom{
-        display:flex;
-        flex-direction:column;
-        gap:18px;
-    }
-
-    #cart-items-container .cart-qty-control{
-        width:100%;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        gap:18px;
-        padding:10px;
-        background:#f8fafc;
-        border-radius:18px;
-        border:1px solid #e2e8f0;
-    }
-
-    #cart-items-container .cart-qty-btn{
-        width:44px;
-        height:44px;
-        border:none;
-        border-radius:14px;
-        background:#ffffff;
-        font-size:1.35rem;
-        font-weight:700;
-        color:#0f172a;
-        box-shadow:0 4px 10px rgba(15,23,42,.08);
-        transition:.2s;
-    }
-
-    #cart-items-container .cart-qty-btn:active{
-        transform:scale(.95);
-    }
-
-    #cart-items-container .cart-qty-value{
-        min-width:34px;
-        text-align:center;
-        font-size:1.2rem;
-        font-weight:800;
-        color:#0f172a;
-    }
-
-    #cart-items-container .cart-footer{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        padding-top:4px;
-    }
-
-    #cart-items-container .cart-item-price{
-        font-size:1.7rem;
-        font-weight:900;
-        color:#0284c7;
-        letter-spacing:-.5px;
-    }
-
-    #cart-items-container .remove-cart-item{
-        width:42px;
-        height:42px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        border:none;
-        border-radius:50%;
-        background:#f8fafc;
-        color:#94a3b8;
-        font-size:1.1rem;
-        transition:.25s;
-    }
-
-    #cart-items-container .remove-cart-item:active{
-        transform:scale(.92);
-    }
-
-    #cart-items-container .remove-cart-item:hover{
-        background:#fee2e2;
-        color:#ef4444;
-    }
-    
-    /* ==========================================================================
-    ПОЛНОСТЬЮ АДАПТИВНЫЙ КАЛЕНДАРЬ (FULL MOBILE & DESKTOP)
-    ========================================================================== */
-
-    /* Оверлей / Фон */
-    #calendar-modal {
+    .booking-drawer {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: none;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
         justify-content: center;
-        align-items: center;
-        padding: 16px;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 10000;
-        box-sizing: border-box;
+        z-index: 9999;
     }
 
-    #calendar-modal-overlay {
+    .drawer-overlay {
         position: absolute;
         inset: 0;
-        cursor: pointer;
+        background: rgba(15,23,42,.55);
+        backdrop-filter: blur(8px);
     }
 
-    /* Белая карточка модалки */
-    #calendar-modal > div:nth-child(2) {
+    .drawer-content {
         position: relative;
-        width: 92%;
-        max-width: 340px; /* Идеальная ширина для симметрии */
-        padding: 20px 14px; /* Симметричные отступы */
+        width: 100%;
+        height: 92vh;
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        font-family: system-ui, -apple-system, sans-serif;
-        z-index: 10001;
-        box-sizing: border-box;
+        border-radius: 28px 28px 0 0;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
+        box-shadow: 0 -20px 60px rgba(0,0,0,.18);
     }
 
-    /* Шапка (Месяц + Кнопки) */
-    #calendar-modal > div:nth-child(2) > div:first-child {
+    .drawer-header {
+        position: relative;
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
+        padding: 22px 20px;
+        background: #ffffff;
+        border-bottom: 1px solid #edf2f7;
+        flex-shrink: 0;
     }
 
-    #cal-prev-month,
-    #cal-next-month {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #f1f5f9;
-        color: #0284c7;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background 0.2s;
+    .drawer-header::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 54px;
+        height: 5px;
+        border-radius: 999px;
+        background: #d6dde5;
     }
 
-    #cal-prev-month:hover,
-    #cal-next-month:hover {
-        background: #e2e8f0;
-    }
-
-    #cal-month-year-title {
-        margin: 0;
-        font-size: 1.05rem;
+    .drawer-header h2 {
+        margin: 12px 0 0;
+        font-size: 1.35rem;
         font-weight: 800;
         color: #0f172a;
-        text-transform: capitalize;
     }
 
-    /* Дни недели (ПН ВТ СР ЧТ ПТ СБ НД) */
-    #calendar-modal > div:nth-child(2) > div:nth-child(2) {
-        display: grid !important;
-        grid-template-columns: repeat(7, 1fr) !important;
-        gap: 2px !important;
-        text-align: center;
-        margin-bottom: 8px;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    #calendar-modal > div:nth-child(2) > div:nth-child(2) span {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #94a3b8;
+    .close-drawer-btn {
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: #f8fafc;
         display: flex;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #0f172a;
+        cursor: pointer;
     }
 
-    /* Выходные подсвечиваем красным */
-    #calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(6),
-    #calendar-modal > div:nth-child(2) > div:nth-child(2) span:nth-child(7) {
+    .drawer-body-form {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 18px 140px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .drawer-body-form::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .drawer-body-form::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+
+    /* ==========================================
+    🔥 ЧИСТЫЙ КОНТЕЙНЕР И 3-ЭТАЖНЫЕ КАРТОЧКИ
+    ========================================== */
+
+    #cart-items-container {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 10px;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+
+    /* Карточка товара */
+    .cart-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 16px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* 1 ЭТАЖ: Бейдж + Кнопка удаления */
+    .cart-item-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .cart-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .cart-badge.rental {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .cart-badge.hike {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .cart-delete-btn {
+        background: #f8fafc;
+        border: 1px solid #edf2f7;
+        color: #94a3b8;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .cart-delete-btn:active {
+        background: #fee2e2;
+        border-color: #fca5a5;
         color: #ef4444;
     }
 
-    /* Сетка с числами */
-    #cal-days-grid {
-        display: grid !important;
-        grid-template-columns: repeat(7, 1fr) !important;
-        gap: 2px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+    /* 2 ЭТАЖ: Название и Подпись */
+    .cart-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .cart-item-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    .cart-item-meta {
+        font-size: 0.82rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    /* 3 ЭТАЖ: Степпер + Итоговая цена */
+    .cart-item-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px dashed #f1f5f9;
+        margin-top: 4px;
+    }
+
+    /* Капсульный степпер (- 1 +) */
+    .cart-stepper {
+        display: flex;
+        align-items: center;
+        background: #f1f5f9;
+        padding: 3px;
+        border-radius: 12px;
+        gap: 4px;
+    }
+
+    .stepper-btn {
+        width: 32px;
+        height: 32px;
+        background: #ffffff;
+        border: none;
+        border-radius: 9px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: transform 0.1s ease;
+    }
+
+    .stepper-btn:active {
+        transform: scale(0.9);
+        background: #e2e8f0;
+    }
+
+    .stepper-val {
+        min-width: 28px;
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    /* Итоговая цена */
+    .cart-item-total-price {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+    }
+
+    .cart-item-total-price .currency {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0284c7;
+        margin-left: 2px;
     }
 
     /*=========================================

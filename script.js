@@ -416,7 +416,7 @@ function updateCheckoutFormByCart() {
             console.log('✅ Вызвана populateTourDates для ключа:', tourKey);
         } else if (tourData && Array.isArray(tourData.dates)) {
             // Прямой фоллбек на случай если populateTourDates не объявлена
-            tourSelect.innerHTML = '<option value="">-- Оберіть дату заходу --</option>';
+            tourSelect.innerHTML = '<option value="">Оберіть дату заходу</option>';
             tourData.dates.forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
@@ -792,13 +792,37 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// --- 3. МОДАЛКА ПРОВЕРКИ ЗАКАЗА ---
+// --- 3. МОДАЛКА ПРОВЕРКИ ЗАКАЗА (SAFE VERSION) ---
 function openCheckOrderModal() {
-    // 0. Автоматически скрываем ненужные блоки перед проверкой
-    syncCartDateFields();
+    // Безопасные хелперы (чтобы скрипт не падал, если функций нет в глобале)
+    const safeSync = () => {
+        if (typeof syncCartDateFields === 'function') {
+            try { syncCartDateFields(); } catch(e) { console.warn('syncCartDateFields error:', e); }
+        }
+    };
+
+    const safeIsHike = (item) => {
+        if (typeof isHikeItem === 'function') return isHikeItem(item);
+        const title = (item.title || item.name || '').toLowerCase();
+        return title.includes('похід') || item.type === 'hike';
+    };
+
+    const safeEscape = (str) => {
+        if (typeof escapeHtml === 'function') return escapeHtml(str);
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
+
+    // 0. Синхронизируем поля
+    safeSync();
 
     // 1. Проверяем контакты
-    const nameInput = document.getElementById('user-name') || document.getElementById('checkout-name');
+    const nameInput = document.getElementById('user-name') || document.getElementById('checkout-name') || document.getElementById('checkout-fullname');
     const phoneInput = document.getElementById('user-phone') || document.getElementById('checkout-phone');
     
     const name = nameInput ? nameInput.value.trim() : '';
@@ -825,9 +849,9 @@ function openCheckOrderModal() {
         return;
     }
 
-    // 3. Определяем состав корзины
-    const hasHike = currentCart.some(item => isHikeItem(item));
-    const hasRental = currentCart.some(item => !isHikeItem(item));
+    // 3. Определяем состав корзины через безопасный хелпер
+    const hasHike = currentCart.some(item => safeIsHike(item));
+    const hasRental = currentCart.some(item => !safeIsHike(item));
 
     console.log('🔍 Проверка состава корзины:', { hasHike, hasRental, currentCart });
 
@@ -839,12 +863,9 @@ function openCheckOrderModal() {
                            document.getElementById('checkout-hike-date') || 
                            document.querySelector('.hike-date-select');
 
-    let formattedDate = '';
-    let displayTime = '';
+    let fullDateTimeString = '';
 
-    // 5. УМНАЯ ВАЛИДАЦИЯ ПРИ ОТПРАВКЕ
-    
-    // Сценарий А: Только ПОХОД / ТУР
+    // 5. УМНАЯ ВАЛИДАЦИЯ И СБОРКА СТРОКИ ДАТЫ/ВРЕМЕНИ
     if (hasHike && !hasRental) {
         const hikeDate = hikeDateSelect ? hikeDateSelect.value : '';
         if (!hikeDate) {
@@ -852,10 +873,8 @@ function openCheckOrderModal() {
             if (hikeDateSelect) hikeDateSelect.focus();
             return;
         }
-        formattedDate = hikeDate;
-        displayTime = 'За розкладом походу';
+        fullDateTimeString = `Похід: ${hikeDate}`;
     } 
-    // Сценарий Б: Есть ОРЕНДА (или Оренда + Поход)
     else {
         const rentalDate = rentalDateInput ? rentalDateInput.value : '';
         const rentalTime = rentalTimeInput ? rentalTimeInput.value : '';
@@ -872,24 +891,34 @@ function openCheckOrderModal() {
             return;
         }
 
-        formattedDate = rentalDate.split('-').reverse().join('.');
-        displayTime = rentalTime;
+        const formattedRentalDate = rentalDate.split('-').reverse().join('.');
+        
+        let dateParts = [];
+        dateParts.push(`Оренда: ${formattedRentalDate} (${rentalTime})`);
 
-        if (hasHike && hikeDateSelect && hikeDateSelect.value) {
-            formattedDate += ` | Похід: ${hikeDateSelect.value}`;
+        if (hasHike) {
+            const hikeDate = hikeDateSelect ? hikeDateSelect.value : '';
+            if (!hikeDate) {
+                alert('Будь ласка, оберіть дату походу');
+                if (hikeDateSelect) hikeDateSelect.focus();
+                return;
+            }
+            dateParts.push(`Похід: ${hikeDate}`);
         }
+
+        fullDateTimeString = dateParts.join(' | ');
     }
 
-    // 6. Формирование списка товаров
+    // 6. Формирование списка товаров (ТЁМНЫЙ СТИЛЬ)
     const cartItemsHtml = currentCart.map(item => {
         const itemTitle = item.title || item.name || 'Послуга';
         const itemQty = item.qty || item.quantity || item.count || 1;
         const itemPrice = item.price ? `${item.price * itemQty} грн` : '';
 
         return `
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #334155; padding: 2px 0;">
-                <span style="font-weight: 500; line-height: 1.3;">• ${escapeHtml(itemTitle)} ${itemQty > 1 ? `<b style="color:#2563eb;">×${itemQty}</b>` : ''}</span>
-                <span style="font-weight: 700; color: #0f172a; margin-left: 8px; white-space: nowrap;">${itemPrice}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; color: #e2e8f0; padding: 2px 0;">
+                <span style="font-weight: 500; line-height: 1.3; color: #cbd5e1;">• ${safeEscape(itemTitle)} ${itemQty > 1 ? `<b style="color:#38bdf8;">×${itemQty}</b>` : ''}</span>
+                <span style="font-weight: 800; color: #ffffff; margin-left: 8px; white-space: nowrap;">${itemPrice}</span>
             </div>
         `;
     }).join('');
@@ -901,54 +930,63 @@ function openCheckOrderModal() {
     const totalPrice = totalPriceEl ? totalPriceEl.textContent.trim() : '';
     const depositPrice = depositPriceEl ? depositPriceEl.textContent.trim() : '';
 
-    // 8. Заполнение финального окна
+    // 8. Заполнение финального окна (DARK GLASSMORPHISM)
     const detailsContainer = document.getElementById('check-order-details');
     if (detailsContainer) {
         detailsContainer.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
-                <span style="color:#64748b; font-size:0.85rem;">Ім'я:</span>
-                <span style="font-weight:700; color:#0f172a;">${escapeHtml(name)}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                <span style="color:#94a3b8; font-size:0.85rem;">Ім'я:</span>
+                <span style="font-weight:700; color:#ffffff;">${safeEscape(name)}</span>
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
-                <span style="color:#64748b; font-size:0.85rem;">Телефон:</span>
-                <span style="font-weight:700; color:#0f172a;">${escapeHtml(phone)}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                <span style="color:#94a3b8; font-size:0.85rem;">Телефон:</span>
+                <span style="font-weight:700; color:#ffffff;">${safeEscape(phone)}</span>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
-                <span style="color:#64748b; font-size:0.85rem;">Дата та час:</span>
-                <span style="font-weight:700; color:#2563eb; background:#eff6ff; padding:2px 8px; border-radius:6px;">${formattedDate} ${displayTime ? `(${displayTime})` : ''}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                <span style="color:#94a3b8; font-size:0.85rem;">Дата та час:</span>
+                <span style="font-weight:700; color:#38bdf8; background:rgba(0, 136, 204, 0.15); border:1px solid rgba(0, 136, 204, 0.3); padding:3px 10px; border-radius:8px; font-size:0.82rem;">${fullDateTimeString}</span>
             </div>
 
-            <div style="margin-top:4px; padding:10px; background:#ffffff; border-radius:10px; border:1px solid #e2e8f0;">
-                <div style="font-size:0.75rem; font-weight:800; color:#64748b; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.5px;">Ваше замовлення:</div>
+            <div style="margin-top:6px; padding:12px; background:rgba(255, 255, 255, 0.03); border-radius:14px; border:1px solid rgba(255, 255, 255, 0.07);">
+                <div style="font-size:0.75rem; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.5px;">Ваше замовлення:</div>
                 <div style="display:flex; flex-direction:column; gap:6px;">
                     ${cartItemsHtml}
                 </div>
             </div>
 
             ${totalPrice ? `
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:8px;">
-                <span style="color:#64748b; font-size:0.85rem;">Загальна вартість:</span>
-                <span style="font-weight:700; color:#0f172a;">${totalPrice}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; margin-top:4px;">
+                <span style="color:#94a3b8; font-size:0.85rem;">Загальна вартість:</span>
+                <span style="font-weight:800; color:#ffffff; font-size:1.1rem;">${totalPrice}</span>
             </div>
             ` : ''}
 
             ${depositPrice ? `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:10px 12px; border-radius:10px; border:1px solid #bbf7d0; margin-top:4px;">
-                <span style="color:#166534; font-size:0.85rem; font-weight:600;">Передплата до сплати:</span>
-                <span style="font-weight:800; color:#15803d; font-size:1.05rem;">${depositPrice}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(34, 197, 94, 0.12); padding:10px 12px; border-radius:12px; border:1px solid rgba(34, 197, 94, 0.25); margin-top:6px;">
+                <span style="color:#4ade80; font-size:0.85rem; font-weight:600;">Передплата до сплати:</span>
+                <span style="font-weight:800; color:#4ade80; font-size:1.1rem;">${depositPrice}</span>
             </div>
             ` : ''}
         `;
+    } else {
+        console.warn('⚠️ Элемент #check-order-details не найден!');
     }
 
     // 9. Открываем модалку
     const modal = document.getElementById('check-order-modal');
     if (modal) {
         modal.style.display = 'flex';
+        console.log('✅ Модалка успешно открыта!');
+    } else {
+        console.error('❌ Ошибка: модалка #check-order-modal не найдена в DOM!');
+        alert('Помилка: не знайдено вікно підтвердження (#check-order-modal)');
     }
 }
+
+// Делаем функцию доступной глобально
+window.openCheckOrderModal = openCheckOrderModal;
 
 // --- 4. ФУНКЦИЯ СКРЫТИЯ/ПОКАЗА И СБРОСА БЛОКОВ ---
 function syncCartDateFields() {
@@ -1066,32 +1104,16 @@ function calculatePaymentAmounts(total) {
 // ==========================================
 // ПЕРЕХОД СО ШАГА 2 НА ШАГ 3 (С РАСЧЕТОМ ПРЕДОПЛАТЫ)
 // ==========================================
+
 document.addEventListener('click', function(e) {
     const btn = e.target.closest('#btn-show-requisites');
     if (!btn) return;
 
     e.preventDefault();
 
-    // 1. Проверяем валидность формы (имя, телефон, дата, время)
-    const form = document.getElementById('tour-checkout-form');
-    if (form && !form.checkValidity()) {
-        form.reportValidity(); // Подсветит пропущенное поле
-        return;
-    }
-
-    // 2. ВЫЗЫВАЕМ ТВОЮ ГОТОВУЮ ФУНКЦИЮ РАСЧЕТА ИЗ catalog.js
-    if (typeof initPaymentCalculations === 'function') {
-        initPaymentCalculations();
-    }
-
-    // 3. Переключаем шторку на Шаг 3 (Оплата)
-    if (typeof goToDrawerStep === 'function') {
-        goToDrawerStep(3);
-    } else {
-        // Резервный вариант, если goToDrawerStep не объявлен
-        document.querySelectorAll('.drawer-step').forEach(step => step.style.display = 'none');
-        const step3 = document.getElementById('drawer-step-3');
-        if (step3) step3.style.display = 'block';
+    // Всю валидацию, проверку дат, корзины и вывод алертов делает openCheckOrderModal
+    if (typeof openCheckOrderModal === 'function') {
+        openCheckOrderModal();
     }
 });
 
@@ -1205,7 +1227,15 @@ const N8N_WEBHOOK_URL = 'https://tiktiok.xyz/webhook-test/219a97d0-2e45-4479-947
 const btnSubmitFinal = document.getElementById('btn-submit-final-booking');
 
 if (btnSubmitFinal) {
-    btnSubmitFinal.addEventListener('click', async function() {
+    btnSubmitFinal.addEventListener('click', async function(e) {
+        // 1. Отменяем стандартный submit формы (если кнопка внутри <form>)
+        if (e) e.preventDefault();
+
+        // 2. Безопасно находим инпут файла чек-оплаты
+        const receiptFileInput = document.getElementById('receipt-file-input') 
+                              || document.getElementById('receipt-file') 
+                              || document.querySelector('input[type="file"]');
+        
         const file = receiptFileInput && receiptFileInput.files ? receiptFileInput.files[0] : null;
         
         if (!file) {
@@ -1213,13 +1243,13 @@ if (btnSubmitFinal) {
             return;
         }
 
-        // Собираем ввод
+        // 3. Собираем ввод
         const name = (document.getElementById('user-name') || document.getElementById('checkout-name'))?.value.trim() || '';
         const phone = (document.getElementById('user-phone') || document.getElementById('checkout-phone'))?.value.trim() || '';
         const date = document.getElementById('checkout-rental-date')?.value || '';
         const time = document.getElementById('checkout-rental-time')?.value || '';
 
-        // Корзина и финансовый пересчет
+        // 4. Корзина и финансовый пересчет
         const currentCart = (typeof cart !== 'undefined' && Array.isArray(cart)) ? cart : (window.cart || []);
         let totalFullPrice = 0;
         currentCart.forEach(item => {
@@ -1234,9 +1264,16 @@ if (btnSubmitFinal) {
             }
         }
 
-        const { prepayAmount, restAmount } = calculatePaymentAmounts(totalFullPrice);
+        // Безопасный вызов подсчета (если функция существует)
+        let prepayAmount = 0;
+        let restAmount = totalFullPrice;
+        if (typeof calculatePaymentAmounts === 'function') {
+            const calc = calculatePaymentAmounts(totalFullPrice);
+            prepayAmount = calc.prepayAmount;
+            restAmount = calc.restAmount;
+        }
 
-        // Формируем мультипарт-данные
+        // 5. Формируем мультипарт-данные
         const formData = new FormData();
         formData.append('name', name);
         formData.append('phone', phone);
@@ -1254,11 +1291,15 @@ if (btnSubmitFinal) {
         btnSubmitFinal.style.opacity = '0.6';
         btnSubmitFinal.textContent = 'Надсилаємо замовлення...';
 
+        console.log('🚀 Отправляем данные на n8n...', { name, phone, date, time, totalFullPrice, file });
+
         try {
             const response = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
-                body: formData
+                body: formData // При отправке FormData заголовок Content-Type браузер ставит автоматически с boundary!
             });
+
+            console.log('📡 Ответ от n8n:', response.status, response.statusText);
 
             if (response.ok) {
                 alert('Замовлення та чек успішно надіслано! Чекаємо на локації 🤙');
@@ -1269,8 +1310,8 @@ if (btnSubmitFinal) {
                 throw new Error(`Помилка сервера: ${response.status}`);
             }
         } catch (error) {
-            console.error('Помилка надсилання на вебхук:', error);
-            alert('Не вдалося надіслати замовлення. Перевірте з’єднання.');
+            console.error('❌ Помилка надсилання на вебхук:', error);
+            alert('Не вдалося надіслати замовлення. Перевірте консоль браузера (F12).');
         } finally {
             btnSubmitFinal.disabled = false;
             btnSubmitFinal.style.opacity = '1';
@@ -1280,122 +1321,246 @@ if (btnSubmitFinal) {
 }
 
 // ==========================================
-// 14. ФИНАЛЬНАЯ ОТПРАВКА И ПОЛНАЯ ОЧИСТКА КОРЗИНЫ
+// 14. УНИВЕРСАЛЬНАЯ ОТПРАВКА В N8N, СОХРАНЕНИЕ И ОЧИСТКА
 // ==========================================
 
-document.addEventListener('click', function(e) {
-    // 1. Клик по кнопке "Підтвердити та надіслати"
+// Кодирование файла чека в Base64
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+// --- СБОРОЧНЫЕ ИЩЕЙКИ ПО ТВОЕМУ HTML ---
+// --- ВСЕЯДНЫЕ ИЩЕЙКИ ДЛЯ ОБЕИХ СТРАНИЦ (АРЕНДА И ПОХОДЫ) ---
+const getSmartClientName = () => {
+    const el = document.getElementById('user-name')
+            || document.getElementById('checkout-fullname') 
+            || document.getElementById('checkout-name')
+            || document.getElementById('client-name');
+    if (el && el.value && el.value.trim()) return el.value.trim();
+    
+    const fallback = document.querySelector('input[name="fullname"], input[name="name"], input[placeholder*="Ім"]');
+    return fallback ? fallback.value.trim() : 'Не вказано';
+};
+
+// --- ЧЕТКИЙ СБОР ТЕЛЕФОНА И ИСТОЧНИКА ---
+const getSmartClientPhone = () => {
+    // 1. Ищем элемент
+    const el = document.getElementById('user-phone') 
+            || document.getElementById('checkout-phone');
+
+    // 2. Если нашли, просто берем value, без всяких проверок
+    if (el) {
+        console.log("DEBUG: Я нашел телефон, значение сейчас:", el.value); // ЭТО ВАЖНО!
+        return el.value.trim(); 
+    }
+
+    // 3. Fallback (если вдруг ID изменился)
+    const fallback = document.querySelector('input[name="phone"], input[type="tel"]');
+    if (fallback) {
+        console.log("DEBUG: Нашел телефон через fallback, значение:", fallback.value);
+        return fallback.value.trim();
+    }
+
+    return 'Не вказано';
+};
+
+const getSmartClientSource = () => {
+    const el = document.getElementById('checkout-source') 
+            || document.getElementById('source')
+            || document.getElementById('client-source');
+    if (el && el.value && el.value.trim()) return el.value.trim();
+
+    const fallback = document.querySelector('select[name="source"], input[name="source"]');
+    return fallback ? fallback.value.trim() : 'Не вказано';
+};
+
+const getSmartRentalDate = () => {
+    const rentalDateEl = document.getElementById('checkout-rental-date');
+    if (rentalDateEl && rentalDateEl.value && rentalDateEl.value.trim()) {
+        return rentalDateEl.value.trim();
+    }
+
+    const tourDateEl = document.getElementById('checkout-tour-date');
+    if (tourDateEl && tourDateEl.value && tourDateEl.value.trim()) {
+        const selectedOption = tourDateEl.options[tourDateEl.selectedIndex];
+        return selectedOption ? selectedOption.textContent.trim() : tourDateEl.value.trim();
+    }
+
+    return 'Не вказано';
+};
+
+const getSmartRentalTime = () => {
+    const timeEl = document.getElementById('checkout-rental-time');
+    if (timeEl && timeEl.value && timeEl.value.trim()) {
+        return timeEl.value.trim();
+    }
+    return 'Не вказано';
+};
+
+// --- ОСНОВНОЙ ОБРАБОТЧИК КЛИКОВ ---
+document.addEventListener('click', async function(e) {
     const submitFinalBtn = e.target.closest('#btn-submit-final-booking');
     if (submitFinalBtn) {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('🎉 Заявка принята! Сохраняем в историю и открываем модалку успеха.');
+        const N8N_WEBHOOK_URL = 'https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52';
 
-        // ----------------------------------------------------
-        // СОХРАНЯЕМ ЗАКАЗ В ИСТОРИЮ (LOCALSTORAGE)
-        // ----------------------------------------------------
+        // А) Чек
+        const receiptFileInput = document.getElementById('receipt-file-input') 
+                              || document.getElementById('receipt-file') 
+                              || document.querySelector('input[type="file"]');
+        
+        const file = receiptFileInput && receiptFileInput.files ? receiptFileInput.files[0] : null;
+        
+        if (!file) {
+            alert('Будь ласка, прикріпіть чек про оплату передоплати!');
+            return;
+        }
+
+        // Б) ГЕНЕРИРУЕМ ЕДИНЫЙ АЙДИ ЗАКАЗА
+        const orderId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        // В) Собираем точные данные с формы через умные функции
+        const name = getSmartClientName();
+        const phone = getSmartClientPhone(); // 🔥 Используем нашу всеядную функцию для телефона
+        const source = getSmartClientSource(); // 🔥 И для источника на всякий случай
+        const rentalDate = getSmartRentalDate();
+        const rentalTime = getSmartRentalTime();
+
+        // Г) Корзина
+        const currentCart = Array.isArray(window.cart) ? window.cart : ((typeof cart !== 'undefined' && Array.isArray(cart)) ? cart : []);
+
+        let totalSum = 0;
+        const itemsList = currentCart.map(item => {
+            const price = Number(item.price || item.cost || 0);
+            const count = Number(item.count || item.quantity || item.qty || 1);
+            totalSum += price * count;
+
+            return {
+                name: item.title || item.name || 'Послуга',
+                count: count,
+                price: price
+            };
+        });
+
+        // Корректировка сумм
+        const totalEl = document.getElementById('checkout-total-price') || document.getElementById('cart-total');
+        if (totalEl) {
+            const parsedTotal = parseFloat(totalEl.textContent.replace(/[^\d.]/g, ''));
+            if (!isNaN(parsedTotal) && parsedTotal > 0) totalSum = parsedTotal;
+        }
+
+        const prepayEl = document.getElementById('checkout-prepay-price');
+        let prepaySum = 300; 
+        if (prepayEl) {
+            const parsedPrepay = parseFloat(prepayEl.textContent.replace(/[^\d.]/g, ''));
+            if (!isNaN(parsedPrepay)) prepaySum = parsedPrepay;
+        }
+
+        // UX анимация
+        const originalText = submitFinalBtn.textContent;
+        submitFinalBtn.disabled = true;
+        submitFinalBtn.style.opacity = '0.6';
+        submitFinalBtn.textContent = 'Обробка чека...';
+
         try {
-            // Достаем товары из корзины (проверяем все частые имена переменных)
-            const currentCart = Array.isArray(window.cart) ? window.cart : [];
+            const receiptBase64 = await fileToBase64(file);
+            submitFinalBtn.textContent = 'Надсилаємо замовлення...';
 
-            let totalSum = 0;
-            const itemsList = currentCart.map(item => {
-                const price = Number(item.price || item.cost || 0);
-                const count = Number(item.count || item.quantity || 1);
-                totalSum += price * count;
+            const payload = {
+                order_id: orderId, // 🔥 ОТПРАВЛЯЕМ ЕДИНЫЙ АЙДИ В N8N
+                name: name,
+                phone: phone,
+                source: source,
+                date: rentalDate,
+                time: rentalTime,
+                total_price: totalSum,
+                prepay_amount: prepaySum,
+                rest_amount: Math.max(0, totalSum - prepaySum),
+                cart: itemsList,
+                receipt: {
+                    filename: file.name,
+                    filetype: file.type,
+                    base64: receiptBase64
+                }
+            };
 
-                return {
-                    name: item.title || item.name || 'Товар',
-                    count: count,
-                    price: price
-                };
+            console.log('🚀 Отправка payload в n8n:', payload);
+
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
             });
 
-            // Пытаемся взять общую сумму из DOM, если она подсчитана в интерфейсе
-            const totalEl = document.getElementById('checkout-total-price') || document.getElementById('cart-total');
-            if (totalEl) {
-                const parsedTotal = parseFloat(totalEl.textContent.replace(/[^\d.]/g, ''));
-                if (!isNaN(parsedTotal) && parsedTotal > 0) totalSum = parsedTotal;
-            }
+            if (!response.ok) throw new Error(`Ошибка n8n: ${response.status}`);
 
-            // Пытаемся взять предоплату из DOM (или ставим по умолчанию)
-            const prepayEl = document.getElementById('checkout-prepay-price');
-            let prepaySum = 300; 
-            if (prepayEl) {
-                const parsedPrepay = parseFloat(prepayEl.textContent.replace(/[^\d.]/g, ''));
-                if (!isNaN(parsedPrepay)) prepaySum = parsedPrepay;
-            }
+            console.log('✅ Успешно доставлено в n8n!');
 
-            // Записываем заказ в историю
-            if (typeof saveOrderToHistory === 'function') {
-                saveOrderToHistory({
-                    rentalDate: document.getElementById('checkout-rental-date')?.value || 'Не вказано',
-                    rentalTime: document.getElementById('checkout-rental-time')?.value || 'Не вказано',
-                    items: itemsList,
-                    totalAmount: totalSum,
-                    prepayAmount: prepaySum,
-                    restAmount: Math.max(0, totalSum - prepaySum)
-                });
-            }
-        } catch (err) {
-            console.error('⚠️ Ошибка при записи заказа в историю:', err);
-        }
-        // ----------------------------------------------------
+            // 🔥 СОХРАНЯЕМ В ИСТОРИЮ С ТЕМ ЖЕ САМЫМ АЙДИ
+            try {
+                if (typeof saveOrderToHistory === 'function') {
+                    saveOrderToHistory({
+                        id: orderId, // Передаем сгенерированный ID
+                        rentalDate: rentalDate,
+                        rentalTime: rentalTime,
+                        items: itemsList,
+                        totalAmount: totalSum,
+                        prepayAmount: prepaySum,
+                        restAmount: Math.max(0, totalSum - prepaySum)
+                    });
+                }
+            } catch (err) { console.error('Ошибка истории:', err); }
 
-        // Гасим все шаги
-        document.querySelectorAll('#drawer-step-cart, #drawer-step-checkout, #drawer-step-3').forEach(el => {
-            el.style.setProperty('display', 'none', 'important');
-        });
+            // Полная очистка корзины
+            if (typeof clearCart === 'function') { try { clearCart(); } catch (err) {} }
+            if (typeof window.cart !== 'undefined') window.cart = [];
+            if (typeof cart !== 'undefined') cart = [];
 
-        // Сворачиваем шторку
-        document.querySelectorAll('.open, .active, .show, .is-open').forEach(el => {
-            if (el.id !== 'success-modal' && !el.contains(document.getElementById('success-modal'))) {
-                el.classList.remove('open', 'active', 'show', 'is-open');
-            }
-        });
+            try {
+                localStorage.removeItem('cart');
+                localStorage.removeItem('shopping_cart');
+                localStorage.removeItem('rental_cart');
+            } catch (err) {}
 
-        // Выкатываем сочную модалку
-        const successModal = document.getElementById('success-modal');
-        if (successModal) {
-            successModal.style.setProperty('display', 'flex', 'important');
+            // Переключение UI
+            document.querySelectorAll('#drawer-step-cart, #drawer-step-checkout, #drawer-step-3').forEach(el => {
+                el.style.setProperty('display', 'none', 'important');
+            });
+
+            document.querySelectorAll('.open, .active, .show, .is-open').forEach(el => {
+                if (el.id !== 'success-modal' && !el.contains(document.getElementById('success-modal'))) {
+                    el.classList.remove('open', 'active', 'show', 'is-open');
+                }
+            });
+
+            const successModal = document.getElementById('success-modal');
+            if (successModal) successModal.style.setProperty('display', 'flex', 'important');
+
+        } catch (error) {
+            console.error('❌ Ошибка отправки:', error);
+            alert('Не вдалося надіслати замовлення. Перевірте з’єднання.');
+        } finally {
+            submitFinalBtn.disabled = false;
+            submitFinalBtn.style.opacity = '1';
+            submitFinalBtn.textContent = originalText;
         }
         return;
     }
 
-    // 2. Клик по кнопке "Чудово" -> ОЧИСТКА КОРЗИНЫ И СБРОС (БЕЗ УДАЛЕНИЯ ИСТОРИИ)
+    // Закрытие успеха
     const closeSuccessBtn = e.target.closest('#close-success-btn');
     if (closeSuccessBtn) {
         e.preventDefault();
-
-        console.log('🧹 Очищаем корзину и сбрасываем всё в ноль...');
-
-        // А) Вызываем родную функцию очистки корзины
-        if (typeof clearCart === 'function') {
-            try { clearCart(); } catch (err) { console.error(err); }
-        }
-
-        // Б) Обнуляем внутренний массив cart
-        if (typeof window.cart !== 'undefined') {
-            window.cart = [];
-        }
-
-        // В) Удаляем ТОЛЬКО КОРЗИНУ из localStorage, НЕ ТРОГАЯ историю заказов my_orders_history!
-        try {
-            localStorage.removeItem('cart');
-            localStorage.removeItem('shopping_cart');
-            sessionStorage.clear();
-        } catch (err) {
-            console.error('Ошибка при очистке корзины:', err);
-        }
-
-        // Г) Закрываем модалку
         const successModal = document.getElementById('success-modal');
-        if (successModal) {
-            successModal.style.setProperty('display', 'none', 'important');
-        }
-
-        // Д) Чистая перезагрузка — клиент получает свежий сайт
+        if (successModal) successModal.style.setProperty('display', 'none', 'important');
         window.location.hash = '';
         window.location.reload();
     }
@@ -1553,7 +1718,7 @@ function populateTourDates(tourId) {
     if (!selectEl) return;
 
     // Очищаем селект
-    selectEl.innerHTML = '<option value="">-- Оберіть дату заходу --</option>';
+    selectEl.innerHTML = '<option value="">Оберіть дату заходу</option>';
 
     const tour = typeof toursData !== 'undefined' ? toursData[tourId] : null;
     if (!tour) return;
