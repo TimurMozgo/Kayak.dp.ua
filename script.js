@@ -1895,12 +1895,12 @@ function formatDateLabel(dateObj) {
 // ЛОГИКА РАЗДЕЛА "МОЇ ЗАМОВЛЕННЯ" (LOCALSTORAGE)
 // ==========================================
 
-// 1. Сохранение заказа в память (с авто-подстраховкой данных)
+// 1. Сохранение заказа в память (с разделением Оренды и Походов)
 function saveOrderToHistory(orderData = {}) {
     try {
         let orders = JSON.parse(localStorage.getItem('my_orders_history') || '[]');
 
-        // 🛡️ СТРАХОВКА 1: Если items не передали или они пустые, вытягиваем их из корзины
+        // 🛡️ СТРАХОВКА 1: Вытягиваем позиции
         let items = orderData.items;
         if (!items || !Array.isArray(items) || items.length === 0) {
             if (typeof cart !== 'undefined' && Array.isArray(cart) && cart.length > 0) {
@@ -1916,7 +1916,7 @@ function saveOrderToHistory(orderData = {}) {
             }
         }
 
-        // 🛡️ СТРАХОВКА 2: Если totalAmount = 0, сами пересчитываем сумму по товарам
+        // 🛡️ СТРАХОВКА 2: Пересчет суммы
         let totalAmount = parseFloat(orderData.totalAmount || 0);
         if ((!totalAmount || totalAmount === 0) && items.length > 0) {
             totalAmount = items.reduce((sum, item) => {
@@ -1926,19 +1926,22 @@ function saveOrderToHistory(orderData = {}) {
             }, 0);
         }
 
-        // Умный выбор даты (из календаря аренды или из календаря походов)
-        const selectedDate = orderData.rentalDate || 
-                             document.getElementById('checkout-rental-date')?.value || 
-                             document.getElementById('checkout-tour-date')?.value || 
-                             '---';
+        // Раздельный забор дат и времени для Оренды и Похода
+        const rentalDate = orderData.rentalDate || document.getElementById('checkout-rental-date')?.value || '';
+        const rentalTime = orderData.rentalTime || document.getElementById('checkout-rental-time')?.value || '';
+        
+        const tourDate = orderData.tourDate || document.getElementById('checkout-tour-date')?.value || '';
+        const tourTime = orderData.tourTime || document.getElementById('checkout-tour-time')?.value || '';
 
         const newOrder = {
             id: orderData.id || `ORD-${Math.floor(10000 + Math.random() * 90000)}`,
             createdAt: orderData.createdAt || new Date().toLocaleString('uk-UA', { 
                 day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' 
             }),
-            rentalDate: selectedDate,
-            rentalTime: orderData.rentalTime || document.getElementById('checkout-rental-time')?.value || '---',
+            rentalDate: rentalDate,
+            rentalTime: rentalTime,
+            tourDate: tourDate,
+            tourTime: tourTime,
             items: items,
             totalAmount: totalAmount,
             prepayAmount: orderData.prepayAmount || 0,
@@ -1947,12 +1950,11 @@ function saveOrderToHistory(orderData = {}) {
             statusText: orderData.statusText || 'Заброньовано'
         };
 
-        orders.unshift(newOrder); // Добавляем свежий заказ самым первым
+        orders.unshift(newOrder);
         localStorage.setItem('my_orders_history', JSON.stringify(orders));
         
         console.log('✅ Заказ успешно записан:', newOrder);
 
-        // Перерисовываем список прямо сейчас
         loadAndRenderMyOrders();
     } catch (e) {
         console.error('❌ Ошибка записи заказа:', e);
@@ -1966,7 +1968,6 @@ function loadAndRenderMyOrders() {
 
     const orders = JSON.parse(localStorage.getItem('my_orders_history') || '[]');
 
-    // Если заказов нет — выводим заглушку
     if (orders.length === 0) {
         container.innerHTML = `
             <div style="background: #ffffff; padding: 24px 16px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; color: #64748b; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
@@ -1978,15 +1979,12 @@ function loadAndRenderMyOrders() {
         return;
     }
 
-    // Если заказы есть — рендерим карточки
     container.innerHTML = orders.map(order => {
-        // Безопасно достаем и парсим товары
         let items = order.items || [];
         if (typeof items === 'string') {
             try { items = JSON.parse(items); } catch(e) { items = []; }
         }
 
-        // Формируем список позиций с защитой от разницы в названиях ключей
         const itemsMarkup = (Array.isArray(items) && items.length > 0)
             ? items.map(item => {
                 const name = item.name || item.title || 'Товар';
@@ -1995,6 +1993,23 @@ function loadAndRenderMyOrders() {
                 return `<li style="margin-bottom: 2px;">${name} (x${count}) — <strong>${price} грн</strong></li>`;
             }).join('')
             : '<li style="color: #94a3b8; list-style-type: none; margin-left: -20px;">Немає деталей по позиціях</li>';
+
+        // Динамический блок дат (Оренда / Похід)
+        let datesMarkup = '';
+        
+        if (order.rentalDate && order.rentalDate !== '---') {
+            const rTime = (order.rentalTime && order.rentalTime !== '---') ? ` о ${order.rentalTime}` : '';
+            datesMarkup += `<div>📅 <strong>Оренда:</strong> ${order.rentalDate}${rTime}</div>`;
+        }
+        
+        if (order.tourDate && order.tourDate !== '---') {
+            const tTime = (order.tourTime && order.tourTime !== '---') ? ` о ${order.tourTime}` : '';
+            datesMarkup += `<div style="${datesMarkup ? 'margin-top: 4px;' : ''}">🧭 <strong>Похід:</strong> ${order.tourDate}${tTime}</div>`;
+        }
+
+        if (!datesMarkup) {
+            datesMarkup = `<div>📅 <strong>Бронь:</strong> ---</div>`;
+        }
 
         return `
             <div class="order-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
@@ -2006,7 +2021,7 @@ function loadAndRenderMyOrders() {
                 
                 <div style="font-size: 14px; color: #334155; margin-bottom: 12px;">
                     <div style="margin-bottom: 8px; font-weight: 500;">
-                        📅 <strong>Бронь:</strong> ${order.rentalDate} ${order.rentalTime !== '---' ? 'о ' + order.rentalTime : ''}
+                        ${datesMarkup}
                     </div>
                     <div>
                         🛒 <strong>Позиції:</strong>
