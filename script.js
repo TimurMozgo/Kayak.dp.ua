@@ -1231,6 +1231,22 @@ if (uploadZone && receiptFileInput) {
 
 // 6. Обработка и отправка брони на Webhook n8n
 const N8N_WEBHOOK_URL = 'https://tiktiok.xyz/webhook/219a97d0-2e45-4479-947d-08702f215d52';
+const TARGET_MANAGER_ID = '6088315974'; // Твой ID менеджера
+
+// 🔥 ИЗВЛЕКАЕМ ID АГЕНТА И ПАРТНЕРА ИЗ URL (для CPA трекинга)
+const urlParams = new URLSearchParams(window.location.search);
+const startParam = urlParams.get('start') || '';
+
+let extractedAgentId = urlParams.get('agent_id') || urlParams.get('ref') || 'organic'; // 'organic' если пришел сам
+let extractedPartnerId = urlParams.get('partner_id') || urlParams.get('offer') || 'off_kayak_default';
+
+// Если это ссылка из Telegram (формат: start=agent_6750749768_offer_off_123)
+if (startParam.includes('agent_')) {
+    const parts = startParam.split('_');
+    if (parts.length >= 2) extractedAgentId = parts[1];
+    if (parts.length >= 4) extractedPartnerId = parts[2] + '_' + parts[3];
+}
+
 const btnSubmitFinal = document.getElementById('btn-submit-final-booking');
 
 if (btnSubmitFinal) {
@@ -1291,6 +1307,11 @@ if (btnSubmitFinal) {
         formData.append('rest_amount', restAmount);
         formData.append('cart', JSON.stringify(currentCart));
         formData.append('receipt', file, file.name);
+        
+        // 🔥 ДОБАВЛЯЕМ CPA ДАННЫЕ В ОТПРАВКУ
+        formData.append('agent_id', extractedAgentId);
+        formData.append('manager_id', TARGET_MANAGER_ID);
+        formData.append('partner_id', extractedPartnerId);
 
         // UX анимация кнопки
         const originalText = btnSubmitFinal.textContent;
@@ -1298,7 +1319,12 @@ if (btnSubmitFinal) {
         btnSubmitFinal.style.opacity = '0.6';
         btnSubmitFinal.textContent = 'Надсилаємо замовлення...';
 
-        console.log('🚀 Отправляем данные на n8n...', { name, phone, date, time, totalFullPrice, file });
+        console.log('🚀 Отправляем данные на n8n (с CPA трекингом):', { 
+            name, phone, date, time, totalFullPrice, 
+            agent_id: extractedAgentId, 
+            manager_id: TARGET_MANAGER_ID, 
+            partner_id: extractedPartnerId 
+        });
 
         try {
             const response = await fetch(N8N_WEBHOOK_URL, {
@@ -1585,25 +1611,39 @@ document.addEventListener('click', async function(e) {
             submitFinalBtn.textContent = 'Надсилаємо замовлення...';
 
             // 🔥 ОБНОВЛЕННЫЙ PAYLOAD ДЛЯ N8N 🔥
+                        // 🔥 ОБНОВЛЕННЫЙ PAYLOAD ДЛЯ N8N (с CPA полями)
             const payload = {
                 order_id: orderId,
-                category: categoryName,           // "🔥 КОМБО ЗАМОВЛЕННЯ" или "🛶 САМОСТІЙНА ОРЕНДА"
-                is_combo: (hasTour && hasRental),  // true / false
-                name: name,
-                phone: phone,
-                source: source,
-                rental_date: rentalDate,           // Дата для оренды
-                rental_time: rentalTime,           // Время для оренды
-                tour_date: tourDate || rentalDate, // Дата для похода (если отдельная — берется она, иначе fallback)
+                category: categoryName,
+                is_combo: (hasTour && hasRental),
+                
+                // 🔥 НОВЫЕ ПОЛЯ ДЛЯ ТАБЛИЦЫ И CPA
+                agent_id: extractedAgentId,
+                manager_id: TARGET_MANAGER_ID,
+                partner_id: extractedPartnerId,
+                
+                // Поля клиента (приведены к названиям из твоего JSON)
+                client_name: name,
+                client_phone: phone,
+                client_source: source,
+                
+                rental_date: rentalDate,
+                rental_time: rentalTime,
+                tour_date: tourDate || rentalDate,
+                
                 total_price: totalSum,
                 prepay_amount: prepaySum,
                 rest_amount: restSum,
                 cart: itemsList,
+                
                 receipt: {
                     filename: file.name,
                     filetype: file.type,
                     base64: receiptBase64
-                }
+                },
+                
+                // Текстовое представление для удобного чтения в Telegram/n8n
+                telegram_text: `🆕 НОВЕ ЗАМОВЛЕННЯ! № ${orderId}\n👤 Клієнт: ${name}\n📞 Телефон: ${phone}\n💰 Сума: ${totalSum} грн\n🔗 Агент: ${extractedAgentId}`
             };
 
             console.log('🚀 Отправка payload в n8n:', payload);
