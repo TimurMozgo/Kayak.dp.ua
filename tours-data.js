@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. БАЗА ДАННЫХ ТУРОВ (ТВОЙ ФУНДАМЕНТ)
+// 1. БАЗА ДАНИХ ПОХОДІВ
 // ==========================================================================
 const toursData = {
     // 🌅 1. ЧАРІВНІ ЗАХОДИ СОНЦЯ (Вт, Чт, Пт, Сб, Нд)
@@ -37,7 +37,7 @@ const toursData = {
         days: "Щосуботи та щонеділі",
         badge: "🔥 Акція 1700 грн (до 15 серпня)",
         intro: "Ця прогулянка як перше кохання… назавжди у спогадах, а серце жадає повторення ❤️‍🔥",
-        description: "Оновлений маршрут водною акваторією: заплутані затоки, вузькі протоки та справжня природа! Акційна ціна 1700 грн діє при бронюванні до 15 серпня (далі — 2500 грн).",
+        description: "Оновлений маршрут водною акваторією: заплутані затоки, вузькі протоки та справжня природа! Акційна ціна 1700 грн діє у разі бронювання до 15 серпня (далі — 2500 грн).",
         features: [
             "🛶 Оновлений маршрут водною акваторією",
             "🌿 Найцікавіші затоки плавнів",
@@ -52,22 +52,22 @@ const toursData = {
     // 🚣‍♂️ 3. ДВОДЕННИЙ СПЛАВ ПО ОРЕЛІ (Конкретні дати)
     'dvodenniy-splav-po-oreli': {
         id: 'dvodenniy-splav-po-oreli',
-        title: "Дводенний сплав по Орелі",
+        title: "Дводенний сплав Ореллю",
         price: "5700 грн",
         numericPrice: 5700,
         regularPrice: 8700,
         unit: "людина",
         location: "Старт з м. Дніпро (трансфер)",
         time: "2 дні (Субота – Неділя)",
-        days: "За розкладом выїздів",
+        days: "За розкладом виїздів",
         badge: "🔥 Акція 5700 грн (до 15.08)",
         intro: "Запрошуємо на насичену подорож найчистішою притокою Дніпра — Ореллю! 2 дні природи, вогнища, спорту та крутої компанії 🚣‍♂️🔥",
         description: "Маршрут (~8–16 км/день) дикими берегами та заплавними луками. У вартість 5700 грн включено все спорядження для веслування, 4-разове харчування, перекуси, чаювання та супровід інструкторів. Додатково: трансфер (800-1000 грн) та прокат наметів/спальників. Знижка 30% дітям до 12 років та УБД.",
         features: [
-            "🚣‍♂️ Маршрут по найцікавішій частині Орелі (~8–16 км/день)",
+            "🚣‍♂️ Маршрут найцікавішою частиною Орелі (~8–16 км/день)",
             "🔥 4-разове харчування на вогні + перекуси та чаювання",
             "🏕 Все спорядження для веслування та супровід інструкторів",
-            "🏐 Рухливі ігри (бадмінтон, фрізбі)",
+            "🏐 Рухливі ігри (бадмінтон, фрисбі)",
             "📸 Яскраві живі фото від інструкторів",
             "🤝 Позитивна та активна компанія"
         ],
@@ -179,111 +179,3 @@ const toursData = {
     }
 };
 
-window.openTourDetails = function(tourId) {
-    const tour = toursData[tourId];
-    if (!tour) {
-        console.error('❌ Тур не найден:', tourId);
-        return;
-    }
-
-    const modal = document.getElementById('tourModal');
-    const modalBody = document.getElementById('modalBody');
-
-    if (!modal || !modalBody) {
-        console.error('❌ Элементы модалки не найдены!');
-        return;
-    }
-
-    // Заливаем адаптированный под темную тему HTML
-    modalBody.innerHTML = `
-        <!-- Бейдж / Акция -->
-        ${tour.badge ? `
-            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; margin-bottom: 16px; border: 1px solid rgba(249, 115, 22, 0.3);">
-                ${tour.badge}
-            </div>
-        ` : ''}
-
-        <!-- Четкий белый заголовок -->
-        <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin: 0 0 14px 0; line-height: 1.3;">
-            ${tour.title}
-        </h2>
-
-        <!-- Локация и Время -->
-        <div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.9rem; color: #94a3b8; margin-bottom: 18px; font-weight: 500;">
-            <span style="display: flex; align-items: center; gap: 6px;">📍 ${tour.location}</span>
-            <span style="display: flex; align-items: center; gap: 6px;">⏱️ ${tour.time}</span>
-        </div>
-
-        <!-- Краткое описание -->
-        <p style="font-size: 1.05rem; color: #f1f5f9; font-weight: 600; line-height: 1.5; margin-bottom: 14px;">
-            ${tour.intro}
-        </p>
-
-        <!-- Полный текст -->
-        <p style="font-size: 0.95rem; color: #94a3b8; line-height: 1.6; margin-bottom: 22px;">
-            ${tour.description}
-        </p>
-
-        <!-- Блок "В стоимость входит" в стиле Dark Glass -->
-        ${tour.features && tour.features.length ? `
-            <div style="background: rgba(255, 255, 255, 0.04); border-radius: 16px; padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255, 255, 255, 0.08);">
-                <h4 style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin: 0 0 14px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                    У вартість входить:
-                </h4>
-                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
-                    ${tour.features.map(f => `
-                        <li style="font-size: 0.95rem; color: #e2e8f0; display: flex; align-items: center; gap: 8px; line-height: 1.4;">
-                            ${f}
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        ` : ''}
-
-        <!-- Футер: Цена + Кнопка -->
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 18px; margin-top: 10px;">
-            <div>
-                <span style="display: block; font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">ЦІНА ЗА ЛЮДИНУ:</span>
-                <span style="font-size: 1.6rem; font-weight: 800; color: #38bdf8;">${tour.price}</span>
-            </div>
-            <button type="button" onclick="closeTourDetails(); openBookingDrawer('${tour.id}')" style="background: #0088cc; color: #ffffff; border: none; border-radius: 12px; padding: 14px 28px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 136, 204, 0.3);">
-                Забронювати
-            </button>
-        </div>
-    `;
-
-    modal.classList.add('active', 'open', 'show');
-    modal.style.setProperty('display', 'flex', 'important');
-};
-
-// ==========================================
-// ЗАКРЫТИЕ МОДАЛКИ ПОДРОБНОСТЕЙ (ЖЕЛЕЗОБЕТОН)
-// ==========================================
-
-window.closeTourDetails = function() {
-    console.log('🔒 Закрываем модалку подробностей');
-    const modal = document.getElementById('tourModal');
-    if (modal) {
-        modal.classList.remove('active', 'open', 'show');
-        modal.style.setProperty('display', 'none', 'important');
-    }
-};
-
-// Перехватчик кликов: реагирует на крестик, оверлей и ESC
-document.addEventListener('click', function(e) {
-    const isCloseBtn = e.target.closest('.modal-close-btn');
-    const isOverlay = e.target.classList.contains('modal-overlay');
-
-    if (isCloseBtn || isOverlay) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.closeTourDetails();
-    }
-}, true);
-
-// Закрытие по кнопке Esc на клавиатуре
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        window.closeTourDetails();
-    }
-});

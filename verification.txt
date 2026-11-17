@@ -1,0 +1,3 @@
+DOM and business logic tests: 109 passed.
+No actual browser or Telegram device test performed.
+No remote requests sent.

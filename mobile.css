@@ -1,0 +1,49 @@
+/* Mobile app shell. Original content and assets are shared with desktop. */
+:root{--app-safe-top:0px;--app-safe-bottom:0px;--app-safe-left:0px;--app-safe-right:0px;--app-visible-height:100dvh}
+.booking-dock{background:var(--cream)}
+@media(max-width:600px){
+ html{scroll-padding-bottom:180px;-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+ body{padding-left:var(--app-safe-left);padding-right:var(--app-safe-right);overflow-x:clip}
+ header{padding:14px 18px;padding-top:calc(14px + max(env(safe-area-inset-top),var(--app-safe-top)));min-height:74px;background:var(--cream)}
+ .brand{font-size:22px;gap:9px}.brand small{font-size:8px;letter-spacing:1.5px}.brand .wave svg{width:44px;height:29px}
+ .cart-button{min-height:44px;min-width:78px;background:#f4eddf;border:0;padding:8px 12px}
+ .layout{padding-bottom:calc(104px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)))}
+ body:has(.quick-cart:not([hidden])) .layout{padding-bottom:calc(180px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)))}
+ main{padding:12px 16px 24px;min-height:calc(var(--app-visible-height) - 170px)}
+ .hero{margin:-12px -16px 0;min-height:440px;min-height:clamp(370px,58svh,490px);padding:24px 24px 0}
+ .hero-content{width:100%}.hero h1{font-size:clamp(48px,13.6vw,64px);line-height:1.02;letter-spacing:-2.5px;margin-top:16px}
+ .hero .location{position:absolute;top:18px;right:18px;font-size:10px;padding:7px 11px}
+ .hero p{font-size:15px;line-height:1.45;margin:10px 0 104px}.hero:after{background:linear-gradient(180deg,#10304705 10%,#10304728 40%,#082b36f2 100%)}
+ .hero-wave svg{width:66px;height:26px}.hero>img{object-position:center 62%}
+ .categories{margin:-82px -6px 32px;gap:12px}.category{padding:20px 17px 36px;min-height:194px;border-radius:25px;background:#fff9ed;box-shadow:0 3px 14px #1030470b}
+ .category>svg{width:46px;height:38px;margin-bottom:9px}.category h2{font-size:27px;letter-spacing:-1px;margin-bottom:7px}.category p{font-size:12px;line-height:1.45}.round-arrow{bottom:34px;right:15px;width:30px;height:30px}.category:after{height:37px;bottom:-18px;transform:rotate(-5deg)}
+ .page-heading{margin:10px 4px 22px;gap:6px;align-items:flex-start}.page-heading h1{font-size:clamp(28px,8.3vw,36px);letter-spacing:-1.4px;line-height:1.12}.page-heading p{font-size:13px;line-height:1.5;max-width:260px}.waves{flex-shrink:0;margin-top:4px}.waves svg{width:54px;height:38px}
+ .filters{gap:9px;margin:0 0 22px}.filters button{border-radius:17px;min-height:46px;font-size:13px;padding:12px 15px}.filters button.active{box-shadow:0 4px 12px #00bca819}
+ .grid{gap:18px}.card{border-radius:23px;border:1px solid #eee8de;box-shadow:0 3px 12px #1030470a}.card-body{padding:19px 17px}.card-heading{gap:10px;align-items:flex-start}.card-heading h2{font-size:21px;line-height:1.18;letter-spacing:-.7px}.card .price{font-size:12px;padding:7px 9px;max-width:116px;line-height:1.4;border-radius:12px}.card .meta{font-size:12px;line-height:1.5;margin:12px 0 15px}
+ .card.rental .image-button img{height:215px;background:#fff}.card-actions{gap:8px;flex-wrap:nowrap}.card-actions .primary{flex:1;min-width:0;min-height:48px;font-size:13px;padding:13px 14px}.card-actions .text-button{padding:10px 4px;min-height:44px;font-size:11px}.card-actions .primary svg{width:18px}
+ body[data-page="tours"] .grid{gap:14px}
+ body[data-page="tours"] .tour{display:grid;grid-template-columns:92px minmax(0,1fr);padding:12px;gap:13px;border-radius:21px}
+ body[data-page="tours"] .tour .image-button{border-radius:14px;align-self:stretch;background:#eaf2ea}
+ body[data-page="tours"] .tour .image-button img{height:100%;min-height:145px;aspect-ratio:auto;object-fit:cover}
+ body[data-page="tours"] .tour .card-body{padding:0;min-width:0}
+ body[data-page="tours"] .tour .card-heading{display:block}
+ body[data-page="tours"] .tour .card-heading h2{font-size:17px;line-height:1.25;letter-spacing:-.5px;margin-bottom:8px}
+ body[data-page="tours"] .tour .price{display:inline-block;max-width:100%;font-size:11px;padding:5px 8px}
+ body[data-page="tours"] .tour .meta{font-size:10px;margin:9px 0}
+ body[data-page="tours"] .tour .card-actions{display:grid;grid-template-columns:1fr;gap:2px}
+ body[data-page="tours"] .tour .card-actions .text-button{order:2;min-height:36px;padding:7px;text-align:center}
+ body[data-page="tours"] .tour .card-actions .primary{font-size:11px;min-height:43px;padding:10px;gap:5px}
+ nav{padding:10px max(10px,var(--app-safe-right)) calc(10px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)));min-height:74px;box-shadow:0 -5px 20px #10304708}
+ nav button{position:relative;min-height:48px;flex:1;max-width:100px;min-width:0;padding:3px 0;transition:color .2s,transform .2s}nav button:active{transform:scale(.92)}nav svg{width:23px;height:23px;margin-bottom:5px}nav span{font-size:10px;letter-spacing:0}.active svg{filter:drop-shadow(0 2px 6px #ff665725)}
+ .quick-cart{bottom:calc(85px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)));width:calc(100% - 28px - var(--app-safe-left) - var(--app-safe-right));padding:13px 16px;border-radius:17px;min-height:57px;gap:12px;box-shadow:0 7px 22px #d7564524}.quick-cart>svg:first-child{width:22px}.quick-cart>svg:last-child{width:19px}.quick-cart b{font-size:16px}.quick-cart small{font-size:10px}
+ dialog{max-height:calc(var(--app-visible-height) - max(12px,var(--app-safe-top)));width:100%;max-width:100%;border-radius:27px 27px 0 0;padding-bottom:max(env(safe-area-inset-bottom),var(--app-safe-bottom));overscroll-behavior:contain;scrollbar-width:none}
+ dialog:before{content:'';position:absolute;left:calc(50% - 18px);top:9px;width:36px;height:4px;background:#10304732;border-radius:10px;z-index:2}.close{width:44px;height:44px;right:12px;top:12px;font-size:27px;backdrop-filter:blur(8px)}
+ .detail-image{height:166px}.detail-image.rental{padding:18px}.detail-pad{padding:22px 20px 0}.detail-pad h2{font-size:25px;line-height:1.2;margin:10px 0 12px}.detail-pad .eyebrow{font-size:9px}.description{margin-bottom:20px;padding-bottom:12px}.description summary{min-height:44px;display:list-item;padding:12px 0;font-size:13px}.description p,.description li{font-size:13px;line-height:1.65}
+ .fields{gap:14px 12px;margin:18px 0}.fields label,#checkout label{font-size:12px}.fields input,.fields select,#checkout input{font-size:16px;min-height:50px;border-radius:13px;background:#fffdf9;padding:12px 10px}.fields select{font-size:14px;padding-right:22px}input[type="date"]{min-width:0;max-width:100%}.stepper{height:50px}.stepper input{min-height:32px;margin:0;padding:0;background:none;font-size:16px}.stepper button{width:34px;height:34px}.span2{grid-column:1/-1}
+ .booking-dock{position:sticky;bottom:0;margin:18px -20px 0;padding:12px 20px 16px;background:#fff9f0f7;backdrop-filter:blur(12px);border-top:1px solid #e9e4d9;z-index:2;box-shadow:0 -7px 22px #10304706}.booking-dock .form-total{margin:0;padding:0;background:none}.booking-dock .form-total strong{font-size:25px}.booking-dock .wide{min-height:51px;border-radius:15px;font-size:14px;margin-top:11px}.form-total small{font-size:11px;color:var(--muted)}
+ .cart-line{border-radius:19px;padding:15px;gap:12px;grid-template-columns:62px minmax(0,1fr)}.cart-line>img{width:62px;height:74px;border-radius:12px}.cart-line h3{font-size:16px;line-height:1.25}.cart-line p{font-size:11px}.line-actions{gap:12px}.line-actions button{min-height:44px;padding:10px 0;font-size:12px}.cart-line>b{font-size:17px}.sum{padding:16px 17px}.sum b{font-size:23px}#checkout .primary{font-size:14px;min-height:52px}.steps{margin:25px 16px 33px}.steps small{font-size:10px}.notice{font-size:12px;border-radius:14px}.success{padding:36px 5px}.success h1{font-size:32px}.success>span{width:82px;height:82px}
+ #toast{bottom:calc(160px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)));font-size:12px;max-width:calc(100% - 32px);text-align:center;line-height:1.5}body[data-page="cart"] #toast{bottom:calc(90px + max(env(safe-area-inset-bottom),var(--app-safe-bottom)))}
+ body.keyboard-open nav,body.keyboard-open .quick-cart{display:none}body.keyboard-open .layout{padding-bottom:30px}body.keyboard-open dialog{max-height:calc(var(--app-visible-height) - 12px)}
+}
+@media(max-width:359px){header{padding-left:14px;padding-right:14px}.brand{font-size:20px;gap:7px}.brand .wave svg{width:35px}.brand small{font-size:7px}.cart-button{min-width:70px;font-size:10px}main{padding-left:13px;padding-right:13px}.hero{margin-left:-13px;margin-right:-13px;padding-left:22px}.hero h1{font-size:49px}.category{padding:18px 14px 36px}.category h2{font-size:24px}.category p{font-size:10px}.round-arrow{right:11px;width:26px;height:26px}.page-heading h1{font-size:28px}.waves svg{width:42px}.card-heading h2{font-size:19px}.card .price{font-size:11px;max-width:100px}.card-body{padding:16px 14px}.card-actions .primary{font-size:12px}.fields{gap:14px 9px}.detail-pad{padding-left:16px;padding-right:16px}.booking-dock{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}body[data-page="tours"] .tour{grid-template-columns:74px minmax(0,1fr);gap:10px}.section-heading h2{font-size:18px}.contacts a{padding:11px;font-size:10px}}
+@media(prefers-reduced-motion:reduce){dialog,nav button,.booking-dock{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
